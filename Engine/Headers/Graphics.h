@@ -18,4 +18,5 @@ private:
 	ID3D11Device*			m_Device;
 	ID3D11DeviceContext*	m_ImmediateContext;
 	ID3D11RenderTargetView*	m_RenderTargetView;
+
 };

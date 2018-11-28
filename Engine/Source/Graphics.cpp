@@ -4,6 +4,7 @@
 Graphics::Graphics(Window& window)
 {
 	DXGI_SWAP_CHAIN_DESC sd;
+	ZeroMemory(&sd, sizeof(sd));
 	sd.BufferCount = 1;
 	sd.BufferDesc.Width = Graphics::SCREENWIDTH;
 	sd.BufferDesc.Height = Graphics::SCREENHEIGHT;
@@ -16,7 +17,7 @@ Graphics::Graphics(Window& window)
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = TRUE;
 
-	if (!D3D11CreateDeviceAndSwapChain(
+	if (D3D11CreateDeviceAndSwapChain(
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
@@ -30,16 +31,17 @@ Graphics::Graphics(Window& window)
 		nullptr,
 		&m_ImmediateContext)
 		)
-		MessageBox(nullptr, L"Failed Creating the Device and SwapChain", nullptr, 0);
+		MessageBox(window.m_MainWnd, L"Failed Creating the Device and SwapChain", nullptr, 0);
 
 	//Create the render target view, bind the back buffer of our swap chain as a render target
-	ID3D11Resource* pBackBuffer;
+	ID3D11Texture2D* pBackBuffer;
 	//In a debug build, __uuidof always initializes an object dynamically (at runtime).
 	//In a release build, __uuidof can statically (at compile time) initialize an object.
-	if (!m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer)) //LPVOID data types are defined as being a "pointer to a void object". (void**)
+	if (m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer)) //LPVOID data types are defined as being a "pointer to a void object". (void**)
 		MessageBox(window.m_MainWnd, L"Error Getting the back buffer", nullptr, 0);
-	if (!m_Device->CreateRenderTargetView(pBackBuffer, nullptr, &m_RenderTargetView))
+	if (m_Device->CreateRenderTargetView(pBackBuffer, nullptr, &m_RenderTargetView))
 		MessageBox(window.m_MainWnd, L"Error Creating the Render Target View", nullptr, 0);
+	pBackBuffer->Release();
 	m_ImmediateContext->OMSetRenderTargets(0, &m_RenderTargetView, nullptr);
 
 	D3D11_VIEWPORT vp;
