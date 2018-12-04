@@ -24,6 +24,9 @@
     <ClCompile Include="Source\window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Graphics.h">
@@ -32,5 +35,15 @@
     <ClInclude Include="Headers\window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\Game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\PixelShader.hlsl" />
+    <FxCompile Include="Shaders\VertexShader.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="InitializeGraphics\createAndSetVertexBuffer.fi" />
   </ItemGroup>
 </Project>

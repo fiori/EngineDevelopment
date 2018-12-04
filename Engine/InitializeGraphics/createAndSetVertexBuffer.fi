@@ -1,0 +1,16 @@
+//Check tutorial 03 for implementing the vertex buffer and shaders to render.
+SimpleVertex vertices[] =
+{
+	{DirectX::XMFLOAT3(0.9f, 0.9f, 0.0f), DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+	{DirectX::XMFLOAT3(0.9f, -0.9f, 0.0f), DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+	{DirectX::XMFLOAT3(-0.9f, -0.9f, 0.0f), DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)}
+};
+//Set up and create vertex buffer
+D3D11_BUFFER_DESC bufferDesc;
+ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+bufferDesc.ByteWidth = sizeof(SimpleVertex) * 3;
+bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+if (FAILED(m_Device->CreateBuffer(&bufferDesc, nullptr, &m_VertexBuffer)))
+	MessageBox(window.m_MainWnd, L"Error creating the vertex buffer", nullptr, 0);
