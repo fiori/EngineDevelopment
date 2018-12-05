@@ -1,0 +1,9 @@
+//Create and set up the constant buffer
+	D3D11_BUFFER_DESC	constant_buffer_desc;
+	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
+
+	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT; // Can use UpdateSubresource() to update
+	constant_buffer_desc.ByteWidth = sizeof(CONSTANT_BUFFER0); // Must be a multiple of 16
+	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	if (FAILED(m_Device->CreateBuffer(&constant_buffer_desc, nullptr, &m_ConstantBuffer0)))
+		MessageBox(window.m_MainWnd, L"Error Creating the Constant buffer", nullptr, 0);

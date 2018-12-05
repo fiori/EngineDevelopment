@@ -1,7 +1,6 @@
 #include "../Headers/Graphics.h"
 #include "../Headers/window.h"
 
-
 Graphics::Graphics(Window& window)
 {
 	DXGI_SWAP_CHAIN_DESC sd;
@@ -14,11 +13,12 @@ Graphics::Graphics(Window& window)
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.OutputWindow = window.m_MainWnd;
+	
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = TRUE;
 
-
+	
 	UINT CreateDeviceFlags = 0u;
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -63,8 +63,21 @@ Graphics::Graphics(Window& window)
 
 	//Check tutorial 03 for implementing the vertex buffer and shaders to render.
 
-	//Set up and create vertex buffer
-	#include "..\InitializeGraphics\createAndSetVertexBuffer.fi";
+	//Set up and create vertex buffer //Tutorial 03
+	#include "../InitializeGraphics/createAndSetVertexBuffer.fi";
+
+	//Create and set up the constant buffer // Tutorial 04
+	#include "../InitializeGraphics/createAndSetConstantBuffer.fi";
+
+
+
+	//TODO: Fix the problem from the linker, I think the problem is happening due do to somehow the class window is not passing by reference but instead is copying it
+	cb0_values.scale = 2.0f;
+	
+	
+	
+
+	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 
 	//Copy the vertices into the buffer
 	D3D11_MAPPED_SUBRESOURCE ms;
@@ -126,6 +139,9 @@ Graphics::Graphics(Window& window)
 		MessageBox(window.m_MainWnd, L"Error Creating the Input Layout", nullptr, 0);
 
 	m_ImmediateContext->IASetInputLayout(m_InputLayout);
+
+	//TODO: TuTorial 04
+	
 }
 
 Graphics::~Graphics()
@@ -143,6 +159,11 @@ void Graphics::Render()
 	UINT stride = sizeof(SimpleVertex);
 	UINT offset = 0;
 
+	
+
+
+	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer0);
+
 	m_ImmediateContext->IASetVertexBuffers(0, 1, &m_VertexBuffer, &stride, &offset);
 	m_ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_ImmediateContext->Draw(3, 0);
@@ -150,3 +171,5 @@ void Graphics::Render()
 	m_SwapChain->Present(0, 0);
 
 }
+
+

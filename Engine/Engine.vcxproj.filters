@@ -45,5 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="InitializeGraphics\createAndSetVertexBuffer.fi" />
+    <None Include="InitializeGraphics\createAndSetConstantBuffer.fi" />
   </ItemGroup>
 </Project>

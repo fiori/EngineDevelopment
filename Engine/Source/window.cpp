@@ -4,7 +4,6 @@ Window::Window(HINSTANCE instanceHandle, int show)
 	:m_hInst(instanceHandle)
 {
 	WNDCLASS wc;
-
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc = WndProc;
 	wc.cbClsExtra = 0;
@@ -46,6 +45,7 @@ Window::~Window()
 	UnregisterClass(m_ClassName, m_hInst);
 }
 
+
 int Window::Run()
 {
 	MSG msg;
@@ -57,12 +57,13 @@ int Window::Run()
 		{
 			return false;
 		}
+		
 	}
 
 	return true;
 }
 
-LRESULT Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{
@@ -76,8 +77,17 @@ LRESULT Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		if (wParam == VK_F5)
 		{
 			MessageBox(hWnd, L"boiiii", L"Suck a big dick", 0);
+			
 		}
+		if (wParam == VK_UP)
+		{
+
+			//Graphics::cb0_values.scale += 1.0f;
+			
+		}
+		
 		break;
+		
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);

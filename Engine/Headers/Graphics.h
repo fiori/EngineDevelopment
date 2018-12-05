@@ -5,8 +5,11 @@
 #include <D3DCompiler.h>
 #include <DirectXMath.h>
 
+
 class Graphics
 {
+	
+
 public:
 	Graphics(class Window& window);
 	~Graphics();
@@ -38,5 +41,21 @@ private:
 		DirectX::XMFLOAT4 Color; //Color
 	};
 /////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////
+//Tutorial 04 Constant Buffer
+private:
+	ID3D11Buffer*		m_ConstantBuffer0;
+
+
+	struct CONSTANT_BUFFER0
+	{
+		float scale;	//4 bytes
+		DirectX::XMFLOAT3 packing_bytes;	// 3x4 bytes = 12 bytes
+	};
+	CONSTANT_BUFFER0 cb0_values;
+
+
+///////////////////////////////////////
 
 };
