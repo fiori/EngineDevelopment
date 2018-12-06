@@ -2,6 +2,7 @@
 #include "../Headers/window.h"
 
 Graphics::Graphics(Window& window)
+	:wnd(window)
 {
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd, sizeof(sd));
@@ -12,7 +13,7 @@ Graphics::Graphics(Window& window)
 	sd.BufferDesc.RefreshRate.Numerator = 60;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.OutputWindow = window.m_MainWnd;
+	sd.OutputWindow = wnd.m_MainWnd;
 	
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
@@ -39,7 +40,7 @@ Graphics::Graphics(Window& window)
 		nullptr,
 		&m_ImmediateContext)
 		))
-		MessageBox(window.m_MainWnd, L"Failed Creating the Device and SwapChain", nullptr, 0);
+		MessageBox(wnd.m_MainWnd, L"Failed Creating the Device and SwapChain", nullptr, 0);
 
 	//Create the render target view, bind the back buffer of our swap chain as a render target
 	ID3D11Texture2D* pBackBuffer;
@@ -72,7 +73,7 @@ Graphics::Graphics(Window& window)
 
 
 	//TODO: Fix the problem from the linker, I think the problem is happening due do to somehow the class window is not passing by reference but instead is copying it
-	cb0_values.scale = 2.0f;
+	cb0_values.scale = 0.1f;
 	
 	
 	
@@ -159,8 +160,19 @@ void Graphics::Render()
 	UINT stride = sizeof(SimpleVertex);
 	UINT offset = 0;
 
+	//Todo: Create the game class and start using the keyboard in the game class
 	
-
+	if (wnd.kbd.KeyIsPressed(VK_UP))
+	{
+		cb0_values.scale += 0.0002f;
+		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
+	}
+	if (wnd.kbd.KeyIsPressed(VK_DOWN))
+	{
+		cb0_values.scale -= 0.0002f;
+		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
+	}
+	
 
 	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer0);
 

@@ -20,6 +20,8 @@ private:
 	static constexpr short SCREENHEIGHT = 480;
 	static constexpr float ClearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; //RGBA
 
+private:
+	Window& wnd;
 
 private:
 	IDXGISwapChain*			m_SwapChain;

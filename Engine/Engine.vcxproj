@@ -125,6 +125,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Keyboard.cpp" />
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\Graphics.cpp" />
     <ClCompile Include="Source\main.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="Headers\Game.h" />
     <ClInclude Include="Headers\Graphics.h" />
     <ClInclude Include="Headers\window.h" />
+    <ClInclude Include="Headers\Keyboard.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\PixelShader.hlsl">

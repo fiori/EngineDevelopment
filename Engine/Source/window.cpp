@@ -1,11 +1,13 @@
 #include "../Headers/window.h"
+#include "../Headers/Graphics.h"
+#include <cassert>
 
 Window::Window(HINSTANCE instanceHandle, int show)
 	:m_hInst(instanceHandle)
 {
 	WNDCLASS wc;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc = WndProc;
+	wc.lpfnWndProc = _HandleMsgSetup;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = m_hInst;
@@ -45,8 +47,37 @@ Window::~Window()
 	UnregisterClass(m_ClassName, m_hInst);
 }
 
+LRESULT Window::_HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	//use create parameter passed in from CreateWindow() to store window class pointer at WinAPI side
+	if (msg == WM_NCCREATE)
+	{
+		//extract ptr to window class from creation data
+		const CREATESTRUCTW* const pCreate = reinterpret_cast<CREATESTRUCTW*>(lParam);
+		Window* const pWnd = reinterpret_cast<Window*>(pCreate->lpCreateParams);
+		//Sanity Check
+		assert(pWnd != nullptr);
+		// set WinAPI-managed user data to store ptr to window class
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWnd));
+		// set message proc to normal (non-setup) handler now that setup is finished
+		SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&Window::_HandleMsgThunk));
+		//forward message to window class handler
+		return pWnd->WndProc(hWnd, msg, wParam, lParam);
+	}
+	//if we get a message before the WM_NCCREATE message, handle with default handler
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
 
-int Window::Run()
+LRESULT Window::_HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	//retrieve ptr to window class
+	Window* const pWnd = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+	//forward message to window class handler
+	return pWnd->WndProc(hWnd, msg, wParam, lParam);
+}
+
+
+bool Window::Run()
 {
 	MSG msg;
 	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -63,7 +94,7 @@ int Window::Run()
 	return true;
 }
 
-LRESULT CALLBACK Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{
@@ -71,22 +102,23 @@ LRESULT CALLBACK Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 		PostQuitMessage(0);
 		break;
 	case WM_KEYDOWN:
+		if (!(lParam & 0x40000000) || kbd.AutorepeatIsEnabled())
+		{
+			kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
+		}
 		if (wParam == VK_ESCAPE)
 			PostQuitMessage(0); // Exit the application
 			//DestroyWindow(hWnd); Destroys the open window it self
 		if (wParam == VK_F5)
 		{
 			MessageBox(hWnd, L"boiiii", L"Suck a big dick", 0);
-			
-		}
-		if (wParam == VK_UP)
-		{
 
-			//Graphics::cb0_values.scale += 1.0f;
-			
 		}
-		
 		break;
+	case WM_KEYUP:
+		kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
+		break;
+
 		
 	}
 
