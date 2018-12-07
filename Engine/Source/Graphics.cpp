@@ -14,12 +14,11 @@ Graphics::Graphics(Window& window)
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.OutputWindow = wnd.m_MainWnd;
-	
+
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = TRUE;
 
-	
 	UINT CreateDeviceFlags = 0u;
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -39,7 +38,7 @@ Graphics::Graphics(Window& window)
 		&m_Device,
 		nullptr,
 		&m_ImmediateContext)
-		))
+	))
 		MessageBox(wnd.m_MainWnd, L"Failed Creating the Device and SwapChain", nullptr, 0);
 
 	//Create the render target view, bind the back buffer of our swap chain as a render target
@@ -65,18 +64,19 @@ Graphics::Graphics(Window& window)
 	//Check tutorial 03 for implementing the vertex buffer and shaders to render.
 
 	//Set up and create vertex buffer //Tutorial 03
-	#include "../InitializeGraphics/createAndSetVertexBuffer.fi";
+#include "../InitializeGraphics/createAndSetVertexBuffer.fi";
 
-	//Create and set up the constant buffer // Tutorial 04
-	#include "../InitializeGraphics/createAndSetConstantBuffer.fi";
+//Create and set up the constant buffer // Tutorial 04
+#include "../InitializeGraphics/createAndSetConstantBuffer.fi";
 
+	world = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(45));
+	world *= DirectX::XMMatrixTranslation(0, 0, 20);
+	projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(45.0), Graphics::SCREENWIDTH / Graphics::SCREENHEIGHT, 1.0f, 100.0f);
+	view = DirectX::XMMatrixIdentity();
 
+	cb0_values.WorldViewProjection = world * view * projection;
 
-	//TODO: Fix the problem from the linker, I think the problem is happening due do to somehow the class window is not passing by reference but instead is copying it
 	cb0_values.scale = 0.1f;
-	
-	
-	
 
 	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 
@@ -91,8 +91,6 @@ Graphics::Graphics(Window& window)
 
 	//Unlock the buffer
 	m_ImmediateContext->Unmap(m_VertexBuffer, 0);
-
-	
 
 	//Load and compile the pixel and vertex shaders
 	ID3DBlob *VS, *PS, *error;
@@ -109,7 +107,6 @@ Graphics::Graphics(Window& window)
 	//Create vertexShader object
 	if (FAILED(m_Device->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), nullptr, &m_VertexShader)))
 		MessageBox(window.m_MainWnd, L"Error Creating Vertex Shader", nullptr, 0);
-
 
 	//Compiling the PixelShader
 	if (FAILED(D3DX11CompileFromFile(L"Shaders/PixelShader.hlsl", nullptr, nullptr, "PShader", "ps_4_0", 0, 0, nullptr, &PS, &error, nullptr)))
@@ -128,7 +125,6 @@ Graphics::Graphics(Window& window)
 	m_ImmediateContext->VSSetShader(m_VertexShader, nullptr, 0);
 	m_ImmediateContext->PSSetShader(m_PixelShader, nullptr, 0);
 
-
 	//Create Input Layout
 	D3D11_INPUT_ELEMENT_DESC InputLayoutDesc[] =
 	{
@@ -140,9 +136,6 @@ Graphics::Graphics(Window& window)
 		MessageBox(window.m_MainWnd, L"Error Creating the Input Layout", nullptr, 0);
 
 	m_ImmediateContext->IASetInputLayout(m_InputLayout);
-
-	//TODO: TuTorial 04
-	
 }
 
 Graphics::~Graphics()
@@ -161,18 +154,17 @@ void Graphics::Render()
 	UINT offset = 0;
 
 	//Todo: Create the game class and start using the keyboard in the game class
-	
+
 	if (wnd.kbd.KeyIsPressed(VK_UP))
 	{
 		cb0_values.scale += 0.0002f;
-		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 	}
 	if (wnd.kbd.KeyIsPressed(VK_DOWN))
 	{
 		cb0_values.scale -= 0.0002f;
-		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 	}
-	
+
+	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 
 	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer0);
 
@@ -181,7 +173,4 @@ void Graphics::Render()
 	m_ImmediateContext->Draw(3, 0);
 
 	m_SwapChain->Present(0, 0);
-
 }
-
-

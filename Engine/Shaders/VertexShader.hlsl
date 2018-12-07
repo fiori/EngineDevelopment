@@ -6,6 +6,7 @@ struct VOut
 
 cbuffer CBuffer0
 {
+    matrix WVPMatrix; // 64 bytes
     float scale; // 4 bytes
     float3 packing; // 3x4 = 12 bytes
 }
@@ -14,7 +15,7 @@ cbuffer CBuffer0
 VOut VShader(float4 Pos : POSITION, float4 Clr : COLOR)
 {
     VOut output;
-    output.position = Pos;
+    output.position = mul(WVPMatrix, Pos);
     output.position.xy *= scale;
     output.color = Clr;
     return output;

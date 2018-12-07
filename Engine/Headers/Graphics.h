@@ -5,11 +5,8 @@
 #include <D3DCompiler.h>
 #include <DirectXMath.h>
 
-
 class Graphics
 {
-	
-
 public:
 	Graphics(class Window& window);
 	~Graphics();
@@ -29,8 +26,8 @@ private:
 	ID3D11DeviceContext*	m_ImmediateContext;
 	ID3D11RenderTargetView*	m_RenderTargetView;
 
-/////////////////////////////////////////////////////
-//Tutorial 03 Using Vertex Buffer and Shader to Render
+	/////////////////////////////////////////////////////
+	//Tutorial 03 Using Vertex Buffer and Shader to Render
 private:
 	ID3D11InputLayout*		m_InputLayout;
 	ID3D11Buffer*			m_VertexBuffer;
@@ -42,22 +39,26 @@ private:
 		DirectX::XMFLOAT3 Pos; //Position
 		DirectX::XMFLOAT4 Color; //Color
 	};
-/////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////
-//Tutorial 04 Constant Buffer
+	//////////////////////////////////////////////////////
+	//Tutorial 04 Constant Buffer
 private:
 	ID3D11Buffer*		m_ConstantBuffer0;
 
-
 	struct CONSTANT_BUFFER0
 	{
+		DirectX::XMMATRIX WorldViewProjection; // 64 bytes
 		float scale;	//4 bytes
 		DirectX::XMFLOAT3 packing_bytes;	// 3x4 bytes = 12 bytes
 	};
 	CONSTANT_BUFFER0 cb0_values;
 
+	///////////////////////////////////////
+private:
+	////////////
+	//Tutorial05
+	DirectX::XMMATRIX projection, world, view;
 
-///////////////////////////////////////
-
+	///////////////
 };

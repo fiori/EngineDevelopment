@@ -126,13 +126,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\Keyboard.cpp" />
-    <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\Graphics.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Headers\Game.h" />
     <ClInclude Include="Headers\Graphics.h" />
     <ClInclude Include="Headers\window.h" />
     <ClInclude Include="Headers\Keyboard.h" />
