@@ -61,6 +61,24 @@ Graphics::Graphics(Window& window)
 	vp.TopLeftY = 0;
 	m_ImmediateContext->RSSetViewports(1, &vp);
 
+	//Implement back-face culling
+	CD3D11_RASTERIZER_DESC rasterDesc(
+		D3D11_FILL_SOLID,
+		D3D11_CULL_NONE,
+		FALSE,
+		D3D11_DEFAULT_DEPTH_BIAS,
+		D3D11_DEFAULT_DEPTH_BIAS_CLAMP,
+		D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS,
+		TRUE,
+		FALSE,
+		TRUE,
+		FALSE);
+
+	if (FAILED(m_Device->CreateRasterizerState(&rasterDesc, &m_RasterState)))
+		MessageBox(wnd.m_MainWnd, L"Error Creation the rasterizer state", nullptr, 0);
+
+	m_ImmediateContext->RSSetState(m_RasterState);
+
 	//Check tutorial 03 for implementing the vertex buffer and shaders to render.
 
 	//Set up and create vertex buffer //Tutorial 03
@@ -69,14 +87,14 @@ Graphics::Graphics(Window& window)
 //Create and set up the constant buffer // Tutorial 04
 #include "../InitializeGraphics/createAndSetConstantBuffer.fi";
 
-	world = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(45));
-	world *= DirectX::XMMatrixTranslation(0, 0, 20);
+	world = DirectX::XMMatrixTranslation(0, 0, 15);
+	world *= DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(RotationZ));
 	projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(45.0), Graphics::SCREENWIDTH / Graphics::SCREENHEIGHT, 1.0f, 100.0f);
 	view = DirectX::XMMatrixIdentity();
 
 	cb0_values.WorldViewProjection = world * view * projection;
 
-	cb0_values.scale = 0.1f;
+	cb0_values.scale = 1.0f;
 
 	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 
@@ -163,6 +181,12 @@ void Graphics::Render()
 	{
 		cb0_values.scale -= 0.0002f;
 	}
+	if (wnd.kbd.KeyIsPressed(0x45))
+	{
+		RotationZ += 1.0f;
+		world *= DirectX::XMMatrixRotationZ((DirectX::XMConvertToRadians(RotationZ)));
+		cb0_values.WorldViewProjection = world * view * projection;
+	}
 
 	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 
@@ -170,7 +194,7 @@ void Graphics::Render()
 
 	m_ImmediateContext->IASetVertexBuffers(0, 1, &m_VertexBuffer, &stride, &offset);
 	m_ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_ImmediateContext->Draw(3, 0);
+	m_ImmediateContext->Draw(36, 0);
 
 	m_SwapChain->Present(0, 0);
 }

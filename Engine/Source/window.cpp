@@ -76,7 +76,6 @@ LRESULT Window::_HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 	return pWnd->WndProc(hWnd, msg, wParam, lParam);
 }
 
-
 bool Window::Run()
 {
 	MSG msg;
@@ -88,7 +87,6 @@ bool Window::Run()
 		{
 			return false;
 		}
-		
 	}
 
 	return true;
@@ -102,24 +100,21 @@ LRESULT Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 	case WM_KEYDOWN:
-		if (!(lParam & 0x40000000) || kbd.AutorepeatIsEnabled())
-		{
-			kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
-		}
+		/*if (!(lParam & 0x40000000) || kbd.AutorepeatIsEnabled())
+		{*/
+		kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
+		/*}*/
 		if (wParam == VK_ESCAPE)
 			PostQuitMessage(0); // Exit the application
 			//DestroyWindow(hWnd); Destroys the open window it self
 		if (wParam == VK_F5)
 		{
 			MessageBox(hWnd, L"boiiii", L"Suck a big dick", 0);
-
 		}
 		break;
 	case WM_KEYUP:
 		kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
 		break;
-
-		
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);

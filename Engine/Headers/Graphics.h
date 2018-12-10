@@ -60,5 +60,9 @@ private:
 	//Tutorial05
 	DirectX::XMMATRIX projection, world, view;
 
+	//backface culling
+	ID3D11RasterizerState* m_RasterState;
 	///////////////
+
+	float RotationZ = 15;
 };

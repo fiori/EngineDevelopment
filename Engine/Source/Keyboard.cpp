@@ -24,9 +24,6 @@ bool Keyboard::KeyIsEmpty() const
 	return keybuffer.empty();
 }
 
-
-
-
 void Keyboard::EnableAutorepeat()
 {
 	autorepeatEnabled = true;
@@ -42,7 +39,6 @@ bool Keyboard::AutorepeatIsEnabled() const
 	return autorepeatEnabled;
 }
 
-
 void Keyboard::OnKeyPressed(unsigned char keycode)
 {
 	keystates[keycode] = true;
@@ -56,8 +52,6 @@ void Keyboard::OnKeyReleased(unsigned char keycode)
 	keybuffer.push(Keyboard::Event(Keyboard::Event::Release, keycode));
 	TrimBuffer(keybuffer);
 }
-
-
 
 //Trims the buffer so it does not get bigger than 4bytes
 template <typename T>
