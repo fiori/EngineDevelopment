@@ -121,7 +121,8 @@ Graphics::Graphics(Window& window)
 	//world *= DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(RotationZ));
 	world *= DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(15));
 	projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(45.0), Graphics::SCREENWIDTH / Graphics::SCREENHEIGHT, 1.0f, 100.0f);
-	view = DirectX::XMMatrixIdentity();
+	//view = DirectX::XMMatrixIdentity();
+	view = m_Camera->GetViewMatrix();
 
 	cb0_values.WorldViewProjection = world * view * projection;
 
@@ -194,6 +195,7 @@ Graphics::~Graphics()
 	if (m_VertexShader) m_VertexShader->Release();
 	if (m_PixelShader) m_PixelShader->Release();
 	if (m_Device) m_Device->Release();
+	delete m_Camera;
 }
 
 void Graphics::Input()
@@ -202,15 +204,42 @@ void Graphics::Input()
 
 	if (wnd.kbd.KeyIsPressed(VK_UP))
 	{
-		cb0_values.scale += 0.0002f;
+		cb0_values.scale += 0.0001f;
 	}
 	if (wnd.kbd.KeyIsPressed(VK_DOWN))
 	{
-		cb0_values.scale -= 0.0002f;
+		cb0_values.scale -= 0.0001f;
 	}
-	if (wnd.kbd.KeyIsPressed(0x45))
+	if (wnd.kbd.KeyIsPressed(VK_RIGHT))
+	{
+		RotationZ -= 0.0001f;
+	}
+	if (wnd.kbd.KeyIsPressed(VK_LEFT))
 	{
 		RotationZ += 0.0001f;
+	}
+
+	////////////////////////
+	//Camera Movement
+	//E
+	if (wnd.kbd.KeyIsPressed(0x45))
+	{
+		m_Camera->Rotate(0.01f);
+	}
+	//Q
+	if (wnd.kbd.KeyIsPressed(0x51))
+	{
+		m_Camera->Rotate(-0.01f);
+	}
+	//W
+	if (wnd.kbd.KeyIsPressed(0x57))
+	{
+		m_Camera->Up(0.01f);
+	}
+	//S
+	if (wnd.kbd.KeyIsPressed(0x53))
+	{
+		m_Camera->Up(-0.01f);
 	}
 }
 
@@ -231,6 +260,7 @@ void Graphics::Render()
 		world = DirectX::XMMatrixTranslation(0, 0, 10);
 		world *= DirectX::XMMatrixTranslation(5 * i, 5 * i, 1 * i);
 		world *= DirectX::XMMatrixRotationZ(RotationZ);
+		view = m_Camera->GetViewMatrix();
 		cb0_values.WorldViewProjection = world * view * projection;
 		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 		m_ImmediateContext->Draw(36, 0);

@@ -4,6 +4,7 @@
 #include <D3DX11async.h>
 #include <D3DCompiler.h>
 #include <DirectXMath.h>
+#include "../Headers/Camera.h"
 
 class Graphics
 {
@@ -125,4 +126,9 @@ private:
 		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
 		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f) ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
 	};
+
+private:
+	//////
+	//Tutorial07
+	Camera*	m_Camera = new Camera(0.0f, 0.0f, 0.0f, 0);
 };

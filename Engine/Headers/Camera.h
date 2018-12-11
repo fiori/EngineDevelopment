@@ -9,6 +9,9 @@ public:
 	Camera(float x, float y, float z, double CameraRotation);
 	void Rotate(double degrees);
 	void Forward(float distance);
+	void Up(float y);
+	DirectX::XMMATRIX GetViewMatrix();
+	//TODO: Implement Strafe
 	~Camera();
 private:
 	float m_X;

@@ -20,6 +20,19 @@ void Camera::Forward(float distance)
 	m_Y += distance * m_dz;
 }
 
+void Camera::Up(float y)
+{
+	m_Y += y;
+}
+
+DirectX::XMMATRIX Camera::GetViewMatrix()
+{
+	m_position = DirectX::XMVectorSet(m_X, m_Y, m_Z, 0);
+	m_lookat = DirectX::XMVectorSet(m_X + m_dx, m_Y, m_Z + m_dz, 0);
+	m_up = DirectX::XMVectorSet(0.0, 1.0, 0.0, 0.0);
+	return DirectX::XMMatrixLookAtLH(m_position, m_lookat, m_up);
+}
+
 Camera::~Camera()
 {
 }
