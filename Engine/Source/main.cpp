@@ -9,6 +9,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nCmdShow)
 	Graphics graphics(wnd);
 	while (wnd.Run())
 	{
+		graphics.Input();
 		graphics.Render();
 	}
 }

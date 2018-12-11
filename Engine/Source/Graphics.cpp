@@ -196,14 +196,8 @@ Graphics::~Graphics()
 	if (m_Device) m_Device->Release();
 }
 
-void Graphics::Render()
+void Graphics::Input()
 {
-	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
-	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-	UINT stride = sizeof(SimpleVertex);
-	UINT offset = 0;
-
 	//Todo: Create the game class and start using the keyboard in the game class
 
 	if (wnd.kbd.KeyIsPressed(VK_UP))
@@ -218,6 +212,19 @@ void Graphics::Render()
 	{
 		RotationZ += 0.0001f;
 	}
+}
+
+void Graphics::Render()
+{
+	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
+	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	UINT stride = sizeof(SimpleVertex);
+	UINT offset = 0;
+
+	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer0);
+	m_ImmediateContext->IASetVertexBuffers(0, 1, &m_VertexBuffer, &stride, &offset);
+	m_ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	for (size_t i = 0; i < 3; i++)
 	{
@@ -228,9 +235,5 @@ void Graphics::Render()
 		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 		m_ImmediateContext->Draw(36, 0);
 	}
-
-	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer0);
-	m_ImmediateContext->IASetVertexBuffers(0, 1, &m_VertexBuffer, &stride, &offset);
-	m_ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_SwapChain->Present(0, 0);
 }

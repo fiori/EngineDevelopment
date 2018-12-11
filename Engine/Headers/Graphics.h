@@ -10,6 +10,7 @@ class Graphics
 public:
 	Graphics(class Window& window);
 	~Graphics();
+	void Input();
 	void Render();
 	void UnlockBuffer();
 
