@@ -11,6 +11,7 @@ public:
 	Graphics(class Window& window);
 	~Graphics();
 	void Render();
+	void UnlockBuffer();
 
 private:
 	static constexpr short SCREENWIDTH = 640;
@@ -65,4 +66,62 @@ private:
 	///////////////
 
 	float RotationZ = 15;
+
+private:
+	///////////
+	//Tutorial 06
+	//ZBuffer
+	ID3D11DepthStencilView*		m_DepthStencilView;
+
+private:
+	SimpleVertex vertices[36] =
+	{
+		// back face
+		{DirectX::XMFLOAT3(-1.0f, 1.0f, 1.0f), DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f),DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)  ,DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)  ,DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f),DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f) ,DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+
+		// front face
+		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f),DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f) 	,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f) ,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
+
+		// left face
+		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f),DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f)	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f)	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, 1.0f, 1.0f)	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
+
+		// right face
+		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f),DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)   ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f) ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+
+		// bottom face
+		{DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f),DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f)  ,DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f),DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f) ,DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f) ,DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f),DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+
+		// top face
+		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)   ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f) ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f) ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, 1.0f, 1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
+		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f) ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
+	};
 };

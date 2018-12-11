@@ -1,55 +1,5 @@
 //Check tutorial 03 for implementing the vertex buffer and shaders to render.
-SimpleVertex vertices[] =
-{
-		// back face 
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, 1.0f), DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f),DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)  ,DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)  ,DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f),DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f) ,DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
 
-		// front face
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f ),DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f) 	,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f) ,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-
-		// left face
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f ),DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f)	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f )	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, 1.0f)	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-
-		// right face
-		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f ),DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)   ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f ) ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-
-		// bottom face
-		{DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f ),DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f)  ,DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f),DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f ) ,DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f) ,DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f),DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-
-		// top face
-		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)   ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f ) ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f) ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, 1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f )  ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f) ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-
-};
 //Set up and create vertex buffer
 D3D11_BUFFER_DESC bufferDesc;
 ZeroMemory(&bufferDesc, sizeof(bufferDesc));

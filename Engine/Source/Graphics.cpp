@@ -50,7 +50,37 @@ Graphics::Graphics(Window& window)
 	if (FAILED(m_Device->CreateRenderTargetView(pBackBuffer, nullptr, &m_RenderTargetView)))
 		MessageBox(window.m_MainWnd, L"Error Creating the Render Target View", nullptr, 0);
 	pBackBuffer->Release();
-	m_ImmediateContext->OMSetRenderTargets(1, &m_RenderTargetView, nullptr);
+
+	// Creates the Z Buffer texture
+	D3D11_TEXTURE2D_DESC tex2dDesc;
+	ZeroMemory(&tex2dDesc, sizeof(tex2dDesc));
+
+	tex2dDesc.Width = Graphics::SCREENWIDTH;
+	tex2dDesc.Height = Graphics::SCREENHEIGHT;
+	tex2dDesc.ArraySize = 1;
+	tex2dDesc.MipLevels = 1;
+	tex2dDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	tex2dDesc.SampleDesc.Count = sd.SampleDesc.Count;
+	tex2dDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	tex2dDesc.Usage = D3D11_USAGE_DEFAULT;
+
+	ID3D11Texture2D*			m_ZBufferTexture;
+
+	if (FAILED(m_Device->CreateTexture2D(&tex2dDesc, nullptr, &m_ZBufferTexture)))
+		MessageBox(nullptr, L"Error Creating the ZBuffer Texture", nullptr, 0);
+
+	// Creates the Z Buffer
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+	ZeroMemory(&dsvDesc, sizeof(dsvDesc));
+
+	dsvDesc.Format = tex2dDesc.Format;
+	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+
+	m_Device->CreateDepthStencilView(m_ZBufferTexture, &dsvDesc, &m_DepthStencilView);
+	m_ZBufferTexture->Release();
+
+	//Renders the TargetView and the DepthStencilView
+	m_ImmediateContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
 
 	D3D11_VIEWPORT vp;
 	vp.Width = Graphics::SCREENWIDTH;
@@ -88,7 +118,8 @@ Graphics::Graphics(Window& window)
 #include "../InitializeGraphics/createAndSetConstantBuffer.fi";
 
 	world = DirectX::XMMatrixTranslation(0, 0, 15);
-	world *= DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(RotationZ));
+	//world *= DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(RotationZ));
+	world *= DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(15));
 	projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(45.0), Graphics::SCREENWIDTH / Graphics::SCREENHEIGHT, 1.0f, 100.0f);
 	view = DirectX::XMMatrixIdentity();
 
@@ -162,11 +193,13 @@ Graphics::~Graphics()
 	if (m_InputLayout) m_InputLayout->Release();
 	if (m_VertexShader) m_VertexShader->Release();
 	if (m_PixelShader) m_PixelShader->Release();
+	if (m_Device) m_Device->Release();
 }
 
 void Graphics::Render()
 {
 	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
+	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	UINT stride = sizeof(SimpleVertex);
 	UINT offset = 0;
@@ -183,18 +216,21 @@ void Graphics::Render()
 	}
 	if (wnd.kbd.KeyIsPressed(0x45))
 	{
-		RotationZ += 1.0f;
-		world *= DirectX::XMMatrixRotationZ((DirectX::XMConvertToRadians(RotationZ)));
-		cb0_values.WorldViewProjection = world * view * projection;
+		RotationZ += 0.0001f;
 	}
 
-	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
+	for (size_t i = 0; i < 3; i++)
+	{
+		world = DirectX::XMMatrixTranslation(0, 0, 10);
+		world *= DirectX::XMMatrixTranslation(5 * i, 5 * i, 1 * i);
+		world *= DirectX::XMMatrixRotationZ(RotationZ);
+		cb0_values.WorldViewProjection = world * view * projection;
+		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
+		m_ImmediateContext->Draw(36, 0);
+	}
 
 	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer0);
-
 	m_ImmediateContext->IASetVertexBuffers(0, 1, &m_VertexBuffer, &stride, &offset);
 	m_ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_ImmediateContext->Draw(36, 0);
-
 	m_SwapChain->Present(0, 0);
 }
