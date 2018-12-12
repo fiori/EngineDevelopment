@@ -1,10 +1,11 @@
 #include "../Headers/Camera.h"
 
-Camera::Camera(float x, float y, float z, double CameraRotation)
-	:m_X(x), m_Y(y), m_Z(z), m_camera_rotation(CameraRotation)
+Camera::Camera(float x, float y, float z, double CameraRotation, float pitch)
+	:m_X(x), m_Y(y), m_Z(z), m_camera_rotation(CameraRotation), m_pitch(pitch)
 {
 	m_dx = sin(m_camera_rotation * (XM_PI / 180));
 	m_dz = cos(m_camera_rotation * (XM_PI / 180));
+	m_dy = sin(m_pitch * (XM_PI / 180));
 }
 
 void Camera::Rotate(double degrees)
@@ -18,6 +19,16 @@ void Camera::Forward(float distance)
 {
 	m_X += distance * m_dx;
 	m_Y += distance * m_dz;
+}
+
+void Camera::Pitch(float degrees)
+{
+	m_pitch += degrees;
+	if (m_pitch > 89.0f)
+		m_pitch = 89.0f;
+	if (m_pitch < -89.0f)
+		m_pitch = -89.0f;
+	m_dy = sin(m_pitch * (XM_PI / 180));
 }
 
 void Camera::Strafe(float distance)
@@ -37,7 +48,7 @@ void Camera::Up(float y)
 XMMATRIX Camera::GetViewMatrix()
 {
 	m_position = XMVectorSet(m_X, m_Y, m_Z, 0);
-	m_lookat = XMVectorSet(m_X + m_dx, m_Y, m_Z + m_dz, 0);
+	m_lookat = XMVectorSet(m_X + m_dx, m_Y + m_dy, m_Z + m_dz, 0);
 	m_up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
 	return XMMatrixLookAtLH(m_position, m_lookat, m_up);
 }

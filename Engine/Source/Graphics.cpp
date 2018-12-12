@@ -21,9 +21,9 @@ Graphics::Graphics(Window& window)
 
 	UINT CreateDeviceFlags = 0u;
 
-//#if defined(DEBUG) || defined(_DEBUG)
-//	CreateDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-//#endif
+	//#if defined(DEBUG) || defined(_DEBUG)
+	//	CreateDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+	//#endif
 
 	if (FAILED(D3D11CreateDeviceAndSwapChain(
 		nullptr,
@@ -250,6 +250,16 @@ void Graphics::Input()
 	if (wnd.kbd.KeyIsPressed(0x41))
 	{
 		m_Camera->Strafe(0.001f);
+	}
+	//U
+	if (wnd.kbd.KeyIsPressed(0x55))
+	{
+		m_Camera->Pitch(0.01f);
+	}
+	//K
+	if (wnd.kbd.KeyIsPressed(0x4B))
+	{
+		m_Camera->Pitch(-0.01f);
 	}
 }
 

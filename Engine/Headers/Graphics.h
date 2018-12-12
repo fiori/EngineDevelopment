@@ -132,5 +132,5 @@ private:
 private:
 	//////
 	//Tutorial07
-	Camera*	m_Camera = new Camera(0.0f, 0.0f, 0.0f, 0);
+	Camera*	m_Camera = new Camera(0.0f, 0.0f, 0.0f, 0, 0.0f);
 };
