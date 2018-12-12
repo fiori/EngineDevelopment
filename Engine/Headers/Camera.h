@@ -15,16 +15,21 @@ public:
 	void Strafe(float distance);
 	void Up(float y);
 	XMMATRIX GetViewMatrix();
-	//TODO: Implement Strafe
+	//TODO: Implement Pitch on the camera
 	~Camera();
+
 private:
-	float m_X;
-	float m_Y;
-	float m_Z;
-	float m_dx;
-	float m_dz;
+	float
+		m_X,
+		m_Y,
+		m_Z,
+		m_dx,
+		m_dz;
+	
 	double m_camera_rotation;
-	XMVECTOR m_position;
-	XMVECTOR m_lookat;
-	XMVECTOR m_up;
+	
+	XMVECTOR 
+		m_position,
+		m_lookat,
+		m_up;
 };

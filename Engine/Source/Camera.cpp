@@ -23,11 +23,10 @@ void Camera::Forward(float distance)
 void Camera::Strafe(float distance)
 {
 	XMVECTOR forward = XMVector4Normalize(m_lookat - m_position);
-	XMVECTOR direction = XMVector3Cross(forward, m_up);
+	XMVECTOR right = XMVector3Cross(forward, m_up);
 
-	m_X += (direction.x * distance);
-	m_Z += (direction.z * distance);
-	
+	m_X += (right.x * distance);
+	m_Z += (right.z * distance);
 }
 
 void Camera::Up(float y)
