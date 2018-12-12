@@ -1,7 +1,10 @@
 #pragma once
-#include <DirectXMath.h>
 #include <d3d11.h>
 #include <dxgi.h>
+
+#define _XM_NO_INTRINSICS_
+#define XM_NO_ALIGNMENT
+#include <xnamath.h>
 
 class Camera
 {
@@ -9,8 +12,9 @@ public:
 	Camera(float x, float y, float z, double CameraRotation);
 	void Rotate(double degrees);
 	void Forward(float distance);
+	void Strafe(float distance);
 	void Up(float y);
-	DirectX::XMMATRIX GetViewMatrix();
+	XMMATRIX GetViewMatrix();
 	//TODO: Implement Strafe
 	~Camera();
 private:
@@ -20,7 +24,7 @@ private:
 	float m_dx;
 	float m_dz;
 	double m_camera_rotation;
-	DirectX::XMVECTOR m_position;
-	DirectX::XMVECTOR m_lookat;
-	DirectX::XMVECTOR m_up;
+	XMVECTOR m_position;
+	XMVECTOR m_lookat;
+	XMVECTOR m_up;
 };

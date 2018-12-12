@@ -3,7 +3,9 @@
 #include <dxgi.h>
 #include <D3DX11async.h>
 #include <D3DCompiler.h>
-#include <DirectXMath.h>
+#define _XM_NO_INTRINSICS_
+#define XM_NO_ALIGNMENT
+#include <xnamath.h>
 #include "../Headers/Camera.h"
 
 class Graphics
@@ -39,8 +41,8 @@ private:
 
 	struct SimpleVertex
 	{
-		DirectX::XMFLOAT3 Pos; //Position
-		DirectX::XMFLOAT4 Color; //Color
+		XMFLOAT3 Pos; //Position
+		XMFLOAT4 Color; //Color
 	};
 	/////////////////////////////////////////////////////
 
@@ -51,9 +53,9 @@ private:
 
 	struct CONSTANT_BUFFER0
 	{
-		DirectX::XMMATRIX WorldViewProjection; // 64 bytes
+		XMMATRIX WorldViewProjection; // 64 bytes
 		float scale;	//4 bytes
-		DirectX::XMFLOAT3 packing_bytes;	// 3x4 bytes = 12 bytes
+		XMFLOAT3 packing_bytes;	// 3x4 bytes = 12 bytes
 	};
 	CONSTANT_BUFFER0 cb0_values;
 
@@ -61,7 +63,7 @@ private:
 private:
 	////////////
 	//Tutorial05
-	DirectX::XMMATRIX projection, world, view;
+	XMMATRIX projection, world, view;
 
 	//backface culling
 	ID3D11RasterizerState* m_RasterState;
@@ -79,52 +81,52 @@ private:
 	SimpleVertex vertices[36] =
 	{
 		// back face
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, 1.0f), DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f),DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)  ,DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)  ,DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f),DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f) ,DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, 1.0f),XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, 1.0f)  ,XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, 1.0f)  ,XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, 1.0f),XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+		{XMFLOAT3(1.0f, -1.0f, 1.0f) ,XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
 
 		// front face
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f),DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f) 	,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f) ,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f),XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f)	,XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, -1.0f) 	,XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f) ,XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, -1.0f)	,XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
+		{XMFLOAT3(1.0f, -1.0f, -1.0f)	,XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
 
 		// left face
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f),DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f)	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f)	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, 1.0f)	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f)	,DirectX::XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f),XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, 1.0f)	,XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f)	,XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, 1.0f)	,XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, 1.0f)	,XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f)	,XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
 
 		// right face
-		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f),DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)   ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f) ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+		{XMFLOAT3(1.0f, -1.0f, 1.0f)  ,XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+		{XMFLOAT3(1.0f, -1.0f, -1.0f),XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, -1.0f)  ,XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, 1.0f)   ,XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+		{XMFLOAT3(1.0f, -1.0f, 1.0f) ,XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, -1.0f)  ,XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
 
 		// bottom face
-		{DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f),DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f)  ,DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f),DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f) ,DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f) ,DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f),DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+		{XMFLOAT3(1.0f, -1.0f, -1.0f),XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+		{XMFLOAT3(1.0f, -1.0f, 1.0f)  ,XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f),XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+		{XMFLOAT3(1.0f, -1.0f, 1.0f) ,XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, 1.0f) ,XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f),XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
 
 		// top face
-		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)   ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f) ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f) ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, 1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)  ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f) ,DirectX::XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, 1.0f)   ,XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, -1.0f) ,XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f) ,XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, 1.0f)  ,XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, 1.0f)  ,XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f) ,XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
 	};
 
 private:

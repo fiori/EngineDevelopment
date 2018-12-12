@@ -21,9 +21,9 @@ Graphics::Graphics(Window& window)
 
 	UINT CreateDeviceFlags = 0u;
 
-#if defined(DEBUG) || defined(_DEBUG)
-	CreateDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
+//#if defined(DEBUG) || defined(_DEBUG)
+//	CreateDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+//#endif
 
 	if (FAILED(D3D11CreateDeviceAndSwapChain(
 		nullptr,
@@ -117,11 +117,11 @@ Graphics::Graphics(Window& window)
 //Create and set up the constant buffer // Tutorial 04
 #include "../InitializeGraphics/createAndSetConstantBuffer.fi";
 
-	world = DirectX::XMMatrixTranslation(0, 0, 15);
-	//world *= DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(RotationZ));
-	world *= DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(15));
-	projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(45.0), Graphics::SCREENWIDTH / Graphics::SCREENHEIGHT, 1.0f, 100.0f);
-	//view = DirectX::XMMatrixIdentity();
+	world = XMMatrixTranslation(0, 0, 15);
+	//world *= XMMatrixRotationZ(XMConvertToRadians(RotationZ));
+	world *= XMMatrixRotationY(XMConvertToRadians(15));
+	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), Graphics::SCREENWIDTH / Graphics::SCREENHEIGHT, 1.0f, 100.0f);
+	//view = XMMatrixIdentity();
 	view = m_Camera->GetViewMatrix();
 
 	cb0_values.WorldViewProjection = world * view * projection;
@@ -234,12 +234,22 @@ void Graphics::Input()
 	//W
 	if (wnd.kbd.KeyIsPressed(0x57))
 	{
-		m_Camera->Up(0.01f);
+		m_Camera->Up(0.001f);
 	}
 	//S
 	if (wnd.kbd.KeyIsPressed(0x53))
 	{
-		m_Camera->Up(-0.01f);
+		m_Camera->Up(-0.001f);
+	}
+	//D
+	if (wnd.kbd.KeyIsPressed(0x44))
+	{
+		m_Camera->Strafe(-0.001f);
+	}
+	//A
+	if (wnd.kbd.KeyIsPressed(0x41))
+	{
+		m_Camera->Strafe(0.001f);
 	}
 }
 
@@ -257,9 +267,9 @@ void Graphics::Render()
 
 	for (size_t i = 0; i < 3; i++)
 	{
-		world = DirectX::XMMatrixTranslation(0, 0, 10);
-		world *= DirectX::XMMatrixTranslation(5 * i, 5 * i, 1 * i);
-		world *= DirectX::XMMatrixRotationZ(RotationZ);
+		world = XMMatrixTranslation(0, 0, 10);
+		world *= XMMatrixTranslation(5 * i, 5 * i, 1 * i);
+		world *= XMMatrixRotationZ(RotationZ);
 		view = m_Camera->GetViewMatrix();
 		cb0_values.WorldViewProjection = world * view * projection;
 		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
