@@ -19,7 +19,7 @@ public:
 
 private:
 	static constexpr short SCREENWIDTH = 640;
-	static constexpr short SCREENHEIGHT = 480;
+	static constexpr short SCREENHEIGHT = 640;
 	static constexpr float ClearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; //RGBA
 
 private:
@@ -39,10 +39,11 @@ private:
 	ID3D11VertexShader*		m_VertexShader;
 	ID3D11PixelShader*		m_PixelShader;
 
-	struct SimpleVertex
+	struct POS_COLOR_TEXT_VERTEX
 	{
 		XMFLOAT3 Pos; //Position
 		XMFLOAT4 Color; //Color
+		XMFLOAT2 Texture0;
 	};
 	/////////////////////////////////////////////////////
 
@@ -69,7 +70,7 @@ private:
 	ID3D11RasterizerState* m_RasterState;
 	///////////////
 
-	float RotationZ = 15;
+	float RotationZ = 0;
 
 private:
 	///////////
@@ -78,59 +79,64 @@ private:
 	ID3D11DepthStencilView*		m_DepthStencilView;
 
 private:
-	SimpleVertex vertices[36] =
+	POS_COLOR_TEXT_VERTEX vertices[36] =
 	{
 		// back face
-		{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{XMFLOAT3(-1.0f, -1.0f, 1.0f),XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{XMFLOAT3(1.0f, 1.0f, 1.0f)  ,XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{XMFLOAT3(1.0f, 1.0f, 1.0f)  ,XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{XMFLOAT3(-1.0f, -1.0f, 1.0f),XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
-		{XMFLOAT3(1.0f, -1.0f, 1.0f) ,XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 0.0f)},
+		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 0.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f)},
+		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 1.0f)},
 
 		// front face
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f),XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f)	,XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{XMFLOAT3(1.0f, 1.0f, -1.0f) 	,XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f) ,XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{XMFLOAT3(1.0f, 1.0f, -1.0f)	,XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
-		{XMFLOAT3(1.0f, -1.0f, -1.0f)	,XMFLOAT4(1.0f,1.0f,0.0f,1.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f)},
+		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f)},
+		{XMFLOAT3(1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 1.0f)},
 
 		// left face
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f),XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{XMFLOAT3(-1.0f, -1.0f, 1.0f)	,XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f)	,XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{XMFLOAT3(-1.0f, -1.0f, 1.0f)	,XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{XMFLOAT3(-1.0f, 1.0f, 1.0f)	,XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f)	,XMFLOAT4(1.0f,0.0f,1.0f,1.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, -1.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, -1.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, -1.0f)},
 
 		// right face
-		{XMFLOAT3(1.0f, -1.0f, 1.0f)  ,XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{XMFLOAT3(1.0f, -1.0f, -1.0f),XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{XMFLOAT3(1.0f, 1.0f, -1.0f)  ,XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{XMFLOAT3(1.0f, 1.0f, 1.0f)   ,XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{XMFLOAT3(1.0f, -1.0f, 1.0f) ,XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
-		{XMFLOAT3(1.0f, 1.0f, -1.0f)  ,XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f)},
+		{XMFLOAT3(1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 0.0f)},
+		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f)},
+		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 0.0f)},
 
 		// bottom face
-		{XMFLOAT3(1.0f, -1.0f, -1.0f),XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{XMFLOAT3(1.0f, -1.0f, 1.0f)  ,XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f),XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{XMFLOAT3(1.0f, -1.0f, 1.0f) ,XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{XMFLOAT3(-1.0f, -1.0f, 1.0f) ,XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f),XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+		{XMFLOAT3(1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 1.0f)},
+		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f)},
+		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f)},
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f)},
 
 		// top face
-		{XMFLOAT3(1.0f, 1.0f, 1.0f)   ,XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{XMFLOAT3(1.0f, 1.0f, -1.0f) ,XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f) ,XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{XMFLOAT3(-1.0f, 1.0f, 1.0f)  ,XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{XMFLOAT3(1.0f, 1.0f, 1.0f)  ,XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f) ,XMFLOAT4(0.0f,1.0f,1.0f,1.0f)},
+		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f)},
+		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 1.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f)},
+		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f)},
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f)}
 	};
 
 private:
 	//////
 	//Tutorial07
 	Camera*	m_Camera = new Camera(0.0f, 0.0f, 0.0f, 0, 0.0f);
+
+private:
+	//Tutorial 08
+	ID3D11ShaderResourceView*		m_TextureMap0;
+	ID3D11SamplerState*				m_Sampler0;
 };

@@ -2,7 +2,7 @@
 #include <queue>
 #include <bitset>
 
-class Keyboard 
+class Keyboard
 {
 	friend class Window;
 public:
@@ -60,8 +60,3 @@ private:
 	std::bitset<nKeys> keystates;
 	std::queue<Event> keybuffer;
 };
-
-
-
-
-

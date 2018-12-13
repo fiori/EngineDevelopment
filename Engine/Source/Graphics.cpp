@@ -175,14 +175,38 @@ Graphics::Graphics(Window& window)
 	m_ImmediateContext->VSSetShader(m_VertexShader, nullptr, 0);
 	m_ImmediateContext->PSSetShader(m_PixelShader, nullptr, 0);
 
+	////////////////////////////////////////////////////////////////////////////
+	//Tutorial 08
+	//Create The Texture Mapping
+	D3DX11CreateShaderResourceViewFromFile(
+		m_Device,
+		L"Assets/uv-mapping-grid.png",
+		nullptr,
+		nullptr,
+		&m_TextureMap0,
+		nullptr);
+
+	D3D11_SAMPLER_DESC sampler_desc;
+	ZeroMemory(&sampler_desc, sizeof(sampler_desc));
+
+	sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	m_Device->CreateSamplerState(&sampler_desc, &m_Sampler0);
+	////////////////////////////////////////////////////////////////////////////////
+
 	//Create Input Layout
 	D3D11_INPUT_ELEMENT_DESC InputLayoutDesc[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,0,0, D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
 	};
 
-	if (FAILED(m_Device->CreateInputLayout(InputLayoutDesc, 2, VS->GetBufferPointer(), VS->GetBufferSize(), &m_InputLayout)))
+	if (FAILED(m_Device->CreateInputLayout(InputLayoutDesc, ARRAYSIZE(InputLayoutDesc), VS->GetBufferPointer(), VS->GetBufferSize(), &m_InputLayout)))
 		MessageBox(window.m_MainWnd, L"Error Creating the Input Layout", nullptr, 0);
 
 	m_ImmediateContext->IASetInputLayout(m_InputLayout);
@@ -194,6 +218,8 @@ Graphics::~Graphics()
 	if (m_InputLayout) m_InputLayout->Release();
 	if (m_VertexShader) m_VertexShader->Release();
 	if (m_PixelShader) m_PixelShader->Release();
+	if (m_TextureMap0) m_TextureMap0->Release();
+	if (m_Sampler0) m_Sampler0->Release();
 	if (m_Device) m_Device->Release();
 	delete m_Camera;
 }
@@ -251,6 +277,7 @@ void Graphics::Input()
 	{
 		m_Camera->Strafe(0.001f);
 	}
+	//Camera Pitch //Todo: Create a mouse class and use this in the mouse
 	//U
 	if (wnd.kbd.KeyIsPressed(0x55))
 	{
@@ -268,18 +295,30 @@ void Graphics::Render()
 	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
 	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	UINT stride = sizeof(SimpleVertex);
+	UINT stride = sizeof(POS_COLOR_TEXT_VERTEX);
 	UINT offset = 0;
 
 	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer0);
 	m_ImmediateContext->IASetVertexBuffers(0, 1, &m_VertexBuffer, &stride, &offset);
 	m_ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_ImmediateContext->PSSetSamplers(0, 1, &m_Sampler0);
+	m_ImmediateContext->PSSetShaderResources(0, 1, &m_TextureMap0);
 
-	for (size_t i = 0; i < 3; i++)
+	for (size_t i = 0; i < 10; i++)
 	{
 		world = XMMatrixTranslation(0, 0, 10);
-		world *= XMMatrixTranslation(5 * i, 5 * i, 1 * i);
+		//Important first the rotation and after the translation
 		world *= XMMatrixRotationZ(RotationZ);
+		world *= XMMatrixTranslation(4 * i, 1, 10);
+		view = m_Camera->GetViewMatrix();
+		cb0_values.WorldViewProjection = world * view * projection;
+		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
+		m_ImmediateContext->Draw(36, 0);
+
+		world = XMMatrixTranslation(0, 5, 10);
+		//Important first the rotation and after the translation
+		world *= XMMatrixRotationZ(RotationZ);
+		world *= XMMatrixTranslation(4, 5 * i, 10);
 		view = m_Camera->GetViewMatrix();
 		cb0_values.WorldViewProjection = world * view * projection;
 		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);

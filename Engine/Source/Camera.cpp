@@ -33,8 +33,8 @@ void Camera::Pitch(float degrees)
 
 void Camera::Strafe(float distance)
 {
-	XMVECTOR forward = XMVector4Normalize(m_lookat - m_position);
-	XMVECTOR right = XMVector3Cross(forward, m_up);
+	XMVECTOR const forward = XMVector4Normalize(m_lookat - m_position);
+	XMVECTOR const right = XMVector3Cross(forward, m_up);
 
 	m_X += (right.x * distance);
 	m_Z += (right.z * distance);

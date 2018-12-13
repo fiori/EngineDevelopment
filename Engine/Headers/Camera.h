@@ -16,7 +16,6 @@ public:
 	void Pitch(float degrees);
 	void Up(float y);
 	XMMATRIX GetViewMatrix();
-	//TODO: Implement Pitch on the camera
 	~Camera();
 
 private:
@@ -30,9 +29,9 @@ private:
 		m_pitch;
 
 	double
-		m_camera_rotation,
-		m_pitch_rotation;
+		m_camera_rotation;
 
+private:
 	XMVECTOR
 		m_position,
 		m_lookat,
