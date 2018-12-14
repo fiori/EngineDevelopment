@@ -128,6 +128,17 @@ Graphics::Graphics(Window& window)
 
 	cb0_values.scale = 1.0f;
 
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//Tutorial 09 Lighting
+	transpose = XMMatrixTranspose(world);
+
+	cb0_values.directional_light_color = m_directional_light_color;
+	cb0_values.ambient_light_color = m_ambient_light_color;
+	cb0_values.directional_light_vector = XMVector3Transform(m_directional_light_shines_form, transpose);
+	cb0_values.directional_light_vector = XMVector3Normalize(cb0_values.directional_light_vector);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 
 	//Copy the vertices into the buffer
@@ -203,7 +214,8 @@ Graphics::Graphics(Window& window)
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,0,0, D3D11_INPUT_PER_VERTEX_DATA,0},
 		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
 	};
 
 	if (FAILED(m_Device->CreateInputLayout(InputLayoutDesc, ARRAYSIZE(InputLayoutDesc), VS->GetBufferPointer(), VS->GetBufferSize(), &m_InputLayout)))
@@ -295,7 +307,7 @@ void Graphics::Render()
 	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
 	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	UINT stride = sizeof(POS_COLOR_TEXT_VERTEX);
+	UINT stride = sizeof(POS_COLOR_TEXT_NORM_VERTEX);
 	UINT offset = 0;
 
 	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer0);
@@ -310,7 +322,7 @@ void Graphics::Render()
 		//Important first the rotation and after the translation
 		world *= XMMatrixRotationZ(RotationZ);
 		world *= XMMatrixTranslation(4 * i, 1, 10);
-		view = m_Camera->GetViewMatrix();
+		//view = m_Camera->GetViewMatrix();
 		cb0_values.WorldViewProjection = world * view * projection;
 		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 		m_ImmediateContext->Draw(36, 0);
