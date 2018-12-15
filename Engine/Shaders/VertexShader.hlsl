@@ -8,10 +8,10 @@ struct VOut
 cbuffer CBuffer0
 {
     matrix WVPMatrix; // 64 bytes
-    float scale; // 4 bytes
     float4 directional_light_vector; // 16 bytes
     float4 directional_light_color; // 16 bytes
     float4 ambient_light_color; // 16 bytes
+    float scale; // 4 bytes
     float3 packing; // 3x4 = 12 bytes
 }
 
