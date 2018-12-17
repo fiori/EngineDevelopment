@@ -15,7 +15,9 @@ public:
 	~Graphics();
 	void Input();
 	void Render();
+	void TransposeLight();
 	void UnlockBuffer();
+
 
 private:
 	static constexpr short SCREENWIDTH = 640;
@@ -69,10 +71,7 @@ private:
 	////////////
 	//Tutorial05
 	XMMATRIX projection, world, view;
-	//////////////////////
-	//Tutorial09 Lighting
-	XMMATRIX transpose;
-	//////////////////////
+
 	//backface culling
 	ID3D11RasterizerState* m_RasterState;
 	///////////////
@@ -97,44 +96,44 @@ private:
 		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
 
 		// front face
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+		{XMFLOAT3(1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
 
 		// left face
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f) , XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f) , XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f) , XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f) , XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f) , XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f) , XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+		{XMFLOAT3(-1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
 
 		// right face
-		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f) , XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f) , XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f) , XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-
+		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{XMFLOAT3(1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+																													
 		// bottom face
-		{XMFLOAT3(1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{XMFLOAT3(1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
 
 		// top face
-		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) }
+		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+		{XMFLOAT3(-1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) }
 	};
 
 private:
@@ -146,6 +145,10 @@ private:
 	ID3D11SamplerState*				m_Sampler0;
 	//Tutorial 09
 	XMVECTOR m_directional_light_shines_from;
-	XMVECTOR m_directional_light_color; // Green
-	XMVECTOR m_ambient_light_color; // Dark Grey - always use a small value for ambient lighting
+	
+	XMVECTOR m_directional_light_color;
+	
+	XMVECTOR m_ambient_light_color;
+
+	XMMATRIX transpose;
 };

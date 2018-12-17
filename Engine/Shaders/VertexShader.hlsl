@@ -21,7 +21,7 @@ VOut VShader(float4 Pos : POSITION, float4 Clr : COLOR, float2 texcoord : TEXCOO
     VOut output;
     output.position = mul(WVPMatrix, Pos);
     output.position.xy *= scale;
-
+	
     float diffuse_amount = dot(directional_light_vector, normal);
 
     diffuse_amount = saturate(diffuse_amount);

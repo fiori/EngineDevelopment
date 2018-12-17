@@ -64,9 +64,9 @@ Graphics::Graphics(Window& window)
 	tex2dDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	tex2dDesc.Usage = D3D11_USAGE_DEFAULT;
 
-	ID3D11Texture2D*			m_ZBufferTexture;
+	ID3D11Texture2D*			ZBufferTexture;
 
-	if (FAILED(m_Device->CreateTexture2D(&tex2dDesc, nullptr, &m_ZBufferTexture)))
+	if (FAILED(m_Device->CreateTexture2D(&tex2dDesc, nullptr, &ZBufferTexture)))
 		MessageBox(nullptr, L"Error Creating the ZBuffer Texture", nullptr, 0);
 
 	// Creates the Z Buffer
@@ -76,8 +76,8 @@ Graphics::Graphics(Window& window)
 	dsvDesc.Format = tex2dDesc.Format;
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
-	m_Device->CreateDepthStencilView(m_ZBufferTexture, &dsvDesc, &m_DepthStencilView);
-	m_ZBufferTexture->Release();
+	m_Device->CreateDepthStencilView(ZBufferTexture, &dsvDesc, &m_DepthStencilView);
+	ZBufferTexture->Release();
 
 	//Renders the TargetView and the DepthStencilView
 	m_ImmediateContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
@@ -211,9 +211,11 @@ Graphics::Graphics(Window& window)
 		MessageBox(window.m_MainWnd, L"Error Creating the Input Layout", nullptr, 0);
 
 	m_ImmediateContext->IASetInputLayout(m_InputLayout);
+	//Tutorial 09
+	m_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 
-	m_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	m_directional_light_color = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Green
+
 	m_ambient_light_color = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f); // Dark Grey - always use a small value for ambient lighting
 }
 
@@ -300,16 +302,7 @@ void Graphics::Render()
 	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
 	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//Tutorial 09 Lighting
-	transpose = XMMatrixTranspose(world);
 
-	cb0_values.directional_light_color = m_directional_light_color;
-	cb0_values.ambient_light_color = m_ambient_light_color;
-	cb0_values.directional_light_vector = XMVector3Transform(m_directional_light_shines_from, transpose);
-	cb0_values.directional_light_vector = XMVector3Normalize(cb0_values.directional_light_vector);
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	UINT stride = sizeof(POS_COLOR_TEXT_NORM_VERTEX);
 	UINT offset = 0;
@@ -328,6 +321,7 @@ void Graphics::Render()
 		world *= XMMatrixTranslation(4 * i, 1, 10);
 		//view = m_Camera->GetViewMatrix();
 		cb0_values.WorldViewProjection = world * view * projection;
+		TransposeLight();
 		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 		m_ImmediateContext->Draw(36, 0);
 
@@ -337,8 +331,23 @@ void Graphics::Render()
 		world *= XMMatrixTranslation(4, 5 * i, 10);
 		view = m_Camera->GetViewMatrix();
 		cb0_values.WorldViewProjection = world * view * projection;
+		TransposeLight();
 		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 		m_ImmediateContext->Draw(36, 0);
 	}
 	m_SwapChain->Present(0, 0);
+}
+
+void Graphics::TransposeLight()
+{
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Tutorial 09 Lighting
+	transpose = XMMatrixTranspose(world);
+
+	cb0_values.directional_light_color = m_directional_light_color;
+	cb0_values.ambient_light_color = m_ambient_light_color;
+	cb0_values.directional_light_vector = XMVector3Transform(m_directional_light_shines_from, transpose);
+	cb0_values.directional_light_vector = XMVector3Normalize(cb0_values.directional_light_vector);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
