@@ -7,6 +7,7 @@
 #define XM_NO_ALIGNMENT
 #include <xnamath.h>
 #include "../Headers/Camera.h"
+#include "../Headers/ModelLoader.h"
 
 class Graphics
 {
@@ -139,7 +140,7 @@ private:
 private:
 	//////
 	//Tutorial07
-	Camera*	m_Camera = new Camera(0.0f, 0.0f, 0.0f, 0, 0.0f);
+	Camera*	m_Camera = new Camera(0.0f, 0.0f, -15.0f, 0, 0.0f);
 	//Tutorial 08
 	ID3D11ShaderResourceView*		m_TextureMap0;
 	ID3D11SamplerState*				m_Sampler0;
@@ -151,4 +152,8 @@ private:
 	XMVECTOR m_ambient_light_color;
 
 	XMMATRIX transpose;
+
+private:
+	//Tutorial 10
+	ModelLoader* m_Model;
 };

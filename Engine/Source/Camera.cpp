@@ -1,4 +1,5 @@
 #include "../Headers/Camera.h"
+#include <xnamath.h>
 
 Camera::Camera(float x, float y, float z, double CameraRotation, float pitch)
 	:m_X(x), m_Y(y), m_Z(z), m_camera_rotation(CameraRotation), m_pitch(pitch)
@@ -17,8 +18,9 @@ void Camera::Rotate(double degrees)
 
 void Camera::Forward(float distance)
 {
-	m_X += distance * m_dx;
-	m_Y += distance * m_dz;
+	XMVECTOR const forward = XMVector4Normalize(m_lookat - m_position);
+	m_X += (forward.x * distance);
+	m_Z += (forward.z * distance);
 }
 
 void Camera::Pitch(float degrees)

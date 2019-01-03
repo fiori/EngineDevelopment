@@ -130,6 +130,10 @@ Graphics::Graphics(Window& window)
 
 	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 
+	m_Model = new ModelLoader(m_Device, m_ImmediateContext);
+
+	m_Model->LoadObjModel((char*)"Assets/Sphere.obj");
+
 	//Copy the vertices into the buffer
 	D3D11_MAPPED_SUBRESOURCE ms;
 
@@ -237,11 +241,14 @@ void Graphics::Input()
 
 	if (wnd.kbd.KeyIsPressed(VK_UP))
 	{
-		cb0_values.scale += 0.0001f;
+		/*cb0_values.scale += 0.0001f;*/
+		m_Camera->Forward(0.001f);
 	}
 	if (wnd.kbd.KeyIsPressed(VK_DOWN))
 	{
-		cb0_values.scale -= 0.0001f;
+		//cb0_values.scale -= 0.0001f;
+		m_Camera->Forward(-0.001f);
+		//Todo:: Fix Forward method
 	}
 	if (wnd.kbd.KeyIsPressed(VK_RIGHT))
 	{
@@ -301,40 +308,43 @@ void Graphics::Render()
 {
 	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
 	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_ImmediateContext->PSSetSamplers(0, 1, &m_Sampler0);
+	m_ImmediateContext->PSSetShaderResources(0, 1, &m_TextureMap0); 
 
+	view = m_Camera->GetViewMatrix();
+	m_Model->Draw(&view,&projection);
 
+	/*UINT stride = sizeof(POS_COLOR_TEXT_NORM_VERTEX);
+	UINT offset = 0;*/
 
-	UINT stride = sizeof(POS_COLOR_TEXT_NORM_VERTEX);
-	UINT offset = 0;
-
-	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer0);
+	/*m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer0);
 	m_ImmediateContext->IASetVertexBuffers(0, 1, &m_VertexBuffer, &stride, &offset);
 	m_ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_ImmediateContext->PSSetSamplers(0, 1, &m_Sampler0);
-	m_ImmediateContext->PSSetShaderResources(0, 1, &m_TextureMap0);
+	m_ImmediateContext->PSSetShaderResources(0, 1, &m_TextureMap0);*/
 
-	for (size_t i = 0; i < 10; i++)
-	{
-		world = XMMatrixTranslation(0, 0, 10);
-		//Important first the rotation and after the translation
-		world *= XMMatrixRotationZ(RotationZ);
-		world *= XMMatrixTranslation(4 * i, 1, 10);
-		//view = m_Camera->GetViewMatrix();
-		cb0_values.WorldViewProjection = world * view * projection;
-		TransposeLight();
-		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
-		m_ImmediateContext->Draw(36, 0);
+	//for (size_t i = 0; i < 10; i++)
+	//{
+	//	world = XMMatrixTranslation(0, 0, 10);
+	//	//Important first the rotation and after the translation
+	//	world *= XMMatrixRotationZ(RotationZ);
+	//	world *= XMMatrixTranslation(4 * i, 1, 10);
+	//	//view = m_Camera->GetViewMatrix();
+	//	cb0_values.WorldViewProjection = world * view * projection;
+	//	TransposeLight();
+	//	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
+	//	m_ImmediateContext->Draw(36, 0);
 
-		world = XMMatrixTranslation(0, 5, 10);
-		//Important first the rotation and after the translation
-		world *= XMMatrixRotationZ(RotationZ);
-		world *= XMMatrixTranslation(4, 5 * i, 10);
-		view = m_Camera->GetViewMatrix();
-		cb0_values.WorldViewProjection = world * view * projection;
-		TransposeLight();
-		m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
-		m_ImmediateContext->Draw(36, 0);
-	}
+	//	world = XMMatrixTranslation(0, 5, 10);
+	//	//Important first the rotation and after the translation
+	//	world *= XMMatrixRotationZ(RotationZ);
+	//	world *= XMMatrixTranslation(4, 5 * i, 10);
+	//	view = m_Camera->GetViewMatrix();
+	//	cb0_values.WorldViewProjection = world * view * projection;
+	//	TransposeLight();
+	//	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
+	//	m_ImmediateContext->Draw(36, 0);
+	//}
 	m_SwapChain->Present(0, 0);
 }
 
