@@ -16,7 +16,28 @@ private:
 	float m_x, m_y, m_z;
 	float m_xAngle, m_yAngle, m_zAngle;
 	float m_scale;
-
+private:
+	XMMATRIX world;
+private:
+	//Light Matrix
+	XMMATRIX m_transpose;
+	//Light Vectors with default values
+	XMVECTOR m_directional_light_shines_from = XMVectorSet(1.0f, 1.0f, -1.0f, 1.0f);
+	XMVECTOR m_directional_light_color = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f); // White
+	XMVECTOR m_ambient_light_color = XMVectorSet(0.4f, 0.4f, 0.4f, 1.0f); // Dark Grey - always use a small value for ambient lighting
+public:
+	//Getters
+	XMVECTOR GetDirectionalLightShinesFrom() const { return m_directional_light_shines_from; };
+	XMVECTOR GetDirectionalLightColor() const { return m_directional_light_color; };
+	XMVECTOR GetAmbientLightColor() const { return m_ambient_light_color; };
+	//Setters
+	void SetDirectionalLightShinesFrom(float x, float y, float z);
+	void SetDirectionalLightColor(float x, float y, float z);
+	void SetAmbientLightColor(float x, float y, float z);
+private:
+	//Texture
+	ID3D11ShaderResourceView*	m_textureMap;
+	ID3D11SamplerState*			m_Sampler;
 
 public:
 	ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext);
@@ -25,6 +46,8 @@ public:
 public:
 	void LoadObjModel(char* fileName);
 	void Draw(XMMATRIX* view, XMMATRIX* projection);
+	void AddTexture(char* fileName);
+	void TransposeLight();
 public:
 	//Public methods for model modification
 	//Setters

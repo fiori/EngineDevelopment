@@ -1,6 +1,9 @@
 cbuffer CBuffer0
 {
     matrix WVPMatrix; // 64 bytes
+    float4 directional_light_vector; // 16 bytes
+    float4 directional_light_color; // 16 bytes
+    float4 ambient_light_color; // 16 bytes
 }
 
 struct VOut
@@ -14,9 +17,13 @@ VOut ModelVS(float4 Pos : POSITION, float2 texcoord : TEXCOORD, float3 normal : 
 {
     VOut output;
 
-    float4 default_color = { 1.0, 1.0, 1.0, 1.0 };
     output.position = mul(WVPMatrix, Pos);
+    
+    float diffuse_amount = dot(directional_light_color, normal);
+    diffuse_amount = saturate(diffuse_amount);
+    output.color = ambient_light_color + (directional_light_color * diffuse_amount);
+
     output.texcoord = texcoord;
-    output.color = default_color;
+    
     return output;
 }

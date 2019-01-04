@@ -109,75 +109,75 @@ Graphics::Graphics(Window& window)
 
 	m_ImmediateContext->RSSetState(m_RasterState);
 
-	//Check tutorial 03 for implementing the vertex buffer and shaders to render.
-
-	//Set up and create vertex buffer //Tutorial 03
-#include "../InitializeGraphics/createAndSetVertexBuffer.fi";
-
-//Create and set up the constant buffer // Tutorial 04
-#include "../InitializeGraphics/createAndSetConstantBuffer.fi";
-
+//	//Check tutorial 03 for implementing the vertex buffer and shaders to render.
+//
+//	//Set up and create vertex buffer //Tutorial 03
+//#include "../InitializeGraphics/createAndSetVertexBuffer.fi";
+//
+////Create and set up the constant buffer // Tutorial 04
+//#include "../InitializeGraphics/createAndSetConstantBuffer.fi";
+//
 	world = XMMatrixTranslation(0, 0, 15);
 	//world *= XMMatrixRotationZ(XMConvertToRadians(RotationZ));
 	world *= XMMatrixRotationY(XMConvertToRadians(15));
 	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), Graphics::SCREENWIDTH / Graphics::SCREENHEIGHT, 1.0f, 100.0f);
 	//view = XMMatrixIdentity();
 	view = m_Camera->GetViewMatrix();
-
-	cb0_values.WorldViewProjection = world * view * projection;
-
-	cb0_values.scale = 1.0f;
-
-	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
+//
+//	cb0_values.WorldViewProjection = world * view * projection;
+//
+//	cb0_values.scale = 1.0f;
+//
+//	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 
 	m_Model = new ModelLoader(m_Device, m_ImmediateContext);
 
 	m_Model->LoadObjModel((char*)"Assets/Sphere.obj");
 
-	//Copy the vertices into the buffer
-	D3D11_MAPPED_SUBRESOURCE ms;
+	////Copy the vertices into the buffer
+	//D3D11_MAPPED_SUBRESOURCE ms;
 
-	//Lock the buffer to allow writting
-	m_ImmediateContext->Map(m_VertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
+	////Lock the buffer to allow writting
+	//m_ImmediateContext->Map(m_VertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
 
-	//Copy the data
-	memcpy(ms.pData, vertices, sizeof(vertices));
+	////Copy the data
+	//memcpy(ms.pData, vertices, sizeof(vertices));
 
-	//Unlock the buffer
-	m_ImmediateContext->Unmap(m_VertexBuffer, 0);
+	////Unlock the buffer
+	//m_ImmediateContext->Unmap(m_VertexBuffer, 0);
 
-	//Load and compile the pixel and vertex shaders
-	ID3DBlob *VS, *PS, *error;
+	////Load and compile the pixel and vertex shaders
+	//ID3DBlob *VS, *PS, *error;
 
-	if (FAILED(D3DX11CompileFromFile(L"Shaders/VertexShader.hlsl", nullptr, nullptr, "VShader", "vs_4_0", 0, 0, nullptr, &VS, &error, nullptr)))
-		MessageBox(window.m_MainWnd, L"Error Compiling the Vertex Shader", nullptr, 0);
+	//if (FAILED(D3DX11CompileFromFile(L"Shaders/VertexShader.hlsl", nullptr, nullptr, "VShader", "vs_4_0", 0, 0, nullptr, &VS, &error, nullptr)))
+	//	MessageBox(window.m_MainWnd, L"Error Compiling the Vertex Shader", nullptr, 0);
 
-	if (error != nullptr)//Check for shader compilation errors
-	{
-		OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
-		error->Release();
-	}
+	//if (error != nullptr)//Check for shader compilation errors
+	//{
+	//	OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
+	//	error->Release();
+	//}
 
-	//Create vertexShader object
-	if (FAILED(m_Device->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), nullptr, &m_VertexShader)))
-		MessageBox(window.m_MainWnd, L"Error Creating Vertex Shader", nullptr, 0);
+	////Create vertexShader object
+	//if (FAILED(m_Device->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), nullptr, &m_VertexShader)))
+	//	MessageBox(window.m_MainWnd, L"Error Creating Vertex Shader", nullptr, 0);
 
-	//Compiling the PixelShader
-	if (FAILED(D3DX11CompileFromFile(L"Shaders/PixelShader.hlsl", nullptr, nullptr, "PShader", "ps_4_0", 0, 0, nullptr, &PS, &error, nullptr)))
-		MessageBox(window.m_MainWnd, L"Error Compiling the Pixel Shader", nullptr, 0);
+	////Compiling the PixelShader
+	//if (FAILED(D3DX11CompileFromFile(L"Shaders/PixelShader.hlsl", nullptr, nullptr, "PShader", "ps_4_0", 0, 0, nullptr, &PS, &error, nullptr)))
+	//	MessageBox(window.m_MainWnd, L"Error Compiling the Pixel Shader", nullptr, 0);
 
-	if (error != nullptr)
-	{
-		OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
-		error->Release();
-	}
+	//if (error != nullptr)
+	//{
+	//	OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
+	//	error->Release();
+	//}
 
-	//Create PixelShader Object
-	if (FAILED(m_Device->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), nullptr, &m_PixelShader)))
-		MessageBox(window.m_MainWnd, L"Error Creating the Pixel Shader", nullptr, 0);
+	////Create PixelShader Object
+	//if (FAILED(m_Device->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), nullptr, &m_PixelShader)))
+	//	MessageBox(window.m_MainWnd, L"Error Creating the Pixel Shader", nullptr, 0);
 
-	m_ImmediateContext->VSSetShader(m_VertexShader, nullptr, 0);
-	m_ImmediateContext->PSSetShader(m_PixelShader, nullptr, 0);
+	//m_ImmediateContext->VSSetShader(m_VertexShader, nullptr, 0);
+	//m_ImmediateContext->PSSetShader(m_PixelShader, nullptr, 0);
 
 	////////////////////////////////////////////////////////////////////////////
 	//Tutorial 08
@@ -200,26 +200,26 @@ Graphics::Graphics(Window& window)
 	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	m_Device->CreateSamplerState(&sampler_desc, &m_Sampler0);
+	m_ImmediateContext->PSSetSamplers(0, 1, &m_Sampler0);
+	m_ImmediateContext->PSSetShaderResources(0, 1, &m_TextureMap0);
 	////////////////////////////////////////////////////////////////////////////////
 
 	//Create Input Layout
-	D3D11_INPUT_ELEMENT_DESC InputLayoutDesc[] =
+	/*D3D11_INPUT_ELEMENT_DESC InputLayoutDesc[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,0,0, D3D11_INPUT_PER_VERTEX_DATA,0},
 		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0},
 		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
-	};
+	};*/
 
-	if (FAILED(m_Device->CreateInputLayout(InputLayoutDesc, ARRAYSIZE(InputLayoutDesc), VS->GetBufferPointer(), VS->GetBufferSize(), &m_InputLayout)))
+	/*if (FAILED(m_Device->CreateInputLayout(InputLayoutDesc, ARRAYSIZE(InputLayoutDesc), VS->GetBufferPointer(), VS->GetBufferSize(), &m_InputLayout)))
 		MessageBox(window.m_MainWnd, L"Error Creating the Input Layout", nullptr, 0);
 
-	m_ImmediateContext->IASetInputLayout(m_InputLayout);
+	m_ImmediateContext->IASetInputLayout(m_InputLayout);*/
 	//Tutorial 09
 	m_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
-
 	m_directional_light_color = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Green
-
 	m_ambient_light_color = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f); // Dark Grey - always use a small value for ambient lighting
 }
 
@@ -248,7 +248,7 @@ void Graphics::Input()
 	{
 		//cb0_values.scale -= 0.0001f;
 		m_Camera->Forward(-0.001f);
-		//Todo:: Fix Forward method
+		
 	}
 	if (wnd.kbd.KeyIsPressed(VK_RIGHT))
 	{
@@ -264,12 +264,12 @@ void Graphics::Input()
 	//E
 	if (wnd.kbd.KeyIsPressed(0x45))
 	{
-		m_Camera->Rotate(0.01f);
+		m_Camera->Rotate(0.008f);
 	}
 	//Q
 	if (wnd.kbd.KeyIsPressed(0x51))
 	{
-		m_Camera->Rotate(-0.01f);
+		m_Camera->Rotate(-0.008f);
 	}
 	//W
 	if (wnd.kbd.KeyIsPressed(0x57))
@@ -308,12 +308,13 @@ void Graphics::Render()
 {
 	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
 	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	m_ImmediateContext->PSSetSamplers(0, 1, &m_Sampler0);
-	m_ImmediateContext->PSSetShaderResources(0, 1, &m_TextureMap0); 
+	
 
 	view = m_Camera->GetViewMatrix();
 	m_Model->Draw(&view,&projection);
-
+	m_Model->TransposeLight();
+	
+	//m_Model->TransposeLight();
 	/*UINT stride = sizeof(POS_COLOR_TEXT_NORM_VERTEX);
 	UINT offset = 0;*/
 

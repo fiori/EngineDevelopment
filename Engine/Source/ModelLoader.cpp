@@ -3,7 +3,25 @@
 struct MODEL_CONSTANT_BUFFER
 {
 	XMMATRIX WorldViewProjection;
-};
+	XMVECTOR directional_light_vector; // 16 bytes
+	XMVECTOR directional_light_color; // 16 bytes
+	XMVECTOR ambient_light_color; // 16 bytes
+};MODEL_CONSTANT_BUFFER model_cb_values;
+
+void ModelLoader::SetDirectionalLightShinesFrom(float x, float y, float z)
+{
+	m_directional_light_shines_from = XMVectorSet(x, y, z, 0.0f);
+}
+
+void ModelLoader::SetDirectionalLightColor(float x, float y, float z)
+{
+	m_directional_light_color = XMVectorSet(x, y, z, 0.0f);
+}
+
+void ModelLoader::SetAmbientLightColor(float x, float y, float z)
+{
+	m_ambient_light_color = XMVectorSet(x, y, z, 1.0f);
+}
 
 ModelLoader::ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext)
 	:m_device_(Device), m_ImmediateContext(ImmediateContext), m_x(0.0f), m_y(0.0f), m_z(0.0f), m_xAngle(0.0f), m_yAngle(0.0f),
@@ -14,6 +32,8 @@ ModelLoader::ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateCon
 
 ModelLoader::~ModelLoader()
 {
+	if (m_textureMap)m_textureMap->Release();
+	if (m_Sampler)m_Sampler->Release();
 	delete m_Object;
 }
 
@@ -77,19 +97,61 @@ void ModelLoader::LoadObjModel(char* fileName)
 
 void ModelLoader::Draw(XMMATRIX* view, XMMATRIX* projection)
 {
-	XMMATRIX world = XMMatrixTranslation(m_x, m_y, m_z);
+
+	world = XMMatrixTranslation(m_x, m_y, m_z);
 	world *= XMMatrixRotationX(XMConvertToRadians(m_xAngle));
 	world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
 	world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
 	world *= XMMatrixScaling(m_scale, m_scale, m_scale);
-	MODEL_CONSTANT_BUFFER model_cb_values;
+
 	model_cb_values.WorldViewProjection = world*(*view)*(*projection);
 	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);
 	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer, 0, nullptr, &model_cb_values,0,0);
 	m_ImmediateContext->VSSetShader(m_VShader, nullptr, 0);
 	m_ImmediateContext->PSSetShader(m_PShader, nullptr, 0);
 	m_ImmediateContext->IASetInputLayout(m_InputLayout);
+	if (m_textureMap != nullptr && m_Sampler != nullptr)
+	{
+		m_ImmediateContext->PSSetSamplers(0, 1, &m_Sampler);
+		m_ImmediateContext->PSSetShaderResources(0, 1, &m_textureMap);
+	}
 	m_Object->Draw();
+}
+
+void ModelLoader::TransposeLight()
+{
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Tutorial 09 Lighting
+
+	m_transpose = XMMatrixTranspose(world);
+	model_cb_values.directional_light_color = m_directional_light_color;
+	model_cb_values.ambient_light_color = m_ambient_light_color;
+	model_cb_values.directional_light_vector = XMVector3Transform(m_directional_light_shines_from, m_transpose);
+	model_cb_values.directional_light_vector = XMVector3Normalize(model_cb_values.directional_light_vector);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+
+void ModelLoader::AddTexture(char* fileName)
+{
+	D3DX11CreateShaderResourceViewFromFileA(
+		m_device_,
+		fileName,
+		nullptr,
+		nullptr,
+		&m_textureMap,
+		nullptr);
+
+	D3D11_SAMPLER_DESC sampler_desc;
+	ZeroMemory(&sampler_desc, sizeof(sampler_desc));
+
+	sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	m_device_->CreateSamplerState(&sampler_desc, &m_Sampler);
 }
 
 
