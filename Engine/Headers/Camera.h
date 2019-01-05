@@ -18,6 +18,16 @@ public:
 	XMMATRIX GetViewMatrix();
 	~Camera();
 
+public:
+	//Getters
+	float GetX() const { return m_X; };
+	float GetY() const { return m_Y; };
+	float GetZ() const { return m_Z; };
+	//Setters
+	void SetX(float x) { m_X = x; };
+	void SetY(float y) { m_Y = y; };
+	void SetZ(float z) { m_Z = z; };
+
 private:
 	float
 		m_X,

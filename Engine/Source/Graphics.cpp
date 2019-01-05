@@ -313,7 +313,8 @@ void Graphics::Render()
 	view = m_Camera->GetViewMatrix();
 	m_Model->Draw(&view,&projection);
 	m_Model->TransposeLight();
-	
+	m_Model->LookAt_XZ(m_Camera->GetX(), m_Camera->GetZ());
+
 	//m_Model->TransposeLight();
 	/*UINT stride = sizeof(POS_COLOR_TEXT_NORM_VERTEX);
 	UINT offset = 0;*/

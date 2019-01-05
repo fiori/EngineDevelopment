@@ -132,6 +132,17 @@ void ModelLoader::TransposeLight()
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
+void ModelLoader::LookAt_XZ(float x, float z)
+{
+	m_yAngle = atan2((x - this->m_x),(z - this->m_z)) * (180.0 / XM_PI);
+}
+
+void ModelLoader::MoveForward(float distance)
+{
+	this->m_x += sin(m_yAngle * (XM_PI / 180.0)) * distance;
+	this->m_z += cos(m_yAngle * (XM_PI / 180.0)) * distance;
+}
+
 void ModelLoader::AddTexture(char* fileName)
 {
 	D3DX11CreateShaderResourceViewFromFileA(

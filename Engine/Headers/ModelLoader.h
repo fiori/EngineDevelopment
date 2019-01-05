@@ -74,5 +74,8 @@ public:
 	void IncYRotation(float angle) { m_yAngle += angle; };
 	void IncZRotation(float angle) { m_zAngle += angle; };
 	void IncScale(float scale) { m_scale += scale; };
+	//LookAt
+	void LookAt_XZ(float x, float z);
+	void MoveForward(float distance);
 };
 
