@@ -130,9 +130,11 @@ Graphics::Graphics(Window& window)
 //
 //	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 
-	m_Model = new ModelLoader(m_Device, m_ImmediateContext);
+	m_Model = new ModelLoader(m_Device, m_ImmediateContext, 0.0f,0.0f,0.0f);
+	m_Model01 = new ModelLoader(m_Device, m_ImmediateContext, 5.0f, 0.0f, 5.0f);
 
 	m_Model->LoadObjModel((char*)"Assets/Sphere.obj");
+	m_Model01->LoadObjModel((char*)"Assets/cube.obj");
 
 	////Copy the vertices into the buffer
 	//D3D11_MAPPED_SUBRESOURCE ms;
@@ -235,28 +237,28 @@ Graphics::~Graphics()
 	delete m_Camera;
 }
 
-void Graphics::Input()
+void Graphics::Input(GameTimer timer)
 {
 	//Todo: Create the game class and start using the keyboard in the game class
 
 	if (wnd.kbd.KeyIsPressed(VK_UP))
 	{
 		/*cb0_values.scale += 0.0001f;*/
-		m_Camera->Forward(0.001f);
+		m_Camera->Forward(2.0f * timer.DeltaTime());
 	}
 	if (wnd.kbd.KeyIsPressed(VK_DOWN))
 	{
 		//cb0_values.scale -= 0.0001f;
-		m_Camera->Forward(-0.001f);
+		m_Camera->Forward(-2.0f * timer.DeltaTime());
 		
 	}
 	if (wnd.kbd.KeyIsPressed(VK_RIGHT))
 	{
-		RotationZ -= 0.0001f;
+		RotationZ -= 2.0f * timer.DeltaTime();
 	}
 	if (wnd.kbd.KeyIsPressed(VK_LEFT))
 	{
-		RotationZ += 0.0001f;
+		RotationZ += 2.0f * timer.DeltaTime();
 	}
 
 	////////////////////////
@@ -264,43 +266,44 @@ void Graphics::Input()
 	//E
 	if (wnd.kbd.KeyIsPressed(0x45))
 	{
-		m_Camera->Rotate(0.008f);
+		m_Camera->Rotate(10.0f * timer.DeltaTime());
 	}
 	//Q
 	if (wnd.kbd.KeyIsPressed(0x51))
 	{
-		m_Camera->Rotate(-0.008f);
+		m_Camera->Rotate(-10.0f * timer.DeltaTime());
 	}
 	//W
 	if (wnd.kbd.KeyIsPressed(0x57))
 	{
-		m_Camera->Up(0.001f);
+		m_Camera->Up(2.0f * timer.DeltaTime());
 	}
 	//S
 	if (wnd.kbd.KeyIsPressed(0x53))
 	{
-		m_Camera->Up(-0.001f);
+		m_Camera->Up(-2.0f * timer.DeltaTime());
 	}
 	//D
 	if (wnd.kbd.KeyIsPressed(0x44))
 	{
-		m_Camera->Strafe(-0.001f);
+		m_Camera->Strafe(-5.0f * timer.DeltaTime());
+		
 	}
 	//A
 	if (wnd.kbd.KeyIsPressed(0x41))
 	{
-		m_Camera->Strafe(0.001f);
+		m_Camera->Strafe(5.0f * timer.DeltaTime());
 	}
 	//Camera Pitch //Todo: Create a mouse class and use this in the mouse
 	//U
 	if (wnd.kbd.KeyIsPressed(0x55))
 	{
-		m_Camera->Pitch(0.01f);
+		m_Camera->Pitch(15.0f * timer.DeltaTime());
 	}
 	//K
 	if (wnd.kbd.KeyIsPressed(0x4B))
 	{
-		m_Camera->Pitch(-0.01f);
+		m_Camera->Pitch(-15.0f * timer.DeltaTime());
 	}
 }
 
@@ -308,12 +311,20 @@ void Graphics::Render()
 {
 	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
 	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	
 
 	view = m_Camera->GetViewMatrix();
 	m_Model->Draw(&view,&projection);
-	m_Model->TransposeLight();
 	m_Model->LookAt_XZ(m_Camera->GetX(), m_Camera->GetZ());
+	m_Model->MoveForward(0.0001f);
+	m_Model->TransposeLight();
+
+	m_Model01->Draw(&view, &projection);
+	m_Model01->LookAt_XZ(m_Model->GetXPos(), m_Model->GetZPos());
+	m_Model01->TransposeLight();
+
+	/*m_Model01->IncYRotation(cos(XMConvertToRadians(rotation)));
+	m_Model01->IncXRotation(sin(XMConvertToRadians(rotation)));
+	m_Model01->IncZRotation(cos(XMConvertToRadians(rotation)));*/
 
 	//m_Model->TransposeLight();
 	/*UINT stride = sizeof(POS_COLOR_TEXT_NORM_VERTEX);

@@ -23,8 +23,8 @@ void ModelLoader::SetAmbientLightColor(float x, float y, float z)
 	m_ambient_light_color = XMVectorSet(x, y, z, 1.0f);
 }
 
-ModelLoader::ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext)
-	:m_device_(Device), m_ImmediateContext(ImmediateContext), m_x(0.0f), m_y(0.0f), m_z(0.0f), m_xAngle(0.0f), m_yAngle(0.0f),
+ModelLoader::ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z)
+	:m_device_(Device), m_ImmediateContext(ImmediateContext), m_x(x), m_y(y), m_z(z), m_xAngle(0.0f), m_yAngle(0.0f),
 	m_zAngle(0.0f), m_scale(1.0f)
 {
 	
@@ -134,7 +134,7 @@ void ModelLoader::TransposeLight()
 
 void ModelLoader::LookAt_XZ(float x, float z)
 {
-	m_yAngle = atan2((x - this->m_x),(z - this->m_z)) * (180.0 / XM_PI);
+	m_yAngle = atan2((this->m_x - x),(this->m_z - z)) * (180.0 / XM_PI);
 }
 
 void ModelLoader::MoveForward(float distance)

@@ -16,6 +16,7 @@ private:
 	float m_x, m_y, m_z;
 	float m_xAngle, m_yAngle, m_zAngle;
 	float m_scale;
+	
 private:
 	XMMATRIX world;
 private:
@@ -40,7 +41,7 @@ private:
 	ID3D11SamplerState*			m_Sampler;
 
 public:
-	ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext);
+	ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z);
 	~ModelLoader();
 
 public:

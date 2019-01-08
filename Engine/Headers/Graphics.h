@@ -8,13 +8,13 @@
 #include <xnamath.h>
 #include "../Headers/Camera.h"
 #include "../Headers/ModelLoader.h"
-
+#include "../Headers/GameTimer.h"
 class Graphics
 {
 public:
 	Graphics(class Window& window);
 	~Graphics();
-	void Input();
+	void Input(GameTimer timer);
 	void Render();
 	void TransposeLight();
 	void UnlockBuffer();
@@ -156,4 +156,5 @@ private:
 private:
 	//Tutorial 10
 	ModelLoader* m_Model;
+	ModelLoader* m_Model01;
 };
