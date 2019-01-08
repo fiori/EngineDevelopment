@@ -23,6 +23,101 @@ void ModelLoader::SetAmbientLightColor(float x, float y, float z)
 	m_ambient_light_color = XMVectorSet(x, y, z, 1.0f);
 }
 
+bool ModelLoader::CheckCollision(ModelLoader* model)
+{
+	if (model == this)
+	{
+		MessageBox(nullptr, L"Cannot collide with the same object", nullptr, 0);
+		return false;
+	}
+
+	float x1 = XMVectorGetX(this->GetBoundingSphereWorldSpacePosition());
+	float x2 = XMVectorGetX(model->GetBoundingSphereWorldSpacePosition());
+	float y1 = XMVectorGetY(this->GetBoundingSphereWorldSpacePosition());
+	float y2 = XMVectorGetY(model->GetBoundingSphereWorldSpacePosition());
+	float z1 = XMVectorGetZ(this->GetBoundingSphereWorldSpacePosition());
+	float z2 = XMVectorGetZ(model->GetBoundingSphereWorldSpacePosition());
+	
+	float distance_squared = pow(x1 - x2,2) + pow(y1 - y2, 2) + pow(z1 - z2,2);
+	return distance_squared < pow(this->GetBoundingSphereRadius() + model->GetBoundingSphereRadius(),2);
+	
+}
+
+void ModelLoader::CalculateModelCentrePoint()
+{
+	m_MinimumVertPos = m_Object->vertices[0].Pos;
+	m_MaximumVertPos = m_Object->vertices[0].Pos;
+
+	for (int i = 0; i < m_Object->numverts; i++)
+	{
+		if (m_Object->vertices[i].Pos.x < m_MinimumVertPos.x)
+		{
+			m_MinimumVertPos.x = m_Object->vertices[i].Pos.x;
+		}	
+		if (m_Object->vertices[i].Pos.y < m_MinimumVertPos.y)
+		{
+			m_MinimumVertPos.y = m_Object->vertices[i].Pos.y;
+		}	
+		if (m_Object->vertices[i].Pos.z < m_MinimumVertPos.z)
+		{
+			m_MinimumVertPos.z = m_Object->vertices[i].Pos.z;
+		}		
+		if (m_Object->vertices[i].Pos.x > m_MaximumVertPos.x)
+		{
+			m_MaximumVertPos.x = m_Object->vertices[i].Pos.x;
+		}		
+		if (m_Object->vertices[i].Pos.y > m_MaximumVertPos.y)
+		{
+			m_MaximumVertPos.y = m_Object->vertices[i].Pos.y;
+		}		
+		if (m_Object->vertices[i].Pos.z > m_MaximumVertPos.z)
+		{
+			m_MaximumVertPos.z = m_Object->vertices[i].Pos.z;
+		}	
+		
+		
+		m_bouding_sphere_centre_x = ((m_MaximumVertPos.x + m_MinimumVertPos.x) / 2);
+		m_bouding_sphere_centre_y = ((m_MaximumVertPos.y + m_MinimumVertPos.y) / 2);
+		m_bouding_sphere_centre_z = ((m_MaximumVertPos.z + m_MinimumVertPos.z) / 2);
+	}
+}
+
+void ModelLoader::CalculateBoundingSphereRadius()
+{
+	float distance_squared = 0.0f;
+	m_bouding_sphere_radius = sqrt(pow(m_bouding_sphere_centre_x, 2) + pow(m_bouding_sphere_centre_y, 2) + pow(m_bouding_sphere_centre_z, 2));
+
+	for (int i = 0; i < m_Object->numverts; i++)
+	{
+		distance_squared = sqrt(pow(m_Object->vertices[i].Pos.x - m_bouding_sphere_centre_x, 2) +
+			pow(m_Object->vertices[i].Pos.y - m_bouding_sphere_centre_y, 2) +
+			pow(m_Object->vertices[i].Pos.z - m_bouding_sphere_centre_z, 2));
+
+		if (distance_squared > m_bouding_sphere_radius)
+		{
+			m_bouding_sphere_radius = distance_squared;
+		}
+	}
+}
+
+XMVECTOR ModelLoader::GetBoundingSphereWorldSpacePosition()
+{
+	world = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
+	world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
+	world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
+	world *= XMMatrixScaling(m_scale, m_scale, m_scale);
+	world *= XMMatrixTranslation(m_x, m_y, m_z);
+	XMVECTOR offset = XMVectorSet(m_bouding_sphere_centre_x,m_bouding_sphere_centre_y,m_bouding_sphere_centre_z, 0.0f);
+	offset = XMVector3Transform(offset, world);
+	return offset;
+}
+
+float ModelLoader::GetBoundingSphereRadius()
+{
+	return m_bouding_sphere_radius * m_scale;
+}
+
+
 ModelLoader::ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z)
 	:m_device_(Device), m_ImmediateContext(ImmediateContext), m_x(x), m_y(y), m_z(z), m_xAngle(0.0f), m_yAngle(0.0f),
 	m_zAngle(0.0f), m_scale(1.0f)
@@ -42,6 +137,9 @@ void ModelLoader::LoadObjModel(char* fileName)
 	m_Object = new ObjFileModel(fileName, m_device_, m_ImmediateContext);
 	if (m_Object->filename == "FILE NOT LOADED")
 		MessageBox(nullptr, L"Model not Loaded", nullptr, 0);
+	
+	CalculateModelCentrePoint();
+	CalculateBoundingSphereRadius();
 
 	ID3DBlob *VS, *PS, *error;
 
@@ -92,17 +190,19 @@ void ModelLoader::LoadObjModel(char* fileName)
 	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	if (FAILED(m_device_->CreateBuffer(&constant_buffer_desc, nullptr, &m_ConstantBuffer)))
 		MessageBox(nullptr, L"Error Creating the Constant buffer", nullptr, 0);
+
+
 }
 
 
 void ModelLoader::Draw(XMMATRIX* view, XMMATRIX* projection)
 {
-
-	world = XMMatrixTranslation(m_x, m_y, m_z);
-	world *= XMMatrixRotationX(XMConvertToRadians(m_xAngle));
+	
+	world = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
 	world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
 	world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
 	world *= XMMatrixScaling(m_scale, m_scale, m_scale);
+	world *= XMMatrixTranslation(m_x, m_y, m_z);
 
 	model_cb_values.WorldViewProjection = world*(*view)*(*projection);
 	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);

@@ -131,11 +131,11 @@ Graphics::Graphics(Window& window)
 //	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 
 	m_Model = new ModelLoader(m_Device, m_ImmediateContext, 0.0f,0.0f,0.0f);
-	m_Model01 = new ModelLoader(m_Device, m_ImmediateContext, 5.0f, 0.0f, 5.0f);
+	m_Model01 = new ModelLoader(m_Device, m_ImmediateContext, 4.91f, 0.0f, 5.0f);
+	m_Model01->SetScale(0.7f);
 
 	m_Model->LoadObjModel((char*)"Assets/Sphere.obj");
-	m_Model01->LoadObjModel((char*)"Assets/cube.obj");
-
+	m_Model01->LoadObjModel((char*)"Assets/Sphere.obj");
 	////Copy the vertices into the buffer
 	//D3D11_MAPPED_SUBRESOURCE ms;
 
@@ -276,23 +276,26 @@ void Graphics::Input(GameTimer timer)
 	//W
 	if (wnd.kbd.KeyIsPressed(0x57))
 	{
-		m_Camera->Up(2.0f * timer.DeltaTime());
+		m_Model->MoveForward(5.0f * timer.DeltaTime());
 	}
 	//S
 	if (wnd.kbd.KeyIsPressed(0x53))
 	{
-		m_Camera->Up(-2.0f * timer.DeltaTime());
+		m_Model->MoveForward(-5.0f * timer.DeltaTime());
+
+		//m_Camera->Up(-2.0f * timer.DeltaTime());
 	}
 	//D
 	if (wnd.kbd.KeyIsPressed(0x44))
 	{
-		m_Camera->Strafe(-5.0f * timer.DeltaTime());
-		
+		//m_Camera->Strafe(-5.0f * timer.DeltaTime());
+		m_Model->IncXPos(5.0f * timer.DeltaTime());
 	}
 	//A
 	if (wnd.kbd.KeyIsPressed(0x41))
 	{
-		m_Camera->Strafe(5.0f * timer.DeltaTime());
+		m_Model->IncXPos(-5.0f * timer.DeltaTime());
+		//m_Camera->Strafe(5.0f * timer.DeltaTime());
 	}
 	//Camera Pitch //Todo: Create a mouse class and use this in the mouse
 	//U
@@ -315,13 +318,35 @@ void Graphics::Render()
 	view = m_Camera->GetViewMatrix();
 	m_Model->Draw(&view,&projection);
 	m_Model->LookAt_XZ(m_Camera->GetX(), m_Camera->GetZ());
-	m_Model->MoveForward(0.0001f);
+	//m_Model->MoveForward(0.001f);
 	m_Model->TransposeLight();
 
 	m_Model01->Draw(&view, &projection);
 	m_Model01->LookAt_XZ(m_Model->GetXPos(), m_Model->GetZPos());
 	m_Model01->TransposeLight();
 
+	if (m_Model->CheckCollision(m_Model01))
+	{
+		if (m_Model->GetZPos() > m_Model01->GetZPos() && (m_Model->GetXPos() > m_Model01->GetXPos() || m_Model->GetXPos() < m_Model01->GetXPos() || m_Model->GetXPos() == m_Model01->GetXPos()))
+		{
+			m_Model->IncZPos(0.1f);
+		}
+		else if (m_Model->GetXPos() > m_Model01->GetXPos() || m_Model->GetXPos() < m_Model01->GetXPos() || m_Model->GetXPos() == m_Model01->GetXPos() && m_Model->GetZPos() < m_Model01->GetZPos())
+		{
+			m_Model->IncZPos(-0.1f);
+		}
+		else if (m_Model->GetXPos() < m_Model01->GetXPos())
+		{
+			m_Model->IncXPos(-0.1f);
+			m_Model->IncZPos(0.1f);
+		}
+		else
+		{
+			m_Model->IncXPos(0.1f);
+			m_Model->IncZPos(0.1f);
+		}
+		
+	}
 	/*m_Model01->IncYRotation(cos(XMConvertToRadians(rotation)));
 	m_Model01->IncXRotation(sin(XMConvertToRadians(rotation)));
 	m_Model01->IncZRotation(cos(XMConvertToRadians(rotation)));*/

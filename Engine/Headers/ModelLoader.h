@@ -40,6 +40,20 @@ private:
 	ID3D11ShaderResourceView*	m_textureMap;
 	ID3D11SamplerState*			m_Sampler;
 
+//Tutorial12
+private:
+	float m_bouding_sphere_centre_x, m_bouding_sphere_centre_y, m_bouding_sphere_centre_z, m_bouding_sphere_radius;
+	XMFLOAT3 m_MinimumVertPos, m_MaximumVertPos;
+public:
+	bool CheckCollision(ModelLoader* model);
+	
+
+private:
+	void CalculateModelCentrePoint();
+	void CalculateBoundingSphereRadius();
+	XMVECTOR GetBoundingSphereWorldSpacePosition();
+	float GetBoundingSphereRadius();
+//--------------------------------
 public:
 	ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z);
 	~ModelLoader();
