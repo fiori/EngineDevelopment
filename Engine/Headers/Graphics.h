@@ -144,6 +144,16 @@ private:
 	//Tutorial 08
 	ID3D11ShaderResourceView*		m_TextureMap0;
 	ID3D11SamplerState*				m_Sampler0;
+	//SkyBox
+	ID3D11ShaderResourceView*		m_SkyBoxTextureMap;
+	ID3D11SamplerState*				m_SkyBoxSampler;
+	ID3D11RasterizerState*			m_SkyBoxRasterSolid = 0;
+	ID3D11RasterizerState*			m_SkyBoxRasterSkyBox = 0;
+	ID3D11DepthStencilState*		m_SkyBoxDepthWriteSolid = 0;
+	ID3D11DepthStencilState*		m_SkyBoxDepthWriteSkybox = 0;
+	
+
+
 	//Tutorial 09
 	XMVECTOR m_directional_light_shines_from;
 	
@@ -157,4 +167,5 @@ private:
 	//Tutorial 10
 	ModelLoader* m_Model;
 	ModelLoader* m_Model01;
+	ModelLoader* m_SkyBox;
 };

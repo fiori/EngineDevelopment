@@ -18,7 +18,6 @@ Graphics::Graphics(Window& window)
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = TRUE;
-
 	UINT CreateDeviceFlags = 0u;
 
 	//#if defined(DEBUG) || defined(_DEBUG)
@@ -117,9 +116,9 @@ Graphics::Graphics(Window& window)
 ////Create and set up the constant buffer // Tutorial 04
 //#include "../InitializeGraphics/createAndSetConstantBuffer.fi";
 //
-	world = XMMatrixTranslation(0, 0, 15);
-	//world *= XMMatrixRotationZ(XMConvertToRadians(RotationZ));
-	world *= XMMatrixRotationY(XMConvertToRadians(15));
+	//world = XMMatrixTranslation(0, 0, 15);
+	////world *= XMMatrixRotationZ(XMConvertToRadians(RotationZ));
+	//world *= XMMatrixRotationY(XMConvertToRadians(15));
 	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), Graphics::SCREENWIDTH / Graphics::SCREENHEIGHT, 1.0f, 100.0f);
 	//view = XMMatrixIdentity();
 	view = m_Camera->GetViewMatrix();
@@ -133,9 +132,18 @@ Graphics::Graphics(Window& window)
 	m_Model = new ModelLoader(m_Device, m_ImmediateContext, 0.0f,0.0f,0.0f);
 	m_Model01 = new ModelLoader(m_Device, m_ImmediateContext, 4.91f, 0.0f, 5.0f);
 	m_Model01->SetScale(0.7f);
+	
+	m_SkyBox = new ModelLoader(m_Device, m_ImmediateContext, 0.0f, 0.0f, 0.0f);
+	m_SkyBox->LoadSkyBox((char*)"Assets/cube.obj",m_SkyBoxTextureMap, m_SkyBoxSampler, m_SkyBoxDepthWriteSolid, m_SkyBoxDepthWriteSkybox,m_SkyBoxRasterSkyBox);
+	m_SkyBox->SetScale(40.0f);
 
 	m_Model->LoadObjModel((char*)"Assets/Sphere.obj");
 	m_Model01->LoadObjModel((char*)"Assets/Sphere.obj");
+
+	m_Model->AddTexture((char*)"Assets/uv-mapping-grid.png");
+	//m_SkyBox->AddTexture((char*)"Assets/skybox01.dds");
+
+
 	////Copy the vertices into the buffer
 	//D3D11_MAPPED_SUBRESOURCE ms;
 
@@ -218,8 +226,10 @@ Graphics::Graphics(Window& window)
 	/*if (FAILED(m_Device->CreateInputLayout(InputLayoutDesc, ARRAYSIZE(InputLayoutDesc), VS->GetBufferPointer(), VS->GetBufferSize(), &m_InputLayout)))
 		MessageBox(window.m_MainWnd, L"Error Creating the Input Layout", nullptr, 0);
 
+
 	m_ImmediateContext->IASetInputLayout(m_InputLayout);*/
 	//Tutorial 09
+
 	m_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 	m_directional_light_color = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Green
 	m_ambient_light_color = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f); // Dark Grey - always use a small value for ambient lighting
@@ -297,7 +307,7 @@ void Graphics::Input(GameTimer timer)
 		m_Model->IncXPos(-5.0f * timer.DeltaTime());
 		//m_Camera->Strafe(5.0f * timer.DeltaTime());
 	}
-	//Camera Pitch //Todo: Create a mouse class and use this in the mouse
+	//Camera Pitch //Todo: Create a ms class and use this in the ms
 	//U
 	if (wnd.kbd.KeyIsPressed(0x55))
 	{
@@ -314,16 +324,21 @@ void Graphics::Render()
 {
 	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
 	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
 	view = m_Camera->GetViewMatrix();
+
+
+	m_SkyBox->SetPosition(m_Camera->GetPosition());
+	m_SkyBox->Draw(&view, &projection);
+
 	m_Model->Draw(&view,&projection);
 	m_Model->LookAt_XZ(m_Camera->GetX(), m_Camera->GetZ());
 	//m_Model->MoveForward(0.001f);
 	m_Model->TransposeLight();
-
+	
 	m_Model01->Draw(&view, &projection);
 	m_Model01->LookAt_XZ(m_Model->GetXPos(), m_Model->GetZPos());
 	m_Model01->TransposeLight();
+
 
 	if (m_Model->CheckCollision(m_Model01))
 	{

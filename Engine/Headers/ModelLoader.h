@@ -61,6 +61,8 @@ public:
 public:
 	void LoadObjModel(char* fileName);
 	void Draw(XMMATRIX* view, XMMATRIX* projection);
+	void LoadSkyBox(char* fileName, ID3D11ShaderResourceView* SkyBoxTextureMap, ID3D11SamplerState* SkyBoxSampler, 
+		ID3D11DepthStencilState* DepthWriteSolide, ID3D11DepthStencilState* DepthWriteSkyBox, ID3D11RasterizerState* m_SkyBoxRasterSolid);
 	void AddTexture(char* fileName);
 	void TransposeLight();
 public:
@@ -69,6 +71,12 @@ public:
 	void SetXPos(float pos) { m_x = pos; };
 	void SetYPos(float pos) { m_y = pos; };
 	void SetZPos(float pos) { m_z = pos; };
+	void SetPosition(XMFLOAT3 Position)
+	{
+		m_x = Position.x; 
+		m_y = Position.y; 
+		m_z = Position.z;
+	};
 	void SetXRotation(float angle) { m_xAngle = angle; };
 	void SetYRotation(float angle) { m_yAngle = angle; };
 	void SetZRotation(float angle) { m_zAngle = angle; };

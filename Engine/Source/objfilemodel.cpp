@@ -91,7 +91,7 @@ void ObjFileModel::parsefile()
 		// ADD FURTHER KEYWORDS HERE TO EXTEND CAPABILITIES
 		if(strncmp(&fbuffer[tokenstart], "v ", 2)==0) // VERTEX POSITION - note the space in the string is needed (see vt, etc)
 		{
-			success=true; // used to see if correct number of tokens left on line for this type of attribute
+			success=true; // used to see if correct number of tokens left on line for this m_type of attribute
 			success = success && getnexttoken(tokenstart, tokenlength);
 			tempxyz.x = (float) atof(&fbuffer[tokenstart]);
 			success = success && getnexttoken(tokenstart, tokenlength);

@@ -39,6 +39,9 @@
     <ClCompile Include="Source\GameTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Mouse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Graphics.h">
@@ -62,6 +65,9 @@
     <ClInclude Include="Headers\GameTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\Mouse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\PixelShader.hlsl" />
@@ -70,5 +76,10 @@
   <ItemGroup>
     <None Include="InitializeGraphics\createAndSetVertexBuffer.fi" />
     <None Include="InitializeGraphics\createAndSetConstantBuffer.fi" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="C:\Users\Fiori\Downloads\Daylight Box UV.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

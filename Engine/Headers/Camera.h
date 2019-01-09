@@ -23,6 +23,7 @@ public:
 	float GetX() const { return m_X; };
 	float GetY() const { return m_Y; };
 	float GetZ() const { return m_Z; };
+	XMFLOAT3 GetPosition() const { return XMFLOAT3(m_X, m_Y, m_Z); };
 	//Setters
 	void SetX(float x) { m_X = x; };
 	void SetY(float y) { m_Y = y; };

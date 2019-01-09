@@ -80,6 +80,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;d3dx11d.lib;d3dx9d.lib;dxerr.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -131,6 +132,7 @@
     <ClCompile Include="Source\Keyboard.cpp" />
     <ClCompile Include="Source\Graphics.cpp" />
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Mouse.cpp" />
     <ClCompile Include="Source\objfilemodel.cpp" />
     <ClCompile Include="Source\window.cpp" />
   </ItemGroup>
@@ -138,6 +140,7 @@
     <ClInclude Include="Headers\Camera.h" />
     <ClInclude Include="Headers\GameTimer.h" />
     <ClInclude Include="Headers\Graphics.h" />
+    <ClInclude Include="Headers\Mouse.h" />
     <ClInclude Include="Headers\objfilemodel.h" />
     <ClInclude Include="Headers\window.h" />
     <ClInclude Include="Headers\Keyboard.h" />
@@ -158,6 +161,9 @@
     <None Include="InitializeGraphics\createAndSetVertexBuffer.fi">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="C:\Users\Fiori\Downloads\Daylight Box UV.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

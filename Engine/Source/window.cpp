@@ -16,7 +16,8 @@ Window::Window(HINSTANCE instanceHandle, int show)
 	wc.hbrBackground = nullptr;
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = m_ClassName;
-
+	
+	
 	if (!RegisterClass(&wc))
 	{
 		MessageBox(nullptr, L"RegisterClass Failed", nullptr, 0);
@@ -40,6 +41,7 @@ Window::Window(HINSTANCE instanceHandle, int show)
 	}
 	ShowWindow(m_MainWnd, show);
 	UpdateWindow(m_MainWnd);
+	
 }
 
 Window::~Window()
@@ -115,6 +117,22 @@ LRESULT Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_KEYUP:
 		kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
 		break;
+	case WM_MOUSEMOVE:
+		mouse.m_x = LOWORD(lParam);
+		mouse.m_y = HIWORD(lParam);
+		break;
+	case WM_LBUTTONDOWN:
+		mouse.m_leftIsPressed = true;
+		return 0;
+	case WM_LBUTTONUP:
+		mouse.m_leftIsPressed = false;
+		return 0;
+	case WM_RBUTTONDOWN:
+		mouse.m_rightIsPressed = true;
+		return 0;
+	case WM_RBUTTONUP:
+		mouse.m_rightIsPressed = false;
+		return 0;
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
