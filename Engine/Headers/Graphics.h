@@ -144,13 +144,6 @@ private:
 	//Tutorial 08
 	ID3D11ShaderResourceView*		m_TextureMap0;
 	ID3D11SamplerState*				m_Sampler0;
-	//SkyBox
-	ID3D11ShaderResourceView*		m_SkyBoxTextureMap;
-	ID3D11SamplerState*				m_SkyBoxSampler;
-	ID3D11RasterizerState*			m_SkyBoxRasterSolid = 0;
-	ID3D11RasterizerState*			m_SkyBoxRasterSkyBox = 0;
-	ID3D11DepthStencilState*		m_SkyBoxDepthWriteSolid = 0;
-	ID3D11DepthStencilState*		m_SkyBoxDepthWriteSkybox = 0;
 	
 
 

@@ -134,6 +134,7 @@ ModelLoader::~ModelLoader()
 
 void ModelLoader::LoadObjModel(char* fileName)
 {
+	isSkyBox = false;
 	m_Object = new ObjFileModel(fileName, m_device_, m_ImmediateContext);
 	if (m_Object->filename == "FILE NOT LOADED")
 		MessageBox(nullptr, L"Model not Loaded", nullptr, 0);
@@ -215,12 +216,23 @@ void ModelLoader::Draw(XMMATRIX* view, XMMATRIX* projection)
 		m_ImmediateContext->PSSetSamplers(0, 1, &m_Sampler);
 		m_ImmediateContext->PSSetShaderResources(0, 1, &m_textureMap);
 	}
+	if (isSkyBox)
+	{
+		m_ImmediateContext->RSSetState(m_SkyBoxRasterSkyBox);
+		m_ImmediateContext->OMSetDepthStencilState(m_SkyBoxDepthWriteSkybox, 0);
+	}
+	else
+	{
+		m_ImmediateContext->RSSetState(m_SkyBoxRasterSolid);
+		m_ImmediateContext->OMSetDepthStencilState(m_SkyBoxDepthWriteSolid, 0);
+	}
 	m_Object->Draw();
 }
 
-void ModelLoader::LoadSkyBox(char* fileName, ID3D11ShaderResourceView* SkyBoxTextureMap, ID3D11SamplerState* SkyBoxSampler, ID3D11DepthStencilState* DepthWriteSolid, ID3D11DepthStencilState* DepthWriteSkyBox, ID3D11RasterizerState* SkyBoxRasterSkyBox)
+void ModelLoader::LoadSkyBox(char* ObjectFile, char* FileForTheTexture)
 {
-	m_Object = new ObjFileModel(fileName, m_device_, m_ImmediateContext);
+	isSkyBox = true;
+	m_Object = new ObjFileModel(ObjectFile, m_device_, m_ImmediateContext);
 	if (m_Object->filename == "FILE NOT LOADED")
 		MessageBox(nullptr, L"Model not Loaded", nullptr, 0);
 
@@ -281,14 +293,32 @@ void ModelLoader::LoadSkyBox(char* fileName, ID3D11ShaderResourceView* SkyBoxTex
 	ZeroMemory(&rasterizer_desc, sizeof(rasterizer_desc));
 
 	rasterizer_desc.FillMode = D3D11_FILL_SOLID;
+	rasterizer_desc.CullMode = D3D11_CULL_BACK;
+	if(FAILED(m_device_->CreateRasterizerState(&rasterizer_desc, &m_SkyBoxRasterSolid)))
+		MessageBox(nullptr,L"Errpr creatomg the solid rasterizer state", L"Error", 0); //Sucess
+	rasterizer_desc.FillMode = D3D11_FILL_SOLID;
 	rasterizer_desc.CullMode = D3D11_CULL_FRONT;
-	m_device_->CreateRasterizerState(&rasterizer_desc, &SkyBoxRasterSkyBox);
+	if (FAILED(m_device_->CreateRasterizerState(&rasterizer_desc, &m_SkyBoxRasterSkyBox)))
+		MessageBox(nullptr, L"Errpr creating the Skybox rasterizer state", L"Error", 0); //Sucess
+
+
+	D3D11_DEPTH_STENCIL_DESC DSDecsc;
+	ZeroMemory(&DSDecsc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	DSDecsc.DepthEnable = true;
+	DSDecsc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	DSDecsc.DepthFunc = D3D11_COMPARISON_LESS;
+	if(FAILED(m_device_->CreateDepthStencilState(&DSDecsc, &m_SkyBoxDepthWriteSolid)))
+		MessageBox(nullptr, L"Error Creating the DepthWriteSolid", L"Error",0);
+	DSDecsc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	if(FAILED(m_device_->CreateDepthStencilState(&DSDecsc, &m_SkyBoxDepthWriteSkybox)))
+		MessageBox(nullptr,L"Error Creating the DepthWriteSkybox", L"Error",0);
+
 
 	/////////////////////////////////
 	//AddTexture
 	D3DX11CreateShaderResourceViewFromFileA(
 		m_device_,
-		"Assets/skybox02.dds",
+		FileForTheTexture,
 		nullptr,
 		nullptr,
 		&m_textureMap,

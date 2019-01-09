@@ -61,10 +61,23 @@ public:
 public:
 	void LoadObjModel(char* fileName);
 	void Draw(XMMATRIX* view, XMMATRIX* projection);
-	void LoadSkyBox(char* fileName, ID3D11ShaderResourceView* SkyBoxTextureMap, ID3D11SamplerState* SkyBoxSampler, 
-		ID3D11DepthStencilState* DepthWriteSolide, ID3D11DepthStencilState* DepthWriteSkyBox, ID3D11RasterizerState* m_SkyBoxRasterSolid);
 	void AddTexture(char* fileName);
 	void TransposeLight();
+//--------------------------------------------------------------------------------------------------------
+public:
+	//SkyBox
+	void LoadSkyBox(char* ObjectFile, char* FileForTheTexture);
+private:
+	//SkyBox
+	bool isSkyBox = false;
+	ID3D11ShaderResourceView*		m_SkyBoxTextureMap;
+	ID3D11SamplerState*				m_SkyBoxSampler;
+	ID3D11RasterizerState*			m_SkyBoxRasterSolid = 0;
+	ID3D11RasterizerState*			m_SkyBoxRasterSkyBox = 0;
+	ID3D11DepthStencilState*		m_SkyBoxDepthWriteSolid = 0;
+	ID3D11DepthStencilState*		m_SkyBoxDepthWriteSkybox = 0;
+//--------------------------------------------------------------------------------------------------------
+
 public:
 	//Public methods for model modification
 	//Setters

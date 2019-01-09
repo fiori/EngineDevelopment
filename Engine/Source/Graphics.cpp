@@ -134,8 +134,8 @@ Graphics::Graphics(Window& window)
 	m_Model01->SetScale(0.7f);
 	
 	m_SkyBox = new ModelLoader(m_Device, m_ImmediateContext, 0.0f, 0.0f, 0.0f);
-	m_SkyBox->LoadSkyBox((char*)"Assets/cube.obj",m_SkyBoxTextureMap, m_SkyBoxSampler, m_SkyBoxDepthWriteSolid, m_SkyBoxDepthWriteSkybox,m_SkyBoxRasterSkyBox);
-	m_SkyBox->SetScale(40.0f);
+	m_SkyBox->LoadSkyBox((char*)"Assets/cube.obj",(char*)"Assets/abovetheclouds.dds");
+	m_SkyBox->SetScale(3.0f);
 
 	m_Model->LoadObjModel((char*)"Assets/Sphere.obj");
 	m_Model01->LoadObjModel((char*)"Assets/Sphere.obj");
@@ -330,13 +330,13 @@ void Graphics::Render()
 	m_SkyBox->SetPosition(m_Camera->GetPosition());
 	m_SkyBox->Draw(&view, &projection);
 
-	m_Model->Draw(&view,&projection);
 	m_Model->LookAt_XZ(m_Camera->GetX(), m_Camera->GetZ());
+	m_Model->Draw(&view,&projection);
 	//m_Model->MoveForward(0.001f);
 	m_Model->TransposeLight();
 	
-	m_Model01->Draw(&view, &projection);
 	m_Model01->LookAt_XZ(m_Model->GetXPos(), m_Model->GetZPos());
+	m_Model01->Draw(&view, &projection);
 	m_Model01->TransposeLight();
 
 
