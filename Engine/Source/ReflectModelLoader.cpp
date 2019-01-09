@@ -1,29 +1,30 @@
-#include "../Headers/ModelLoader.h"
+#include "../Headers/ReflectModelLoader.h"
 
-struct MODEL_CONSTANT_BUFFER
+struct REFLECT_MODEL_CONSTANT_BUFFER
 {
 	XMMATRIX WorldViewProjection;
+	XMMATRIX worldViewMatrix;
 	XMVECTOR directional_light_vector; // 16 bytes
 	XMVECTOR directional_light_color; // 16 bytes
 	XMVECTOR ambient_light_color; // 16 bytes
-};MODEL_CONSTANT_BUFFER model_cb_values;
+};REFLECT_MODEL_CONSTANT_BUFFER model_cb_values;
 
-void ModelLoader::SetDirectionalLightShinesFrom(float x, float y, float z)
+void ReflectModelLoader::SetDirectionalLightShinesFrom(float x, float y, float z)
 {
 	m_directional_light_shines_from = XMVectorSet(x, y, z, 0.0f);
 }
 
-void ModelLoader::SetDirectionalLightColor(float x, float y, float z)
+void ReflectModelLoader::SetDirectionalLightColor(float x, float y, float z)
 {
 	m_directional_light_color = XMVectorSet(x, y, z, 0.0f);
 }
 
-void ModelLoader::SetAmbientLightColor(float x, float y, float z)
+void ReflectModelLoader::SetAmbientLightColor(float x, float y, float z)
 {
 	m_ambient_light_color = XMVectorSet(x, y, z, 1.0f);
 }
 
-bool ModelLoader::CheckCollision(ModelLoader* model)
+bool ReflectModelLoader::CheckCollision(ReflectModelLoader* model)
 {
 	if (model == this)
 	{
@@ -43,7 +44,7 @@ bool ModelLoader::CheckCollision(ModelLoader* model)
 	
 }
 
-void ModelLoader::CalculateModelCentrePoint()
+void ReflectModelLoader::CalculateModelCentrePoint()
 {
 	m_MinimumVertPos = m_Object->vertices[0].Pos;
 	m_MaximumVertPos = m_Object->vertices[0].Pos;
@@ -82,7 +83,7 @@ void ModelLoader::CalculateModelCentrePoint()
 	}
 }
 
-void ModelLoader::CalculateBoundingSphereRadius()
+void ReflectModelLoader::CalculateBoundingSphereRadius()
 {
 	float distance_squared = 0.0f;
 	m_bouding_sphere_radius = sqrt(pow(m_bouding_sphere_centre_x, 2) + pow(m_bouding_sphere_centre_y, 2) + pow(m_bouding_sphere_centre_z, 2));
@@ -100,7 +101,7 @@ void ModelLoader::CalculateBoundingSphereRadius()
 	}
 }
 
-XMVECTOR ModelLoader::GetBoundingSphereWorldSpacePosition()
+XMVECTOR ReflectModelLoader::GetBoundingSphereWorldSpacePosition()
 {
 	world = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
 	world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
@@ -112,20 +113,20 @@ XMVECTOR ModelLoader::GetBoundingSphereWorldSpacePosition()
 	return offset;
 }
 
-float ModelLoader::GetBoundingSphereRadius()
+float ReflectModelLoader::GetBoundingSphereRadius()
 {
 	return m_bouding_sphere_radius * m_scale;
 }
 
 
-ModelLoader::ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z)
+ReflectModelLoader::ReflectModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z)
 	:m_device_(Device), m_ImmediateContext(ImmediateContext), m_x(x), m_y(y), m_z(z), m_xAngle(0.0f), m_yAngle(0.0f),
 	m_zAngle(0.0f), m_scale(1.0f)
 {
 	
 }
 
-ModelLoader::~ModelLoader()
+ReflectModelLoader::~ReflectModelLoader()
 {
 	if (m_textureMap)m_textureMap->Release();
 	if (m_Sampler)m_Sampler->Release();
@@ -138,7 +139,7 @@ ModelLoader::~ModelLoader()
 	delete m_Object;
 }
 
-void ModelLoader::LoadObjModel(char* fileName)
+void ReflectModelLoader::LoadObjModel(char* fileName)
 {
 	isSkyBox = false;
 	m_Object = new ObjFileModel(fileName, m_device_, m_ImmediateContext);
@@ -150,7 +151,7 @@ void ModelLoader::LoadObjModel(char* fileName)
 
 	ID3DBlob *VS, *PS, *error;
 
-	if (FAILED(D3DX11CompileFromFile(L"Shaders/model_shaders.hlsl", nullptr, nullptr, "ModelVS", "vs_4_0", 0, 0, nullptr, &VS, &error, nullptr)))
+	if (FAILED(D3DX11CompileFromFile(L"Shaders/reflect_shader.hlsl", nullptr, nullptr, "ModelVS", "vs_4_0", 0, 0, nullptr, &VS, &error, nullptr)))
 		MessageBox(nullptr, L"Error compiling the model vertex shader", nullptr, 0);
 
 	if (error != nullptr)//Check for shader compilation errors
@@ -163,7 +164,7 @@ void ModelLoader::LoadObjModel(char* fileName)
 		MessageBox(nullptr, L"Error Creating Vertex Shader", nullptr, 0);
 
 	//Compiling the PixelShader
-	if (FAILED(D3DX11CompileFromFile(L"Shaders/PixelShader.hlsl", nullptr, nullptr, "PShader", "ps_4_0", 0, 0, nullptr, &PS, &error, nullptr)))
+	if (FAILED(D3DX11CompileFromFile(L"Shaders/reflect_shader.hlsl", nullptr, nullptr, "PShader", "ps_4_0", 0, 0, nullptr, &PS, &error, nullptr)))
 		MessageBox(nullptr, L"Error Compiling the Pixel Shader", nullptr, 0);
 
 	if (error != nullptr)
@@ -193,7 +194,7 @@ void ModelLoader::LoadObjModel(char* fileName)
 	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
 
 	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT; // Can use UpdateSubresource() to update
-	constant_buffer_desc.ByteWidth = sizeof(MODEL_CONSTANT_BUFFER); // Must be a multiple of 16
+	constant_buffer_desc.ByteWidth = sizeof(REFLECT_MODEL_CONSTANT_BUFFER); // Must be a multiple of 16
 	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	if (FAILED(m_device_->CreateBuffer(&constant_buffer_desc, nullptr, &m_ConstantBuffer)))
 		MessageBox(nullptr, L"Error Creating the Constant buffer", nullptr, 0);
@@ -202,7 +203,7 @@ void ModelLoader::LoadObjModel(char* fileName)
 }
 
 
-void ModelLoader::Draw(XMMATRIX* view, XMMATRIX* projection)
+void ReflectModelLoader::Draw(XMMATRIX* view, XMMATRIX* projection)
 {
 	
 	world = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
@@ -211,7 +212,7 @@ void ModelLoader::Draw(XMMATRIX* view, XMMATRIX* projection)
 	world *= XMMatrixScaling(m_scale, m_scale, m_scale);
 	world *= XMMatrixTranslation(m_x, m_y, m_z);
 
-
+	model_cb_values.worldViewMatrix = world * (*view);
 	model_cb_values.WorldViewProjection = world*(*view)*(*projection);
 	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);
 	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer, 0, nullptr, &model_cb_values,0,0);
@@ -236,7 +237,7 @@ void ModelLoader::Draw(XMMATRIX* view, XMMATRIX* projection)
 	m_Object->Draw();
 }
 
-void ModelLoader::LoadSkyBox(char* ObjectFile, char* FileForTheTexture)
+void ReflectModelLoader::LoadSkyBox(char* ObjectFile, char* FileForTheTexture)
 {
 	isSkyBox = true;
 	m_Object = new ObjFileModel(ObjectFile, m_device_, m_ImmediateContext);
@@ -248,7 +249,7 @@ void ModelLoader::LoadSkyBox(char* ObjectFile, char* FileForTheTexture)
 
 	ID3DBlob *VS, *PS, *error;
 
-	if (FAILED(D3DX11CompileFromFile(L"Shaders/sky_shader.hlsl", nullptr, nullptr, "ModelVS", "vs_4_0", 0, 0, nullptr, &VS, &error, nullptr)))
+	if (FAILED(D3DX11CompileFromFile(L"Shaders/reflect_shader.hlsl", nullptr, nullptr, "ModelVS", "vs_4_0", 0, 0, nullptr, &VS, &error, nullptr)))
 		MessageBox(nullptr, L"Error compiling the model vertex shader", nullptr, 0);
 
 	if (error != nullptr)//Check for shader compilation errors
@@ -261,7 +262,7 @@ void ModelLoader::LoadSkyBox(char* ObjectFile, char* FileForTheTexture)
 		MessageBox(nullptr, L"Error Creating Vertex Shader", nullptr, 0);
 
 	//Compiling the PixelShader
-	if (FAILED(D3DX11CompileFromFile(L"Shaders/sky_shader.hlsl", nullptr, nullptr, "PShader", "ps_4_0", 0, 0, nullptr, &PS, &error, nullptr)))
+	if (FAILED(D3DX11CompileFromFile(L"Shaders/reflect_shader.hlsl", nullptr, nullptr, "PShader", "ps_4_0", 0, 0, nullptr, &PS, &error, nullptr)))
 		MessageBox(nullptr, L"Error Compiling the Pixel Shader", nullptr, 0);
 
 	if (error != nullptr)
@@ -291,7 +292,7 @@ void ModelLoader::LoadSkyBox(char* ObjectFile, char* FileForTheTexture)
 	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
 
 	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT; // Can use UpdateSubresource() to update
-	constant_buffer_desc.ByteWidth = sizeof(MODEL_CONSTANT_BUFFER); // Must be a multiple of 16
+	constant_buffer_desc.ByteWidth = sizeof(REFLECT_MODEL_CONSTANT_BUFFER); // Must be a multiple of 16
 	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	if (FAILED(m_device_->CreateBuffer(&constant_buffer_desc, nullptr, &m_ConstantBuffer)))
 		MessageBox(nullptr, L"Error Creating the Constant buffer", nullptr, 0);
@@ -360,7 +361,7 @@ void ModelLoader::LoadSkyBox(char* ObjectFile, char* FileForTheTexture)
 
 }
 
-void ModelLoader::TransposeLight()
+void ReflectModelLoader::TransposeLight()
 {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Tutorial 09 Lighting
@@ -374,18 +375,18 @@ void ModelLoader::TransposeLight()
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
-void ModelLoader::LookAt_XZ(float x, float z)
+void ReflectModelLoader::LookAt_XZ(float x, float z)
 {
 	m_yAngle = atan2((this->m_x - x),(this->m_z - z)) * (180.0 / XM_PI);
 }
 
-void ModelLoader::MoveForward(float distance)
+void ReflectModelLoader::MoveForward(float distance)
 {
 	this->m_x += sin(m_yAngle * (XM_PI / 180.0)) * distance;
 	this->m_z += cos(m_yAngle * (XM_PI / 180.0)) * distance;
 }
 
-void ModelLoader::AddTexture(char* fileName)
+void ReflectModelLoader::AddTexture(char* fileName)
 {
 	D3DX11CreateShaderResourceViewFromFileA(
 		m_device_,

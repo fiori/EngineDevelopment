@@ -134,6 +134,7 @@
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Mouse.cpp" />
     <ClCompile Include="Source\objfilemodel.cpp" />
+    <ClCompile Include="Source\ReflectModelLoader.cpp" />
     <ClCompile Include="Source\window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +143,7 @@
     <ClInclude Include="Headers\Graphics.h" />
     <ClInclude Include="Headers\Mouse.h" />
     <ClInclude Include="Headers\objfilemodel.h" />
+    <ClInclude Include="Headers\ReflectModelLoader.h" />
     <ClInclude Include="Headers\window.h" />
     <ClInclude Include="Headers\Keyboard.h" />
     <ClInclude Include="Headers\ModelLoader.h" />

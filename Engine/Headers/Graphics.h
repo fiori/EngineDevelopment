@@ -8,6 +8,7 @@
 #include <xnamath.h>
 #include "../Headers/Camera.h"
 #include "../Headers/ModelLoader.h"
+#include "../Headers/ReflectModelLoader.h"
 #include "../Headers/GameTimer.h"
 class Graphics
 {
@@ -160,5 +161,6 @@ private:
 	//Tutorial 10
 	ModelLoader* m_Model;
 	ModelLoader* m_Model01;
+	ReflectModelLoader* m_ModelReflect;
 	ModelLoader* m_SkyBox;
 };

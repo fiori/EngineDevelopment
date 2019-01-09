@@ -137,11 +137,15 @@ Graphics::Graphics(Window& window)
 	m_SkyBox->LoadSkyBox((char*)"Assets/cube.obj",(char*)"Assets/abovetheclouds.dds");
 	m_SkyBox->SetScale(3.0f);
 
+	m_ModelReflect = new ReflectModelLoader(m_Device, m_ImmediateContext, 10.0f, 0.0f, 0.0f);
+
 	m_Model->LoadObjModel((char*)"Assets/Sphere.obj");
 	m_Model01->LoadObjModel((char*)"Assets/Sphere.obj");
 
+	m_ModelReflect->LoadObjModel((char*)"Assets/Sphere.obj");
+
 	m_Model->AddTexture((char*)"Assets/uv-mapping-grid.png");
-	//m_SkyBox->AddTexture((char*)"Assets/skybox01.dds");
+
 
 
 	////Copy the vertices into the buffer
@@ -330,6 +334,8 @@ void Graphics::Render()
 	m_SkyBox->SetPosition(m_Camera->GetPosition());
 	m_SkyBox->Draw(&view, &projection);
 
+	m_ModelReflect->Draw(&view, &projection);
+	
 	m_Model->LookAt_XZ(m_Camera->GetX(), m_Camera->GetZ());
 	m_Model->Draw(&view,&projection);
 	//m_Model->MoveForward(0.001f);
@@ -338,6 +344,10 @@ void Graphics::Render()
 	m_Model01->LookAt_XZ(m_Model->GetXPos(), m_Model->GetZPos());
 	m_Model01->Draw(&view, &projection);
 	m_Model01->TransposeLight();
+
+
+
+	
 
 
 	if (m_Model->CheckCollision(m_Model01))
