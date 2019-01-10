@@ -10,6 +10,8 @@
 #include "../Headers/ModelLoader.h"
 #include "../Headers/ReflectModelLoader.h"
 #include "../Headers/GameTimer.h"
+
+//#include "../Headers/ParticleGenerator.h"
 class Graphics
 {
 public:
@@ -28,6 +30,10 @@ private:
 
 private:
 	Window& wnd;
+	float mouseXPastPos;
+	bool mouseMoved = false;
+	int x, y;
+
 
 private:
 	IDXGISwapChain*			m_SwapChain;
@@ -163,4 +169,6 @@ private:
 	ModelLoader* m_Model01;
 	ReflectModelLoader* m_ModelReflect;
 	ModelLoader* m_SkyBox;
+	ModelLoader* m_Floor;
+	//ParticleGenerator* particle;
 };

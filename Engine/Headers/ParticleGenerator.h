@@ -1,7 +1,17 @@
 #pragma once
 #include "../Headers/objfilemodel.h"
+#include <list>
 
-class ModelLoader
+struct Particle
+{
+	float gravity;
+	XMFLOAT3 position;
+	XMFLOAT3 velocity;
+	XMFLOAT4 color;
+	float age;
+};
+
+class ParticleGenerator
 {
 private:
 	ID3D11Device*			m_device_;
@@ -12,12 +22,11 @@ private:
 	ID3D11PixelShader*		m_PShader;
 	ID3D11InputLayout*		m_InputLayout;
 	ID3D11Buffer*			m_ConstantBuffer;
+	ID3D11Buffer*			m_VertexBuffer;
 
 	float m_x, m_y, m_z;
 	float m_xAngle, m_yAngle, m_zAngle;
 	float m_scale;
-	float m_xScale;
-	float m_zScale;
 	
 private:
 	XMMATRIX world;
@@ -47,7 +56,7 @@ private:
 	float m_bouding_sphere_centre_x, m_bouding_sphere_centre_y, m_bouding_sphere_centre_z, m_bouding_sphere_radius;
 	XMFLOAT3 m_MinimumVertPos, m_MaximumVertPos;
 public:
-	bool CheckCollision(ModelLoader* model);
+	bool CheckCollision(ParticleGenerator* model);
 	
 
 private:
@@ -55,29 +64,39 @@ private:
 	void CalculateBoundingSphereRadius();
 	XMVECTOR GetBoundingSphereWorldSpacePosition();
 	float GetBoundingSphereRadius();
-//--------------------------------
+//------------------------------------------------------------------------------------------------------------
+//Particles
 public:
-	ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z);
-	~ModelLoader();
+	ParticleGenerator(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z);
+	int CreateParticle();
+	void DrawOne(Particle* one, XMMATRIX* view, XMMATRIX* projection, XMFLOAT3* cameraposition);
+	void DrawParticle(XMMATRIX* view, XMMATRIX* projection, XMFLOAT3* cameraposition);
+	
+	~ParticleGenerator();
+private:
+	float m_timePrevious;
+	float m_untilParticle;
+	float RandomZeroToOne();
+	float RandomNegOneToPosOne();
+	list<Particle*> m_free;
+	list<Particle*> m_active;
+	list<Particle*>::iterator it;
+	float m_age;
 
+	
+//------------------------------------------------------------------------------------------------------------
 public:
-	void LoadObjModel(char* fileName);
-	void Draw(XMMATRIX* view, XMMATRIX* projection);
 	void AddTexture(char* fileName);
-	void TransposeLight();
 //--------------------------------------------------------------------------------------------------------
 public:
-	//SkyBox
-	void LoadSkyBox(char* ObjectFile, char* FileForTheTexture);
 private:
 	//SkyBox
-	bool isSkyBox = false;
-	ID3D11ShaderResourceView*		m_SkyBoxTextureMap;
-	ID3D11SamplerState*				m_SkyBoxSampler;
-	ID3D11RasterizerState*			m_SkyBoxRasterSolid = 0;
-	ID3D11RasterizerState*			m_SkyBoxRasterSkyBox = 0;
-	ID3D11DepthStencilState*		m_SkyBoxDepthWriteSolid = 0;
-	ID3D11DepthStencilState*		m_SkyBoxDepthWriteSkybox = 0;
+	ID3D11ShaderResourceView*		m_ParticleTextureMap;
+	ID3D11SamplerState*				m_ParticleSampler;
+	ID3D11RasterizerState*			m_ParticleRasterSolid = 0;
+	ID3D11RasterizerState*			m_ParticleRasterParticle = 0;
+	ID3D11DepthStencilState*		m_ParticleDepthWriteSolid = 0;
+	ID3D11DepthStencilState*		m_ParticleDepthWriteParticle = 0;
 //--------------------------------------------------------------------------------------------------------
 
 public:
@@ -96,8 +115,6 @@ public:
 	void SetYRotation(float angle) { m_yAngle = angle; };
 	void SetZRotation(float angle) { m_zAngle = angle; };
 	void SetScale(float scale) { m_scale = scale; };
-	void SetXZScale(float X, float Z) { m_xScale = X; m_zScale = Z; };
-
 	//Getters
 	float GetXPos() { return m_x; };
 	float GetYPos() { return m_y; };

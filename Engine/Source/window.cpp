@@ -39,8 +39,13 @@ Window::Window(HINSTANCE instanceHandle, int show)
 	{
 		MessageBox(nullptr, L"Create Window Failed", nullptr, 0);
 	}
+	ShowCursor(false);
+
 	ShowWindow(m_MainWnd, show);
 	UpdateWindow(m_MainWnd);
+
+	
+
 	
 }
 
@@ -101,38 +106,6 @@ LRESULT Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY: //when clicking on the X on the window
 		PostQuitMessage(0);
 		break;
-	case WM_KEYDOWN:
-		/*if (!(lParam & 0x40000000) || kbd.AutorepeatIsEnabled())
-		{*/
-		kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
-		/*}*/
-		if (wParam == VK_ESCAPE)
-			PostQuitMessage(0); // Exit the application
-			//DestroyWindow(hWnd); Destroys the open window it self
-		if (wParam == VK_F5)
-		{
-			MessageBox(hWnd, L"boiiii", L"Suck a big dick", 0);
-		}
-		break;
-	case WM_KEYUP:
-		kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
-		break;
-	case WM_MOUSEMOVE:
-		mouse.m_x = LOWORD(lParam);
-		mouse.m_y = HIWORD(lParam);
-		break;
-	case WM_LBUTTONDOWN:
-		mouse.m_leftIsPressed = true;
-		return 0;
-	case WM_LBUTTONUP:
-		mouse.m_leftIsPressed = false;
-		return 0;
-	case WM_RBUTTONDOWN:
-		mouse.m_rightIsPressed = true;
-		return 0;
-	case WM_RBUTTONUP:
-		mouse.m_rightIsPressed = false;
-		return 0;
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);

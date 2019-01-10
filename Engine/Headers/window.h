@@ -6,6 +6,7 @@
 #include "Graphics.h"
 #include "Keyboard.h"
 #include "Mouse.h"
+#include "inputclass.h"
 
 //Essentially, Unicode (http://unicode.org/) uses 16-bit values to represent a character. This allows us to represent a larger character set
 //to support international characters, and other symbols.For Unicode in C++, we use the wide - characters m_type wchar_t.In 32 - and 64 -
@@ -14,7 +15,7 @@
 
 class Window
 {
-	friend Graphics::Graphics(Window& window);
+	friend Graphics;
 
 public:
 	Window(HINSTANCE instanceHandle, int show);
@@ -34,4 +35,5 @@ private:
 public:
 	Keyboard kbd;
 	Mouse mouse;
+	InputClass input;
 };

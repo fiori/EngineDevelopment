@@ -148,30 +148,30 @@ void ModelLoader::LoadObjModel(char* fileName)
 	CalculateModelCentrePoint();
 	CalculateBoundingSphereRadius();
 
-	ID3DBlob *VS, *PS, *error;
+	ID3DBlob *VS, *PS;
 
-	if (FAILED(D3DX11CompileFromFile(L"Shaders/model_shaders.hlsl", nullptr, nullptr, "ModelVS", "vs_4_0", 0, 0, nullptr, &VS, &error, nullptr)))
+	if (FAILED(D3DX11CompileFromFile(L"Shaders/model_shaders.hlsl", nullptr, nullptr, "ModelVS", "vs_4_0", 0, 0, nullptr, &VS, nullptr, nullptr)))
 		MessageBox(nullptr, L"Error compiling the model vertex shader", nullptr, 0);
 
-	if (error != nullptr)//Check for shader compilation errors
-	{
-		OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
-		error->Release();
-	}
+	//if (error != nullptr)//Check for shader compilation errors
+	//{
+	//	OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
+	//	error->Release();
+	//}
 	//Create vertexShader object
 	if (FAILED(m_device_->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), nullptr, &m_VShader)))
 		MessageBox(nullptr, L"Error Creating Vertex Shader", nullptr, 0);
 
 	//Compiling the PixelShader
-	if (FAILED(D3DX11CompileFromFile(L"Shaders/PixelShader.hlsl", nullptr, nullptr, "PShader", "ps_4_0", 0, 0, nullptr, &PS, &error, nullptr)))
+	if (FAILED(D3DX11CompileFromFile(L"Shaders/PixelShader.hlsl", nullptr, nullptr, "PShader", "ps_4_0", 0, 0, nullptr, &PS, nullptr, nullptr)))
 		MessageBox(nullptr, L"Error Compiling the Pixel Shader", nullptr, 0);
 
-	if (error != nullptr)
+	/*if (error != nullptr)
 	{
 		OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
 		error->Release();
 	}
-
+*/
 	//Create PixelShader Object
 	if (FAILED(m_device_->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), nullptr, &m_PShader)))
 		MessageBox(nullptr, L"Error Creating the Pixel Shader", nullptr, 0);
@@ -208,7 +208,7 @@ void ModelLoader::Draw(XMMATRIX* view, XMMATRIX* projection)
 	world = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
 	world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
 	world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
-	world *= XMMatrixScaling(m_scale, m_scale, m_scale);
+	world *= XMMatrixScaling((m_scale + m_xScale), m_scale, (m_scale + m_zScale));
 	world *= XMMatrixTranslation(m_x, m_y, m_z);
 
 

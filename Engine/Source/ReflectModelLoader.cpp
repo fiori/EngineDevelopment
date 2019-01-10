@@ -154,11 +154,11 @@ void ReflectModelLoader::LoadObjModel(char* fileName)
 	if (FAILED(D3DX11CompileFromFile(L"Shaders/reflect_shader.hlsl", nullptr, nullptr, "ModelVS", "vs_4_0", 0, 0, nullptr, &VS, &error, nullptr)))
 		MessageBox(nullptr, L"Error compiling the model vertex shader", nullptr, 0);
 
-	if (error != nullptr)//Check for shader compilation errors
-	{
-		OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
-		error->Release();
-	}
+	//if (error != nullptr)//Check for shader compilation errors
+	//{
+	//	OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
+	//	error->Release();
+	//}
 	//Create vertexShader object
 	if (FAILED(m_device_->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), nullptr, &m_VShader)))
 		MessageBox(nullptr, L"Error Creating Vertex Shader", nullptr, 0);
@@ -167,11 +167,11 @@ void ReflectModelLoader::LoadObjModel(char* fileName)
 	if (FAILED(D3DX11CompileFromFile(L"Shaders/reflect_shader.hlsl", nullptr, nullptr, "PShader", "ps_4_0", 0, 0, nullptr, &PS, &error, nullptr)))
 		MessageBox(nullptr, L"Error Compiling the Pixel Shader", nullptr, 0);
 
-	if (error != nullptr)
-	{
-		OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
-		error->Release();
-	}
+	//if (error != nullptr)
+	//{
+	//	OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
+	//	error->Release();
+	//}
 
 	//Create PixelShader Object
 	if (FAILED(m_device_->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), nullptr, &m_PShader)))

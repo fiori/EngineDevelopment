@@ -1,5 +1,6 @@
 #include "../Headers/Graphics.h"
 #include "../Headers/window.h"
+#include <smmintrin.h>
 
 Graphics::Graphics(Window& window)
 	:wnd(window)
@@ -129,22 +130,34 @@ Graphics::Graphics(Window& window)
 //
 //	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
 
-	m_Model = new ModelLoader(m_Device, m_ImmediateContext, 0.0f,0.0f,0.0f);
-	m_Model01 = new ModelLoader(m_Device, m_ImmediateContext, 4.91f, 0.0f, 5.0f);
-	m_Model01->SetScale(0.7f);
-	
 	m_SkyBox = new ModelLoader(m_Device, m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	m_SkyBox->LoadSkyBox((char*)"Assets/cube.obj",(char*)"Assets/abovetheclouds.dds");
 	m_SkyBox->SetScale(3.0f);
-
+	
 	m_ModelReflect = new ReflectModelLoader(m_Device, m_ImmediateContext, 10.0f, 0.0f, 0.0f);
-
-	m_Model->LoadObjModel((char*)"Assets/Sphere.obj");
-	m_Model01->LoadObjModel((char*)"Assets/Sphere.obj");
-
 	m_ModelReflect->LoadObjModel((char*)"Assets/Sphere.obj");
 
+	m_Model = new ModelLoader(m_Device, m_ImmediateContext, 0.0f,0.0f,0.0f);
+	m_Model->LoadObjModel((char*)"Assets/Sphere.obj");
 	m_Model->AddTexture((char*)"Assets/uv-mapping-grid.png");
+
+	m_Model01 = new ModelLoader(m_Device, m_ImmediateContext, 4.91f, 0.0f, 5.0f);
+	m_Model01->LoadObjModel((char*)"Assets/Sphere.obj");
+	m_Model01->SetScale(0.7f);
+
+	m_Floor = new ModelLoader(m_Device, m_ImmediateContext, 0.0f, -4.0f, 0.0f);
+	m_Floor->AddTexture((char*)"Assets/uv-mapping-grid.png");
+	m_Floor->SetScale(0.3f);
+	m_Floor->SetXZScale(15.0f, 15.0f);
+
+	m_Floor->LoadObjModel((char*)"Assets/cube.obj");
+	//m_Floor->SetFullScale(XMFLOAT3(30.0f,1.0f,30.0f));
+
+
+
+
+	//particle = new ParticleGenerator(m_Device, m_ImmediateContext, 0.0f, 0.0f, 0.0f);
+	//particle->CreateParticle();
 
 
 
@@ -233,10 +246,13 @@ Graphics::Graphics(Window& window)
 
 	m_ImmediateContext->IASetInputLayout(m_InputLayout);*/
 	//Tutorial 09
-
+	
 	m_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 	m_directional_light_color = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Green
 	m_ambient_light_color = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f); // Dark Grey - always use a small value for ambient lighting
+
+	wnd.input.Initialize(wnd.m_hInst, wnd.m_MainWnd, Graphics::SCREENWIDTH, Graphics::SCREENHEIGHT);
+	
 }
 
 Graphics::~Graphics()
@@ -254,74 +270,32 @@ Graphics::~Graphics()
 void Graphics::Input(GameTimer timer)
 {
 	//Todo: Create the game class and start using the keyboard in the game class
-
-	if (wnd.kbd.KeyIsPressed(VK_UP))
-	{
-		/*cb0_values.scale += 0.0001f;*/
+	if (wnd.input.IsEscapePressed())
+		PostQuitMessage(0); // Exit the application
+	
+	if (wnd.input.KeyIsPressed(DIK_UP))
 		m_Camera->Forward(2.0f * timer.DeltaTime());
-	}
-	if (wnd.kbd.KeyIsPressed(VK_DOWN))
-	{
-		//cb0_values.scale -= 0.0001f;
+	
+	if (wnd.input.KeyIsPressed(DIK_DOWN))
 		m_Camera->Forward(-2.0f * timer.DeltaTime());
-		
-	}
-	if (wnd.kbd.KeyIsPressed(VK_RIGHT))
-	{
-		RotationZ -= 2.0f * timer.DeltaTime();
-	}
-	if (wnd.kbd.KeyIsPressed(VK_LEFT))
-	{
-		RotationZ += 2.0f * timer.DeltaTime();
-	}
-
-	////////////////////////
-	//Camera Movement
-	//E
-	if (wnd.kbd.KeyIsPressed(0x45))
-	{
-		m_Camera->Rotate(10.0f * timer.DeltaTime());
-	}
-	//Q
-	if (wnd.kbd.KeyIsPressed(0x51))
-	{
-		m_Camera->Rotate(-10.0f * timer.DeltaTime());
-	}
-	//W
-	if (wnd.kbd.KeyIsPressed(0x57))
-	{
-		m_Model->MoveForward(5.0f * timer.DeltaTime());
-	}
-	//S
-	if (wnd.kbd.KeyIsPressed(0x53))
-	{
-		m_Model->MoveForward(-5.0f * timer.DeltaTime());
-
-		//m_Camera->Up(-2.0f * timer.DeltaTime());
-	}
-	//D
-	if (wnd.kbd.KeyIsPressed(0x44))
-	{
-		//m_Camera->Strafe(-5.0f * timer.DeltaTime());
-		m_Model->IncXPos(5.0f * timer.DeltaTime());
-	}
-	//A
-	if (wnd.kbd.KeyIsPressed(0x41))
-	{
-		m_Model->IncXPos(-5.0f * timer.DeltaTime());
-		//m_Camera->Strafe(5.0f * timer.DeltaTime());
-	}
-	//Camera Pitch //Todo: Create a ms class and use this in the ms
-	//U
-	if (wnd.kbd.KeyIsPressed(0x55))
-	{
-		m_Camera->Pitch(15.0f * timer.DeltaTime());
-	}
-	//K
-	if (wnd.kbd.KeyIsPressed(0x4B))
-	{
-		m_Camera->Pitch(-15.0f * timer.DeltaTime());
-	}
+	
+	if (wnd.input.KeyIsPressed(DIK_W))
+		m_Camera->Forward(5.0f * timer.DeltaTime());
+		//m_Model->MoveForward(5.0f * timer.DeltaTime());
+	
+	if (wnd.input.KeyIsPressed(DIK_S))
+		m_Camera->Forward(-5.0f * timer.DeltaTime());
+		//m_Model->MoveForward(-5.0f * timer.DeltaTime());
+	
+	if (wnd.input.KeyIsPressed(DIK_D))
+		m_Camera->Strafe(-5.0f * timer.DeltaTime());
+		//m_Model->IncXPos(5.0f * timer.DeltaTime());
+	
+	if (wnd.input.KeyIsPressed(DIK_A))
+		m_Camera->Strafe(5.0f * timer.DeltaTime());
+		//m_Model->IncXPos(-5.0f * timer.DeltaTime());
+	
+	
 }
 
 void Graphics::Render()
@@ -330,24 +304,39 @@ void Graphics::Render()
 	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	view = m_Camera->GetViewMatrix();
 
+	wnd.input.Frame();
+	m_Camera->Rotate(wnd.input.m_mouseState.lX * 0.05f);
+	m_Camera->Pitch(-wnd.input.m_mouseState.lY * 0.05f);
+
+	
+	//m_Camera->Rotate( * 0.00001f);
+	
+	//m_Camera->Pitch(wnd.mouse.GetPosY());
+	
 
 	m_SkyBox->SetPosition(m_Camera->GetPosition());
 	m_SkyBox->Draw(&view, &projection);
 
+	XMFLOAT3 cameraPos = m_Camera->GetPosition();
+
+	//particle->DrawParticle(&view, &projection, &cameraPos);
+
 	m_ModelReflect->Draw(&view, &projection);
+
+	m_Floor->Draw(&view, &projection);
+	m_Floor->TransposeLight();
 	
 	m_Model->LookAt_XZ(m_Camera->GetX(), m_Camera->GetZ());
+	m_Model->SetPosition(m_Camera->GetPosition());
 	m_Model->Draw(&view,&projection);
+	
+
 	//m_Model->MoveForward(0.001f);
 	m_Model->TransposeLight();
-	
+	//
 	m_Model01->LookAt_XZ(m_Model->GetXPos(), m_Model->GetZPos());
 	m_Model01->Draw(&view, &projection);
 	m_Model01->TransposeLight();
-
-
-
-	
 
 
 	if (m_Model->CheckCollision(m_Model01))
@@ -355,22 +344,27 @@ void Graphics::Render()
 		if (m_Model->GetZPos() > m_Model01->GetZPos() && (m_Model->GetXPos() > m_Model01->GetXPos() || m_Model->GetXPos() < m_Model01->GetXPos() || m_Model->GetXPos() == m_Model01->GetXPos()))
 		{
 			m_Model->IncZPos(0.1f);
+			m_Camera->IncZPos(0.1f);
 		}
 		else if (m_Model->GetXPos() > m_Model01->GetXPos() || m_Model->GetXPos() < m_Model01->GetXPos() || m_Model->GetXPos() == m_Model01->GetXPos() && m_Model->GetZPos() < m_Model01->GetZPos())
 		{
 			m_Model->IncZPos(-0.1f);
+			m_Camera->IncZPos(-0.1f);
 		}
 		else if (m_Model->GetXPos() < m_Model01->GetXPos())
 		{
 			m_Model->IncXPos(-0.1f);
 			m_Model->IncZPos(0.1f);
+			m_Camera->IncXPos(-0.1f);
+			m_Camera->IncZPos(0.1f);
 		}
 		else
 		{
 			m_Model->IncXPos(0.1f);
-			m_Model->IncZPos(0.1f);
-		}
-		
+			m_Model->IncZPos(0.1f);		
+			m_Camera->IncXPos(0.1f);
+			m_Camera->IncZPos(0.1f);
+		}	
 	}
 	/*m_Model01->IncYRotation(cos(XMConvertToRadians(rotation)));
 	m_Model01->IncXRotation(sin(XMConvertToRadians(rotation)));

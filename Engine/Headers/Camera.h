@@ -29,6 +29,10 @@ public:
 	void SetY(float y) { m_Y = y; };
 	void SetZ(float z) { m_Z = z; };
 
+	void IncXPos(float pos) { m_X += pos; };
+	void IncYPos(float pos) { m_Y += pos; };
+	void IncZPos(float pos) { m_Z += pos; };
+
 private:
 	float
 		m_X,
