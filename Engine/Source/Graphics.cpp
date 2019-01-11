@@ -117,13 +117,15 @@ Graphics::Graphics(Window& window)
 ////Create and set up the constant buffer // Tutorial 04
 //#include "../InitializeGraphics/createAndSetConstantBuffer.fi";
 //
-	//world = XMMatrixTranslation(0, 0, 15);
+	world = XMMatrixTranslation(0, 0, 15);
 	////world *= XMMatrixRotationZ(XMConvertToRadians(RotationZ));
 	//world *= XMMatrixRotationY(XMConvertToRadians(15));
 	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), Graphics::SCREENWIDTH / Graphics::SCREENHEIGHT, 1.0f, 100.0f);
 	//view = XMMatrixIdentity();
 	view = m_Camera->GetViewMatrix();
+	//identity = XMMatrixIdentity();
 //
+
 //	cb0_values.WorldViewProjection = world * view * projection;
 //
 //	cb0_values.scale = 1.0f;
@@ -142,29 +144,36 @@ Graphics::Graphics(Window& window)
 	m_Model->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	ModelList.push_back(m_Model);
 
-	m_Model01 = new ModelLoader(m_Device, m_ImmediateContext, 4.91f, 0.0f, 5.0f);
-	m_Model01->LoadObjModel((char*)"Assets/Sphere.obj");
-	m_Model01->SetScale(0.7f);
-	ModelList.push_back(m_Model01);
-	
-	m_Model02 = new ModelLoader(m_Device, m_ImmediateContext, 0.0f, 0.0f, 5.0f);
-	m_Model02->LoadObjModel((char*)"Assets/Sphere.obj");
-	m_Model02->SetScale(0.7f);
-	ModelList.push_back(m_Model02);
-	
-	m_Gun = new ModelLoader(m_Device, m_ImmediateContext, -5.0f, 0.0f, 5.0f);
-	m_Gun->LoadObjModel((char*)"Assets/USP45Game.obj");
-
-	m_Gun->SetScale(0.2f);
-	ModelList.push_back(m_Gun);
-
-
 	m_Floor = new ModelLoader(m_Device, m_ImmediateContext, 0.0f, -4.0f, 0.0f);
 	m_Floor->LoadObjModel((char*)"Assets/cube.obj");
 	m_Floor->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	m_Floor->SetScale(0.3f);
 	m_Floor->SetXZScale(15.0f, 15.0f);
 	ModelList.push_back(m_Floor);
+
+	m_Gun = new Weapon(m_Device, m_ImmediateContext, XMFLOAT3(0.0f,-5.0f,0.0f), -5.0f, -1.0f, 5.0f);
+	m_Gun->LoadWeapon((char*)"Assets/gun2.obj");
+	m_Gun->SetScale(XMFLOAT3(1.0f,1.0f,1.0f));
+
+//////////////////////////////////SCENE MANAGMENT///////////////////////////////////////////////////////////////////////////////
+	m_Model01 = new ModelLoader(m_Device, m_ImmediateContext, 4.91f, 0.0f, 5.0f);
+	m_Model01->LoadObjModel((char*)"Assets/Sphere.obj");
+	m_Model01->AddTexture((char*)"Assets/uv-mapping-grid.png");
+	m_Model01->SetScale(0.7f);
+
+	m_Model02 = new ModelLoader(m_Device, m_ImmediateContext, -4.0f, 0.0f, 5.0f);
+	m_Model02->LoadObjModel((char*)"Assets/Sphere.obj");
+	m_Model02->AddTexture((char*)"Assets/uv-mapping-grid.png");
+	m_Model02->SetScale(0.7f);
+
+	g_root_node = new scene_node();
+	g_node1 = new scene_node();
+	g_node2 = new scene_node();
+
+	g_node1->setModel(m_Model01);
+	g_node2->setModel(m_Model02);
+	g_root_node->addChildNode(g_node1);
+	g_node1->addChildNode(g_node2);
 
 
 	//m_Floor->SetFullScale(XMFLOAT3(30.0f,1.0f,30.0f));
@@ -268,7 +277,7 @@ Graphics::Graphics(Window& window)
 	m_ambient_light_color = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f); // Dark Grey - always use a small value for ambient lighting
 
 	wnd.input.Initialize(wnd.m_hInst, wnd.m_MainWnd, Graphics::SCREENWIDTH, Graphics::SCREENHEIGHT);
-	
+
 }
 
 Graphics::~Graphics()
@@ -290,7 +299,8 @@ void Graphics::Input(GameTimer timer)
 		PostQuitMessage(0); // Exit the application
 	
 	if (wnd.input.KeyIsPressed(DIK_UP))
-		m_Camera->Forward(2.0f * timer.DeltaTime());
+		g_node1->MoveForward(5.0f * timer.DeltaTime());
+		//m_Camera->Forward(2.0f * timer.DeltaTime());
 	
 	if (wnd.input.KeyIsPressed(DIK_DOWN))
 		m_Camera->Forward(-2.0f * timer.DeltaTime());
@@ -310,49 +320,44 @@ void Graphics::Input(GameTimer timer)
 	if (wnd.input.KeyIsPressed(DIK_A))
 		m_Camera->Strafe(5.0f * timer.DeltaTime());
 		//m_Model->IncXPos(-5.0f * timer.DeltaTime());
-	
-	
+
+	m_Gun->Rotate(XMFLOAT3(0.0f, 40.0f * timer.DeltaTime(), 0.0f));
+
 }
 
 void Graphics::Render()
 {
-	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
-	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	view = m_Camera->GetViewMatrix();
-
 	wnd.input.Frame();
+	view = m_Camera->GetViewMatrix();
 	m_Camera->Rotate(wnd.input.m_mouseState.lX * 0.05f);
 	m_Camera->Pitch(-wnd.input.m_mouseState.lY * 0.05f);
-
-	
-	//m_Camera->Rotate( * 0.00001f);
-	
-	//m_Camera->Pitch(wnd.mouse.GetPosY());
-	
+	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
+	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	m_SkyBox->SetPosition(m_Camera->GetPosition());
+	m_Model->SetPosition(m_Camera->GetPosition());
+
 	m_SkyBox->Draw(&view, &projection);
-
-	XMFLOAT3 cameraPos = m_Camera->GetPosition();
-
-	//particle->DrawParticle(&view, &projection, &cameraPos);
-
 	m_ModelReflect->Draw(&view, &projection);
 
 	
-	m_Model->LookAt_XZ(m_Camera->GetX(), m_Camera->GetZ());
-	m_Model->SetPosition(m_Camera->GetPosition());
-	m_Model->Draw(&view,&projection);
-	//m_Model->MoveForward(0.001f);
-	m_Model->TransposeLight();
-	//
+
+
+
+	g_root_node->execute(&world,&view, &projection);
+	m_Gun->Draw(&identity, &projection);
+
+
+	
+	//m_Gun->SetPitch(m_Camera);x
+	//m_Gun->SetStrafe(m_Camera);
+
 
 	for (ModelLoader* element : ModelList)
 	{
 		if(m_Model != element)
 		{
 			element->Draw(&view, &projection);
-			element->TransposeLight();
 
 			if (m_Model->CheckCollision(element))
 			{

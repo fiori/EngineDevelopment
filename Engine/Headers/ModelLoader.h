@@ -4,6 +4,11 @@
 class ModelLoader
 {
 private:
+	//tutorial 16
+	//Texture
+	ID3D11ShaderResourceView*	m_textureMap;
+	ID3D11SamplerState*			m_Sampler;
+private:
 	ID3D11Device*			m_device_;
 	ID3D11DeviceContext*	m_ImmediateContext;
 
@@ -37,10 +42,7 @@ public:
 	void SetDirectionalLightShinesFrom(float x, float y, float z);
 	void SetDirectionalLightColor(float x, float y, float z);
 	void SetAmbientLightColor(float x, float y, float z);
-private:
-	//Texture
-	ID3D11ShaderResourceView*	m_textureMap;
-	ID3D11SamplerState*			m_Sampler;
+
 
 //Tutorial12
 private:
@@ -62,6 +64,7 @@ public:
 
 public:
 	void LoadObjModel(char* fileName);
+	void Draw(XMMATRIX* world,XMMATRIX* view, XMMATRIX* projection);
 	void Draw(XMMATRIX* view, XMMATRIX* projection);
 	void AddTexture(char* fileName);
 	void TransposeLight();
@@ -99,13 +102,13 @@ public:
 	void SetXZScale(float X, float Z) { m_xScale = X; m_zScale = Z; };
 
 	//Getters
-	float GetXPos() { return m_x; };
-	float GetYPos() { return m_y; };
-	float GetZPos() { return m_z; };
-	float GetXRotation() { return m_xAngle; };
-	float GetYRotation() { return m_yAngle; };
-	float GetZRotation() { return m_zAngle; };
-	float GetScale() { return m_scale; };
+	float GetXPos() const { return m_x; };
+	float GetYPos() const { return m_y; };
+	float GetZPos() const { return m_z; };
+	float GetXRotation() const { return m_xAngle; };
+	float GetYRotation() const { return m_yAngle; };
+	float GetZRotation() const { return m_zAngle; };
+	float GetScale() const { return m_scale; };
 	//Modifiers
 	void IncXPos(float pos) { m_x += pos; };
 	void IncYPos(float pos) { m_y += pos; };

@@ -120,7 +120,7 @@ float ModelLoader::GetBoundingSphereRadius()
 
 ModelLoader::ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z)
 	:m_device_(Device), m_ImmediateContext(ImmediateContext), m_x(x), m_y(y), m_z(z), m_xAngle(0.0f), m_yAngle(0.0f),
-	m_zAngle(0.0f), m_scale(1.0f)
+	m_zAngle(0.0f), m_scale(1.0f), m_textureMap(nullptr), m_Sampler(nullptr)
 {
 	
 }
@@ -202,17 +202,16 @@ void ModelLoader::LoadObjModel(char* fileName)
 }
 
 
-void ModelLoader::Draw(XMMATRIX* view, XMMATRIX* projection)
+void ModelLoader::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection)
 {
 	
-	world = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
-	world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
-	world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
-	world *= XMMatrixScaling((m_scale + m_xScale), m_scale, (m_scale + m_zScale));
-	world *= XMMatrixTranslation(m_x, m_y, m_z);
+	//world = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
+	//world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
+	//world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
+	//world *= XMMatrixScaling((m_scale + m_xScale), m_scale, (m_scale + m_zScale));
+	//world *= XMMatrixTranslation(m_x, m_y, m_z);
 
-
-	model_cb_values.WorldViewProjection = world*(*view)*(*projection);
+	model_cb_values.WorldViewProjection = (*world)*(*view)*(*projection);
 	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);
 	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer, 0, nullptr, &model_cb_values,0,0);
 	m_ImmediateContext->VSSetShader(m_VShader, nullptr, 0);
@@ -234,6 +233,43 @@ void ModelLoader::Draw(XMMATRIX* view, XMMATRIX* projection)
 		m_ImmediateContext->OMSetDepthStencilState(m_SkyBoxDepthWriteSolid, 0);
 	}
 	m_Object->Draw();
+	TransposeLight();
+
+}
+
+void ModelLoader::Draw(XMMATRIX* view, XMMATRIX* projection)
+{
+
+	world = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
+	world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
+	world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
+	world *= XMMatrixScaling((m_scale + m_xScale), m_scale, (m_scale + m_zScale));
+	world *= XMMatrixTranslation(m_x, m_y, m_z);
+
+	model_cb_values.WorldViewProjection = world*(*view)*(*projection);
+	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);
+	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer, 0, nullptr, &model_cb_values, 0, 0);
+	m_ImmediateContext->VSSetShader(m_VShader, nullptr, 0);
+	m_ImmediateContext->PSSetShader(m_PShader, nullptr, 0);
+	m_ImmediateContext->IASetInputLayout(m_InputLayout);
+	if (m_textureMap != nullptr && m_Sampler != nullptr)
+	{
+		m_ImmediateContext->PSSetSamplers(0, 1, &m_Sampler);
+		m_ImmediateContext->PSSetShaderResources(0, 1, &m_textureMap);
+	}
+	if (isSkyBox)
+	{
+		m_ImmediateContext->RSSetState(m_SkyBoxRasterSkyBox);
+		m_ImmediateContext->OMSetDepthStencilState(m_SkyBoxDepthWriteSkybox, 0);
+	}
+	else
+	{
+		m_ImmediateContext->RSSetState(m_SkyBoxRasterSolid);
+		m_ImmediateContext->OMSetDepthStencilState(m_SkyBoxDepthWriteSolid, 0);
+	}
+	m_Object->Draw();
+	TransposeLight();
+
 }
 
 void ModelLoader::LoadSkyBox(char* ObjectFile, char* FileForTheTexture)

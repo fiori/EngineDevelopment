@@ -126,6 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\scene_node.cpp" />
     <ClCompile Include="Source\GameTimer.cpp" />
     <ClCompile Include="Source\inputclass.cpp" />
     <ClCompile Include="Source\ModelLoader.cpp" />
@@ -135,8 +136,8 @@
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Mouse.cpp" />
     <ClCompile Include="Source\objfilemodel.cpp" />
-    <ClCompile Include="Source\ParticleGenerator.cpp" />
     <ClCompile Include="Source\ReflectModelLoader.cpp" />
+    <ClCompile Include="Source\Weapon.cpp" />
     <ClCompile Include="Source\window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -147,9 +148,11 @@
     <ClInclude Include="Headers\Mouse.h" />
     <ClInclude Include="Headers\objfilemodel.h" />
     <ClInclude Include="Headers\ReflectModelLoader.h" />
+    <ClInclude Include="Headers\Weapon.h" />
     <ClInclude Include="Headers\window.h" />
     <ClInclude Include="Headers\Keyboard.h" />
     <ClInclude Include="Headers\ModelLoader.h" />
+    <ClInclude Include="Headers\scene_node.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\PixelShader.hlsl">
