@@ -10,6 +10,7 @@
 #include "../Headers/ModelLoader.h"
 #include "../Headers/ReflectModelLoader.h"
 #include "../Headers/GameTimer.h"
+#include <list>
 
 //#include "../Headers/ParticleGenerator.h"
 class Graphics
@@ -167,8 +168,11 @@ private:
 	//Tutorial 10
 	ModelLoader* m_Model;
 	ModelLoader* m_Model01;
+	ModelLoader* m_Model02;
+	ModelLoader* m_Gun;
 	ReflectModelLoader* m_ModelReflect;
 	ModelLoader* m_SkyBox;
 	ModelLoader* m_Floor;
+	std::list<ModelLoader*> ModelList;
 	//ParticleGenerator* particle;
 };

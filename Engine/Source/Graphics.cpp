@@ -140,17 +140,33 @@ Graphics::Graphics(Window& window)
 	m_Model = new ModelLoader(m_Device, m_ImmediateContext, 0.0f,0.0f,0.0f);
 	m_Model->LoadObjModel((char*)"Assets/Sphere.obj");
 	m_Model->AddTexture((char*)"Assets/uv-mapping-grid.png");
+	ModelList.push_back(m_Model);
 
 	m_Model01 = new ModelLoader(m_Device, m_ImmediateContext, 4.91f, 0.0f, 5.0f);
 	m_Model01->LoadObjModel((char*)"Assets/Sphere.obj");
 	m_Model01->SetScale(0.7f);
+	ModelList.push_back(m_Model01);
+	
+	m_Model02 = new ModelLoader(m_Device, m_ImmediateContext, 0.0f, 0.0f, 5.0f);
+	m_Model02->LoadObjModel((char*)"Assets/Sphere.obj");
+	m_Model02->SetScale(0.7f);
+	ModelList.push_back(m_Model02);
+	
+	m_Gun = new ModelLoader(m_Device, m_ImmediateContext, -5.0f, 0.0f, 5.0f);
+	m_Gun->LoadObjModel((char*)"Assets/USP45Game.obj");
+
+	m_Gun->SetScale(0.2f);
+	ModelList.push_back(m_Gun);
+
 
 	m_Floor = new ModelLoader(m_Device, m_ImmediateContext, 0.0f, -4.0f, 0.0f);
+	m_Floor->LoadObjModel((char*)"Assets/cube.obj");
 	m_Floor->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	m_Floor->SetScale(0.3f);
 	m_Floor->SetXZScale(15.0f, 15.0f);
+	ModelList.push_back(m_Floor);
 
-	m_Floor->LoadObjModel((char*)"Assets/cube.obj");
+
 	//m_Floor->SetFullScale(XMFLOAT3(30.0f,1.0f,30.0f));
 
 
@@ -323,49 +339,52 @@ void Graphics::Render()
 
 	m_ModelReflect->Draw(&view, &projection);
 
-	m_Floor->Draw(&view, &projection);
-	m_Floor->TransposeLight();
 	
 	m_Model->LookAt_XZ(m_Camera->GetX(), m_Camera->GetZ());
 	m_Model->SetPosition(m_Camera->GetPosition());
 	m_Model->Draw(&view,&projection);
-	
-
 	//m_Model->MoveForward(0.001f);
 	m_Model->TransposeLight();
 	//
-	m_Model01->LookAt_XZ(m_Model->GetXPos(), m_Model->GetZPos());
-	m_Model01->Draw(&view, &projection);
-	m_Model01->TransposeLight();
 
-
-	if (m_Model->CheckCollision(m_Model01))
+	for (ModelLoader* element : ModelList)
 	{
-		if (m_Model->GetZPos() > m_Model01->GetZPos() && (m_Model->GetXPos() > m_Model01->GetXPos() || m_Model->GetXPos() < m_Model01->GetXPos() || m_Model->GetXPos() == m_Model01->GetXPos()))
+		if(m_Model != element)
 		{
-			m_Model->IncZPos(0.1f);
-			m_Camera->IncZPos(0.1f);
+			element->Draw(&view, &projection);
+			element->TransposeLight();
+
+			if (m_Model->CheckCollision(element))
+			{
+				if (m_Model->GetZPos() > element->GetZPos() && (m_Model->GetXPos() > element->GetXPos() || m_Model->GetXPos() < element->GetXPos() || m_Model->GetXPos() == element->GetXPos()))
+				{
+					m_Model->IncZPos(0.1f);
+					m_Camera->IncZPos(0.1f);
+				}
+				else if (m_Model->GetXPos() > element->GetXPos() || m_Model->GetXPos() < element->GetXPos() || m_Model->GetXPos() == element->GetXPos() && m_Model->GetZPos() < element->GetZPos())
+				{
+					m_Model->IncZPos(-0.1f);
+					m_Camera->IncZPos(-0.1f);
+				}
+				else if (m_Model->GetXPos() < element->GetXPos())
+				{
+					m_Model->IncXPos(-0.1f);
+					m_Model->IncZPos(0.1f);
+					m_Camera->IncXPos(-0.1f);
+					m_Camera->IncZPos(0.1f);
+				}
+				else
+				{
+					m_Model->IncXPos(0.1f);
+					m_Model->IncZPos(0.1f);
+					m_Camera->IncXPos(0.1f);
+					m_Camera->IncZPos(0.1f);
+				}
+			}
 		}
-		else if (m_Model->GetXPos() > m_Model01->GetXPos() || m_Model->GetXPos() < m_Model01->GetXPos() || m_Model->GetXPos() == m_Model01->GetXPos() && m_Model->GetZPos() < m_Model01->GetZPos())
-		{
-			m_Model->IncZPos(-0.1f);
-			m_Camera->IncZPos(-0.1f);
-		}
-		else if (m_Model->GetXPos() < m_Model01->GetXPos())
-		{
-			m_Model->IncXPos(-0.1f);
-			m_Model->IncZPos(0.1f);
-			m_Camera->IncXPos(-0.1f);
-			m_Camera->IncZPos(0.1f);
-		}
-		else
-		{
-			m_Model->IncXPos(0.1f);
-			m_Model->IncZPos(0.1f);		
-			m_Camera->IncXPos(0.1f);
-			m_Camera->IncZPos(0.1f);
-		}	
 	}
+
+	
 	/*m_Model01->IncYRotation(cos(XMConvertToRadians(rotation)));
 	m_Model01->IncXRotation(sin(XMConvertToRadians(rotation)));
 	m_Model01->IncZRotation(cos(XMConvertToRadians(rotation)));*/
