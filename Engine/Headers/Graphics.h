@@ -1,17 +1,11 @@
 #pragma once
 #include <d3d11.h>
 #include <dxgi.h>
-#include <D3DX11async.h>
-#include <D3DCompiler.h>
 #define _XM_NO_INTRINSICS_
 #define XM_NO_ALIGNMENT
 #include <xnamath.h>
-#include "../Headers/Camera.h"
-#include "../Headers/ModelLoader.h"
-#include "../Headers/ReflectModelLoader.h"
-#include "../Headers/GameTimer.h"
-#include "../Headers/Weapon.h"
-#include "../Headers/scene_node.h"
+#include "../Headers/Includes.h"
+//#include "../Headers/UILoader.h"
 #include <list>
 
 
@@ -24,14 +18,17 @@ public:
 	void Input(GameTimer timer);
 	void Render();
 
+	//float getGravityForce(ModelLoader * objectOne, ModelLoader * objectTwo);
+
 
 private:
 	static constexpr short SCREENWIDTH = 640;
 	static constexpr short SCREENHEIGHT = 640;
-	static constexpr float ClearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; //RGBA
+	static constexpr float ClearColor[4] = { 0.2f, 0.2f, 0.2f, 1.0f }; //RGBA
 
 private:
 	Window& wnd;
+	//UILoader* userInterface;
 	float mouseXPastPos;
 	bool mouseMoved = false;
 	int x, y;
@@ -50,6 +47,8 @@ private:
 	ID3D11Buffer*			m_VertexBuffer;
 	ID3D11VertexShader*		m_VertexShader;
 	ID3D11PixelShader*		m_PixelShader;
+	//ID3D11BlendState*		g_pAlphaBlendEnable; //14
+	//ID3D11BlendState*		g_pAlphaBlendDisable; //14
 
 	struct POS_COLOR_TEXT_NORM_VERTEX
 	{
@@ -95,66 +94,12 @@ private:
 	ID3D11DepthStencilView*		m_DepthStencilView;
 
 private:
-	POS_COLOR_TEXT_NORM_VERTEX vertices[36] =
-	{
-		// back face
-		{XMFLOAT3(-1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f) , XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f) , XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f) , XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-
-		// front face
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{XMFLOAT3(1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-
-		// left face
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f) , XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f) , XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f) , XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{XMFLOAT3(-1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-
-		// right face
-		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{XMFLOAT3(1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(-1.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-																													
-		// bottom face
-		{XMFLOAT3(1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{XMFLOAT3(1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{XMFLOAT3(-1.0f, -1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-
-		// top face
-		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{XMFLOAT3(1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{XMFLOAT3(-1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{XMFLOAT3(1.0f, 1.0f, 1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{XMFLOAT3(-1.0f, 1.0f, -1.0f),	XMFLOAT4(1.0f,1.0f,1.0f,1.0f),	XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) }
-	};
-
-private:
 	//////
 	//Tutorial07
 	Camera*	m_Camera = new Camera(0.0f, 0.0f, -15.0f, 0, 0.0f);
 	//Tutorial 08
 	ID3D11ShaderResourceView*		m_TextureMap0;
 	ID3D11SamplerState*				m_Sampler0;
-	
-
 
 	//Tutorial 09
 	XMVECTOR m_directional_light_shines_from;
@@ -167,16 +112,16 @@ private:
 
 private:
 	//Tutorial 10
-	ModelLoader* m_Model;
-	ModelLoader* m_Model01;
-	ModelLoader* m_Model02;
+	ModelLoader* m_PlayerModel;
+	ModelLoader* m_GunModel;
 	ModelLoader* m_SkyBox;
+	ModelLoader* m_RandomEnemy;
 	ModelLoader* m_Floor;
 	ModelLoader* m_Barrel;
+	ModelLoader* m_Model01;
 	ReflectModelLoader* m_ModelReflect;
-	Weapon* m_Gun;
 	std::list<ModelLoader*> ModelList;
 
 	//ParticleGenerator* particle;
-	scene_node* g_root_node, *g_node1, *g_node2;
+	scene_node* m_root_node, *m_PlayerNode, *m_gunNode;
 };

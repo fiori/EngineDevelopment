@@ -4,6 +4,8 @@
 Graphics::Graphics(Window& window)
 	:wnd(window)
 {
+	
+
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd, sizeof(sd));
 	sd.BufferCount = 1;
@@ -49,6 +51,21 @@ Graphics::Graphics(Window& window)
 	if (FAILED(m_Device->CreateRenderTargetView(pBackBuffer, nullptr, &m_RenderTargetView)))
 		MessageBox(window.m_MainWnd, L"Error Creating the Render Target View", nullptr, 0);
 	pBackBuffer->Release();
+
+	/*D3D11_BLEND_DESC b;
+	b.RenderTarget[0].BlendEnable = TRUE;
+	b.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	b.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	b.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	b.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	b.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	b.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	b.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	b.IndependentBlendEnable = FALSE;
+	b.AlphaToCoverageEnable = FALSE;
+
+	if(FAILED(m_Device->CreateBlendState(&b, &g_pAlphaBlendEnable)))
+		MessageBox(nullptr,L"Alphablend failed", nullptr, 0);*/
 
 	// Creates the Z Buffer texture
 	D3D11_TEXTURE2D_DESC tex2dDesc;
@@ -114,6 +131,10 @@ Graphics::Graphics(Window& window)
 	view = m_Camera->GetViewMatrix();
 	identity = XMMatrixIdentity();
 
+	//userInterface = new UILoader("Assets/font1.bmp",m_Device, m_ImmediateContext);
+	//userInterface->AddText("Test", -1.0f, 1.0f, 1.0f);
+
+	m_Camera->Pitch(-12.0f);
 	m_SkyBox = new ModelLoader(m_Device, m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	m_SkyBox->LoadSkyBox((char*)"Assets/cube.obj",(char*)"Assets/abovetheclouds.dds");
 	m_SkyBox->SetScale(3.0f);
@@ -121,10 +142,10 @@ Graphics::Graphics(Window& window)
 	m_ModelReflect = new ReflectModelLoader(m_Device, m_ImmediateContext, 10.0f, 0.0f, 0.0f);
 	m_ModelReflect->LoadObjModel((char*)"Assets/Sphere.obj");
 
-	m_Model = new ModelLoader(m_Device, m_ImmediateContext, 0.0f,0.0f,0.0f);
-	m_Model->LoadObjModel((char*)"Assets/Sphere.obj");
-	m_Model->AddTexture((char*)"Assets/uv-mapping-grid.png");
-	ModelList.push_back(m_Model);
+	m_PlayerModel = new ModelLoader(m_Device, m_ImmediateContext, 0.0f,0.0f,0.0f);
+	m_PlayerModel->LoadObjModel((char*)"Assets/Sphere.obj");
+	m_PlayerModel->AddTexture((char*)"Assets/uv-mapping-grid.png");
+	ModelList.push_back(m_PlayerModel);
 
 	m_Floor = new ModelLoader(m_Device, m_ImmediateContext, 0.0f, -4.0f, 0.0f);
 	m_Floor->LoadObjModel((char*)"Assets/cube.obj");
@@ -133,11 +154,17 @@ Graphics::Graphics(Window& window)
 	m_Floor->SetXZScale(15.0f, 15.0f);
 	ModelList.push_back(m_Floor);	
 	
-	m_Barrel = new ModelLoader(m_Device, m_ImmediateContext, -5.0f, -2.0f, 0.0f);
+	m_Barrel = new ModelLoader(m_Device, m_ImmediateContext, -4.0f, -2.0f, 0.0f);
 	m_Barrel->LoadObjModel((char*)"Assets/barrel.obj");
 	m_Barrel->AddTexture((char*)"Assets/uv-mapping-grid.png");
-	m_Barrel->SetScale(0.1f);
+	m_Barrel->SetScale(0.3f);
 	ModelList.push_back(m_Barrel);
+
+	m_RandomEnemy = new ModelLoader(m_Device, m_ImmediateContext, -2.0f, 5.0f, 0.0f);
+	m_RandomEnemy->LoadObjModel((char*)"Assets/spider.obj");
+	m_RandomEnemy->AddTexture((char*)"Assets/Spinnen_Bein_tex_COLOR_.png");
+	m_RandomEnemy->SetScale(0.012f);
+	ModelList.push_back(m_RandomEnemy);
 
 	//m_Gun = new Weapon(m_Device, m_ImmediateContext, XMFLOAT3(0.0f,-4.0f,0.0f), -5.0f, -1.0f, 5.0f);
 	//m_Gun->LoadWeapon((char*)"Assets/gun2.obj");
@@ -150,25 +177,20 @@ Graphics::Graphics(Window& window)
 	ModelList.push_back(m_Model01);
 
 
-	m_Model02 = new ModelLoader(m_Device, m_ImmediateContext, 1.0f, -1.0f, 3.0f);
-	m_Model02->LoadObjModel((char*)"Assets/gun2.obj");
-	m_Model02->AddTexture((char*)"Assets/uv-mapping-grid.png");
-	m_Model02->SetScale(1.0f);
+	m_GunModel = new ModelLoader(m_Device, m_ImmediateContext, 1.0f, -1.0f, 3.0f);
+	m_GunModel->LoadObjModel((char*)"Assets/gun2.obj");
+	m_GunModel->AddTexture((char*)"Assets/uv-mapping-grid.png");
+	m_GunModel->SetScale(1.0f);
 
 
-	g_root_node = new scene_node();
-	g_node1 = new scene_node();
-	g_node2 = new scene_node();
+	m_root_node = new scene_node();
+	m_PlayerNode = new scene_node();
+	m_gunNode = new scene_node();
 
-	g_node1->setModel(m_Model01);
-	g_node2->setModel(m_Model02);
-	g_root_node->addChildNode(g_node1);
-	g_node1->addChildNode(g_node2);
-
-
-
-
-
+	m_PlayerNode->setModel(m_PlayerModel);
+	m_gunNode->setModel(m_GunModel);
+	m_root_node->addChildNode(m_PlayerNode);
+	m_PlayerNode->addChildNode(m_gunNode);
 
 	//particle = new ParticleGenerator(m_Device, m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	//particle->CreateParticle();
@@ -238,7 +260,11 @@ void Graphics::Input(GameTimer timer)
 	if (wnd.input.KeyIsPressed(DIK_A))
 		m_Camera->Strafe(5.0f * timer.DeltaTime());
 		//m_Model->IncXPos(-5.0f * timer.DeltaTime());
-
+	
+	if (m_RandomEnemy->GetYPos() > m_Floor->GetYPos() + 0.2f)
+		m_RandomEnemy->IncYPos(-4 * timer.DeltaTime());	
+	if (m_Barrel->GetYPos() > m_Floor->GetYPos() + 0.2f)
+		m_Barrel->IncYPos(-4 * timer.DeltaTime());
 	
 
 }
@@ -253,51 +279,55 @@ void Graphics::Render()
 	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	m_SkyBox->SetPosition(m_Camera->GetPosition());
-	m_Model->SetPosition(m_Camera->GetPosition());
+	m_PlayerModel->SetPosition(m_Camera->GetPosition());
 
 	m_SkyBox->Draw(&view, &projection);
 	m_ModelReflect->Draw(&view, &projection);
 
-	g_node1->SetPosition(XMFLOAT3(m_Camera->GetX(), m_Camera->GetY(), m_Camera->GetZ() - 15.0f));
-	g_node1->SetYRotation(m_Camera->GetRotation());
+	m_PlayerNode->SetPosition(XMFLOAT3(m_Camera->GetX(), m_Camera->GetY(), m_Camera->GetZ() - 15.0f));
+	m_PlayerNode->SetYRotation(m_Camera->GetRotation());
 
-	g_root_node->execute(&world, &view, &projection);
+	m_root_node->execute(&world, &view, &projection);
 	
-
+	//m_ImmediateContext->OMSetBlendState(g_pAlphaBlendEnable, 0, 0xffffffff);
+	//userInterface->RenderUI();
+	//m_ImmediateContext->OMSetBlendState(g_pAlphaBlendDisable, 0, 0xffffffff);
 
 	//m_Gun->SetPosition(XMFLOAT3(m_Camera->GetPosition().x + 0.3f, m_Camera->GetPosition().y -1.0f, m_Camera->GetPosition().z + 2.0f));
 	//m_Gun->Draw(&view, &projection);
 	//m_Gun->SetRotation(m_Camera);
 
+
+
 	for (ModelLoader* element : ModelList)
 	{
-		if(m_Model != element)
+		if(m_PlayerModel != element)
 		{
 			element->Draw(&view, &projection);
 
-			if (m_Model->CheckCollision(element))
+			if (m_PlayerModel->CheckCollision(element))
 			{
-				if (m_Model->GetZPos() > element->GetZPos() && (m_Model->GetXPos() > element->GetXPos() || m_Model->GetXPos() < element->GetXPos() || m_Model->GetXPos() == element->GetXPos()))
+				if (m_PlayerModel->GetZPos() > element->GetZPos() && (m_PlayerModel->GetXPos() > element->GetXPos() || m_PlayerModel->GetXPos() < element->GetXPos() || m_PlayerModel->GetXPos() == element->GetXPos()))
 				{
-					m_Model->IncZPos(0.1f);
+					m_PlayerModel->IncZPos(0.1f);
 					m_Camera->IncZPos(0.1f);
 				}
-				else if (m_Model->GetXPos() > element->GetXPos() || m_Model->GetXPos() < element->GetXPos() || m_Model->GetXPos() == element->GetXPos() && m_Model->GetZPos() < element->GetZPos())
+				else if (m_PlayerModel->GetXPos() > element->GetXPos() || m_PlayerModel->GetXPos() < element->GetXPos() || m_PlayerModel->GetXPos() == element->GetXPos() && m_PlayerModel->GetZPos() < element->GetZPos())
 				{
-					m_Model->IncZPos(-0.1f);
+					m_PlayerModel->IncZPos(-0.1f);
 					m_Camera->IncZPos(-0.1f);
 				}
-				else if (m_Model->GetXPos() < element->GetXPos())
+				else if (m_PlayerModel->GetXPos() < element->GetXPos())
 				{
-					m_Model->IncXPos(-0.1f);
-					m_Model->IncZPos(0.1f);
+					m_PlayerModel->IncXPos(-0.1f);
+					m_PlayerModel->IncZPos(0.1f);
 					m_Camera->IncXPos(-0.1f);
 					m_Camera->IncZPos(0.1f);
 				}
 				else
 				{
-					m_Model->IncXPos(0.1f);
-					m_Model->IncZPos(0.1f);
+					m_PlayerModel->IncXPos(0.1f);
+					m_PlayerModel->IncZPos(0.1f);
 					m_Camera->IncXPos(0.1f);
 					m_Camera->IncZPos(0.1f);
 				}
@@ -306,4 +336,14 @@ void Graphics::Render()
 	}
 	m_SwapChain->Present(0, 0);
 }
-
+//float Graphics::getGravityForce(ModelLoader* objectOne, ModelLoader* objectTwo)
+//{
+//	float force;
+//	float distance;
+//	distance = objectOne->GetYPos() - objectTwo->GetYPos();
+//
+//	force = ((9.8 * 1) * 1 / (pow(distance, 2)));
+//
+//
+//	return force;
+//}

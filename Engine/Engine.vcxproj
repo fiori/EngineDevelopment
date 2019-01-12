@@ -139,11 +139,13 @@
     <ClCompile Include="Source\ReflectModelLoader.cpp" />
     <ClCompile Include="Source\Weapon.cpp" />
     <ClCompile Include="Source\window.cpp" />
+    <ClCompile Include="Source\UILoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Camera.h" />
     <ClInclude Include="Headers\GameTimer.h" />
     <ClInclude Include="Headers\Graphics.h" />
+    <ClInclude Include="Headers\Includes.h" />
     <ClInclude Include="Headers\inputclass.h" />
     <ClInclude Include="Headers\Mouse.h" />
     <ClInclude Include="Headers\objfilemodel.h" />
@@ -153,6 +155,7 @@
     <ClInclude Include="Headers\Keyboard.h" />
     <ClInclude Include="Headers\ModelLoader.h" />
     <ClInclude Include="Headers\scene_node.h" />
+    <ClInclude Include="Headers\UILoader.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\PixelShader.hlsl">

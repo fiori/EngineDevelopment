@@ -50,13 +50,16 @@ private:
 	XMFLOAT3 m_MinimumVertPos, m_MaximumVertPos;
 public:
 	bool CheckCollision(ModelLoader* model);
+	float GetBoundingSphere_X() const { return m_bouding_sphere_centre_x; };
+	float GetBoundingSphere_Y()	const { return m_bouding_sphere_centre_y; };
+	float GetBoundingSphere_Z()	const { return m_bouding_sphere_centre_z; };
+	float GetBoundingSphereRadius();
 	
 
 private:
 	void CalculateModelCentrePoint();
 	void CalculateBoundingSphereRadius();
 	XMVECTOR GetBoundingSphereWorldSpacePosition();
-	float GetBoundingSphereRadius();
 //--------------------------------
 public:
 	ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z);

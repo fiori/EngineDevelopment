@@ -15,7 +15,10 @@ private:
 	float m_scale;
 	float m_xScale;
 	float m_zScale;
-
+	float m_world_centre_x;
+	float m_world_centre_y;
+	float m_world_centre_z;
+	float m_world_scale;
 
 public:
 	scene_node();
@@ -24,6 +27,9 @@ public:
 	void addChildNode(scene_node* n);
 	bool detachNode(scene_node* n);
 	void execute(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection);
+	void update_collision_tree(XMMATRIX* world, float scale);
+	bool check_collision(scene_node* compare_tree);
+	bool check_collision(scene_node* compare_tree, scene_node* object_tree_root);
 
 public:
 		//Public methods for model modification
@@ -51,14 +57,15 @@ public:
 		float GetYRotation() const { return m_yAngle; };
 		float GetZRotation() const { return m_zAngle; };
 		float GetScale() const { return m_scale; };
+		XMVECTOR get_world_centre_position();
 		//Modifiers
-		void IncXPos(float pos) { m_x += pos; };
-		void IncYPos(float pos) { m_y += pos; };
-		void IncZPos(float pos) { m_z += pos; };
-		void IncXRotation(float angle) { m_xAngle += angle; };
-		void IncYRotation(float angle) { m_yAngle += angle; };
-		void IncZRotation(float angle) { m_zAngle += angle; };
-		void IncScale(float scale) { m_scale += scale; };
+		bool IncXPos(float in, scene_node* root_node);
+		bool IncYPos(float in, scene_node* root_node);
+		bool IncZPos(float in, scene_node* root_node);
+		void IncXRotation(float angle);
+		void IncYRotation(float angle);
+		void IncZRotation(float angle);
+		void IncScale(float scale);
 		//LookAt
 		void LookAt_XZ(float x, float z);
 		void MoveForward(float distance);
