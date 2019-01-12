@@ -26,6 +26,7 @@ public:
 	float GetDX() const { return m_dx; };
 	float GetDY() const { return m_dy; };
 	float GetDZ() const { return m_dz; };
+	float GetRotation() const { return m_camera_rotation; };
 	XMFLOAT3 GetPosition() const { return XMFLOAT3(m_X, m_Y, m_Z); };
 	XMFLOAT3 GetDPosition() const { return XMFLOAT3(m_dx, m_dy, m_dz); };
 	//Setters

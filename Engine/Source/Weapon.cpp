@@ -142,6 +142,7 @@ void Weapon::SetPitch(Camera* Camera)
 
 void Weapon::SetRotation(Camera* Camera)
 {
+	m_Angle.y = Camera->GetRotation();
 }
 
 void Weapon::TransposeLight()

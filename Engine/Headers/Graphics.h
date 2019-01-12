@@ -23,8 +23,6 @@ public:
 	~Graphics();
 	void Input(GameTimer timer);
 	void Render();
-	void TransposeLight();
-	void UnlockBuffer();
 
 
 private:
@@ -172,10 +170,11 @@ private:
 	ModelLoader* m_Model;
 	ModelLoader* m_Model01;
 	ModelLoader* m_Model02;
-	Weapon* m_Gun;
-	ReflectModelLoader* m_ModelReflect;
 	ModelLoader* m_SkyBox;
 	ModelLoader* m_Floor;
+	ModelLoader* m_Barrel;
+	ReflectModelLoader* m_ModelReflect;
+	Weapon* m_Gun;
 	std::list<ModelLoader*> ModelList;
 
 	//ParticleGenerator* particle;

@@ -1,6 +1,5 @@
 #include "../Headers/Graphics.h"
 #include "../Headers/window.h"
-#include <smmintrin.h>
 
 Graphics::Graphics(Window& window)
 	:wnd(window)
@@ -109,28 +108,11 @@ Graphics::Graphics(Window& window)
 
 	m_ImmediateContext->RSSetState(m_RasterState);
 
-//	//Check tutorial 03 for implementing the vertex buffer and shaders to render.
-//
-//	//Set up and create vertex buffer //Tutorial 03
-//#include "../InitializeGraphics/createAndSetVertexBuffer.fi";
-//
-////Create and set up the constant buffer // Tutorial 04
-//#include "../InitializeGraphics/createAndSetConstantBuffer.fi";
-//
 	world = XMMatrixTranslation(0, 0, 15);
-	////world *= XMMatrixRotationZ(XMConvertToRadians(RotationZ));
-	//world *= XMMatrixRotationY(XMConvertToRadians(15));
-	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), Graphics::SCREENWIDTH / Graphics::SCREENHEIGHT, 1.0f, 100.0f);
-	//view = XMMatrixIdentity();
-	view = m_Camera->GetViewMatrix();
-	//identity = XMMatrixIdentity();
-//
 
-//	cb0_values.WorldViewProjection = world * view * projection;
-//
-//	cb0_values.scale = 1.0f;
-//
-//	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
+	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), Graphics::SCREENWIDTH / Graphics::SCREENHEIGHT, 1.0f, 100.0f);
+	view = m_Camera->GetViewMatrix();
+	identity = XMMatrixIdentity();
 
 	m_SkyBox = new ModelLoader(m_Device, m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	m_SkyBox->LoadSkyBox((char*)"Assets/cube.obj",(char*)"Assets/abovetheclouds.dds");
@@ -149,22 +131,30 @@ Graphics::Graphics(Window& window)
 	m_Floor->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	m_Floor->SetScale(0.3f);
 	m_Floor->SetXZScale(15.0f, 15.0f);
-	ModelList.push_back(m_Floor);
+	ModelList.push_back(m_Floor);	
+	
+	m_Barrel = new ModelLoader(m_Device, m_ImmediateContext, -5.0f, -2.0f, 0.0f);
+	m_Barrel->LoadObjModel((char*)"Assets/barrel.obj");
+	m_Barrel->AddTexture((char*)"Assets/uv-mapping-grid.png");
+	m_Barrel->SetScale(0.1f);
+	ModelList.push_back(m_Barrel);
 
-	m_Gun = new Weapon(m_Device, m_ImmediateContext, XMFLOAT3(0.0f,-5.0f,0.0f), -5.0f, -1.0f, 5.0f);
-	m_Gun->LoadWeapon((char*)"Assets/gun2.obj");
-	m_Gun->SetScale(XMFLOAT3(1.0f,1.0f,1.0f));
-
+	//m_Gun = new Weapon(m_Device, m_ImmediateContext, XMFLOAT3(0.0f,-4.0f,0.0f), -5.0f, -1.0f, 5.0f);
+	//m_Gun->LoadWeapon((char*)"Assets/gun2.obj");
+	//m_Gun->SetScale(XMFLOAT3(1.0f,1.0f,1.0f));
 //////////////////////////////////SCENE MANAGMENT///////////////////////////////////////////////////////////////////////////////
 	m_Model01 = new ModelLoader(m_Device, m_ImmediateContext, 4.91f, 0.0f, 5.0f);
 	m_Model01->LoadObjModel((char*)"Assets/Sphere.obj");
 	m_Model01->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	m_Model01->SetScale(0.7f);
+	ModelList.push_back(m_Model01);
 
-	m_Model02 = new ModelLoader(m_Device, m_ImmediateContext, -4.0f, 0.0f, 5.0f);
-	m_Model02->LoadObjModel((char*)"Assets/Sphere.obj");
+
+	m_Model02 = new ModelLoader(m_Device, m_ImmediateContext, 1.0f, -1.0f, 3.0f);
+	m_Model02->LoadObjModel((char*)"Assets/gun2.obj");
 	m_Model02->AddTexture((char*)"Assets/uv-mapping-grid.png");
-	m_Model02->SetScale(0.7f);
+	m_Model02->SetScale(1.0f);
+
 
 	g_root_node = new scene_node();
 	g_node1 = new scene_node();
@@ -176,60 +166,12 @@ Graphics::Graphics(Window& window)
 	g_node1->addChildNode(g_node2);
 
 
-	//m_Floor->SetFullScale(XMFLOAT3(30.0f,1.0f,30.0f));
 
 
 
 
 	//particle = new ParticleGenerator(m_Device, m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	//particle->CreateParticle();
-
-
-
-	////Copy the vertices into the buffer
-	//D3D11_MAPPED_SUBRESOURCE ms;
-
-	////Lock the buffer to allow writting
-	//m_ImmediateContext->Map(m_VertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
-
-	////Copy the data
-	//memcpy(ms.pData, vertices, sizeof(vertices));
-
-	////Unlock the buffer
-	//m_ImmediateContext->Unmap(m_VertexBuffer, 0);
-
-	////Load and compile the pixel and vertex shaders
-	//ID3DBlob *VS, *PS, *error;
-
-	//if (FAILED(D3DX11CompileFromFile(L"Shaders/VertexShader.hlsl", nullptr, nullptr, "VShader", "vs_4_0", 0, 0, nullptr, &VS, &error, nullptr)))
-	//	MessageBox(window.m_MainWnd, L"Error Compiling the Vertex Shader", nullptr, 0);
-
-	//if (error != nullptr)//Check for shader compilation errors
-	//{
-	//	OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
-	//	error->Release();
-	//}
-
-	////Create vertexShader object
-	//if (FAILED(m_Device->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), nullptr, &m_VertexShader)))
-	//	MessageBox(window.m_MainWnd, L"Error Creating Vertex Shader", nullptr, 0);
-
-	////Compiling the PixelShader
-	//if (FAILED(D3DX11CompileFromFile(L"Shaders/PixelShader.hlsl", nullptr, nullptr, "PShader", "ps_4_0", 0, 0, nullptr, &PS, &error, nullptr)))
-	//	MessageBox(window.m_MainWnd, L"Error Compiling the Pixel Shader", nullptr, 0);
-
-	//if (error != nullptr)
-	//{
-	//	OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
-	//	error->Release();
-	//}
-
-	////Create PixelShader Object
-	//if (FAILED(m_Device->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), nullptr, &m_PixelShader)))
-	//	MessageBox(window.m_MainWnd, L"Error Creating the Pixel Shader", nullptr, 0);
-
-	//m_ImmediateContext->VSSetShader(m_VertexShader, nullptr, 0);
-	//m_ImmediateContext->PSSetShader(m_PixelShader, nullptr, 0);
 
 	////////////////////////////////////////////////////////////////////////////
 	//Tutorial 08
@@ -254,32 +196,10 @@ Graphics::Graphics(Window& window)
 	m_Device->CreateSamplerState(&sampler_desc, &m_Sampler0);
 	m_ImmediateContext->PSSetSamplers(0, 1, &m_Sampler0);
 	m_ImmediateContext->PSSetShaderResources(0, 1, &m_TextureMap0);
-	////////////////////////////////////////////////////////////////////////////////
-
-	//Create Input Layout
-	/*D3D11_INPUT_ELEMENT_DESC InputLayoutDesc[] =
-	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,0,0, D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
-	};*/
-
-	/*if (FAILED(m_Device->CreateInputLayout(InputLayoutDesc, ARRAYSIZE(InputLayoutDesc), VS->GetBufferPointer(), VS->GetBufferSize(), &m_InputLayout)))
-		MessageBox(window.m_MainWnd, L"Error Creating the Input Layout", nullptr, 0);
-
-
-	m_ImmediateContext->IASetInputLayout(m_InputLayout);*/
-	//Tutorial 09
-	
-	m_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
-	m_directional_light_color = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Green
-	m_ambient_light_color = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f); // Dark Grey - always use a small value for ambient lighting
 
 	wnd.input.Initialize(wnd.m_hInst, wnd.m_MainWnd, Graphics::SCREENWIDTH, Graphics::SCREENHEIGHT);
 
 }
-
 Graphics::~Graphics()
 {
 	if (m_VertexBuffer) m_VertexBuffer->Release();
@@ -291,7 +211,6 @@ Graphics::~Graphics()
 	if (m_Device) m_Device->Release();
 	delete m_Camera;
 }
-
 void Graphics::Input(GameTimer timer)
 {
 	//Todo: Create the game class and start using the keyboard in the game class
@@ -299,8 +218,7 @@ void Graphics::Input(GameTimer timer)
 		PostQuitMessage(0); // Exit the application
 	
 	if (wnd.input.KeyIsPressed(DIK_UP))
-		g_node1->MoveForward(5.0f * timer.DeltaTime());
-		//m_Camera->Forward(2.0f * timer.DeltaTime());
+		m_Camera->Forward(2.0f * timer.DeltaTime());
 	
 	if (wnd.input.KeyIsPressed(DIK_DOWN))
 		m_Camera->Forward(-2.0f * timer.DeltaTime());
@@ -321,7 +239,7 @@ void Graphics::Input(GameTimer timer)
 		m_Camera->Strafe(5.0f * timer.DeltaTime());
 		//m_Model->IncXPos(-5.0f * timer.DeltaTime());
 
-	m_Gun->Rotate(XMFLOAT3(0.0f, 40.0f * timer.DeltaTime(), 0.0f));
+	
 
 }
 
@@ -330,7 +248,7 @@ void Graphics::Render()
 	wnd.input.Frame();
 	view = m_Camera->GetViewMatrix();
 	m_Camera->Rotate(wnd.input.m_mouseState.lX * 0.05f);
-	m_Camera->Pitch(-wnd.input.m_mouseState.lY * 0.05f);
+	//m_Camera->Pitch(-wnd.input.m_mouseState.lY * 0.05f);
 	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
 	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -340,18 +258,16 @@ void Graphics::Render()
 	m_SkyBox->Draw(&view, &projection);
 	m_ModelReflect->Draw(&view, &projection);
 
+	g_node1->SetPosition(XMFLOAT3(m_Camera->GetX(), m_Camera->GetY(), m_Camera->GetZ() - 15.0f));
+	g_node1->SetYRotation(m_Camera->GetRotation());
+
+	g_root_node->execute(&world, &view, &projection);
 	
 
 
-
-	g_root_node->execute(&world,&view, &projection);
-	m_Gun->Draw(&identity, &projection);
-
-
-	
-	//m_Gun->SetPitch(m_Camera);x
-	//m_Gun->SetStrafe(m_Camera);
-
+	//m_Gun->SetPosition(XMFLOAT3(m_Camera->GetPosition().x + 0.3f, m_Camera->GetPosition().y -1.0f, m_Camera->GetPosition().z + 2.0f));
+	//m_Gun->Draw(&view, &projection);
+	//m_Gun->SetRotation(m_Camera);
 
 	for (ModelLoader* element : ModelList)
 	{
@@ -388,57 +304,6 @@ void Graphics::Render()
 			}
 		}
 	}
-
-	
-	/*m_Model01->IncYRotation(cos(XMConvertToRadians(rotation)));
-	m_Model01->IncXRotation(sin(XMConvertToRadians(rotation)));
-	m_Model01->IncZRotation(cos(XMConvertToRadians(rotation)));*/
-
-	//m_Model->TransposeLight();
-	/*UINT stride = sizeof(POS_COLOR_TEXT_NORM_VERTEX);
-	UINT offset = 0;*/
-
-	/*m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer0);
-	m_ImmediateContext->IASetVertexBuffers(0, 1, &m_VertexBuffer, &stride, &offset);
-	m_ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_ImmediateContext->PSSetSamplers(0, 1, &m_Sampler0);
-	m_ImmediateContext->PSSetShaderResources(0, 1, &m_TextureMap0);*/
-
-	//for (size_t i = 0; i < 10; i++)
-	//{
-	//	world = XMMatrixTranslation(0, 0, 10);
-	//	//Important first the rotation and after the translation
-	//	world *= XMMatrixRotationZ(RotationZ);
-	//	world *= XMMatrixTranslation(4 * i, 1, 10);
-	//	//view = m_Camera->GetViewMatrix();
-	//	cb0_values.WorldViewProjection = world * view * projection;
-	//	TransposeLight();
-	//	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
-	//	m_ImmediateContext->Draw(36, 0);
-
-	//	world = XMMatrixTranslation(0, 5, 10);
-	//	//Important first the rotation and after the translation
-	//	world *= XMMatrixRotationZ(RotationZ);
-	//	world *= XMMatrixTranslation(4, 5 * i, 10);
-	//	view = m_Camera->GetViewMatrix();
-	//	cb0_values.WorldViewProjection = world * view * projection;
-	//	TransposeLight();
-	//	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer0, 0, nullptr, &cb0_values, 0, 0);
-	//	m_ImmediateContext->Draw(36, 0);
-	//}
 	m_SwapChain->Present(0, 0);
 }
 
-void Graphics::TransposeLight()
-{
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Tutorial 09 Lighting
-	transpose = XMMatrixTranspose(world);
-
-	cb0_values.directional_light_color = m_directional_light_color;
-	cb0_values.ambient_light_color = m_ambient_light_color;
-	cb0_values.directional_light_vector = XMVector3Transform(m_directional_light_shines_from, transpose);
-	cb0_values.directional_light_vector = XMVector3Normalize(cb0_values.directional_light_vector);
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-}
