@@ -39,7 +39,7 @@ private:
 public:
 	ParticleGenerator(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z);
 	int CreateParticle();
-	void Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection, XMFLOAT3* cameraposition, float deltaTime);
+	void Draw(XMMATRIX* view, XMMATRIX* projection, XMFLOAT3* cameraposition, float deltaTime);
 	
 	~ParticleGenerator();
 private:

@@ -12,14 +12,14 @@ struct PARTICLE_CONSTANT_BUFFER
 
 ParticleGenerator::ParticleGenerator(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z)
 	:m_device_(Device), m_ImmediateContext(ImmediateContext), m_x(x), m_y(y), m_z(z), m_xAngle(0.0f), m_yAngle(0.0f),
-	m_zAngle(0.0f), m_scale(0.05f), m_isActive(true), m_type(RAIN)
+	m_zAngle(0.0f), m_scale(0.1f), m_isActive(true), m_type(RAIN)
 {
 	for (int i = 0; i < 1000; i++)
 	{
 		Particle* one = new Particle();
 		one->color = XMFLOAT4(1.0f, 0.0f, 0.3f, 1.0f);
 		one->gravity = PARTICLE_GRAVITY;
-		one->position = XMFLOAT3(m_x, m_y, m_z);
+		one->position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		one->velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		m_free.push_back(one);
 	}
@@ -118,7 +118,7 @@ int ParticleGenerator::CreateParticle()
 	return 0;
 }
 
-void ParticleGenerator::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection, XMFLOAT3* cameraposition, float deltaTime)
+void ParticleGenerator::Draw(XMMATRIX* view, XMMATRIX* projection, XMFLOAT3* cameraposition, float deltaTime)
 {
 	UINT stride = sizeof(XMFLOAT3);
 	UINT offset = 0;
@@ -157,8 +157,8 @@ void ParticleGenerator::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projecti
 					m_untilParticle = PARTICLE_TIME;
 					(*it)->color = XMFLOAT4(RandomZeroToOne(), RandomZeroToOne(), RandomZeroToOne(), 1.0f);
 					(*it)->gravity = PARTICLE_GRAVITY;
-					(*it)->position = XMFLOAT3(m_x + RandomNumber(50,100), 200.0f, m_z + RandomNumber(0,10));
-					(*it)->velocity = XMFLOAT3(RandomNegOneToPosOne(), -15.0f, RandomNegOneToPosOne());
+					(*it)->position = XMFLOAT3(this->m_x + RandomNumber(50,100), 80.0f, this->m_z + RandomNumber(50,100));
+					(*it)->velocity = XMFLOAT3(RandomNegOneToPosOne(), -10.0f, RandomNegOneToPosOne());
 					break;
 				}
 				default:
@@ -207,14 +207,12 @@ void ParticleGenerator::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projecti
 			XMMATRIX local_world;
 
 			local_world = XMMatrixIdentity();
-			local_world *= XMMatrixTranslation((*it)->position.x, (*it)->position.y, (*it)->position.z);
 			local_world *= XMMatrixScaling(m_scale, m_scale, m_scale);
-/*
 			local_world *= XMMatrixRotationX(XMConvertToRadians(m_xAngle));
 			local_world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
 			local_world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
-*/
-			//local_world *= *world;
+			local_world *= XMMatrixTranslation((*it)->position.x, (*it)->position.y, (*it)->position.z);
+
 
 			//constant buffer stuff for shader
 			model_cb_values.WorldViewProjection = local_world * (*view)*(*projection);

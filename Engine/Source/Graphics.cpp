@@ -304,7 +304,7 @@ void Graphics::Render()
 	m_SkyBox->Draw(&view, &projection);
 	m_ModelReflect->Draw(&view, &projection);
 
-	m_particle_generator_->Draw(&world, &view, &projection, &m_Camera->GetPosition(),wnd.m_Timer.DeltaTime());
+	m_particle_generator_->Draw(&view, &projection, &m_Camera->GetPosition(),wnd.m_Timer.DeltaTime());
 	m_root_node->execute(&world, &view, &projection);
 
 	//m_ImmediateContext->OMSetBlendState(g_pAlphaBlendEnable, 0, 0xffffffff);
