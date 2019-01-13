@@ -108,6 +108,7 @@ public:
 	float GetXPos() const { return m_x; };
 	float GetYPos() const { return m_y; };
 	float GetZPos() const { return m_z; };
+	XMVECTOR GetPosition() const { return XMVectorSet(m_x, m_y, m_z, 0.0f); };
 	float GetXRotation() const { return m_xAngle; };
 	float GetYRotation() const { return m_yAngle; };
 	float GetZRotation() const { return m_zAngle; };
@@ -123,5 +124,7 @@ public:
 	//LookAt
 	void LookAt_XZ(float x, float z);
 	void MoveForward(float distance);
+	//Chase
+	void Chase(ModelLoader* enemy, const float DeltaTime);
 };
 

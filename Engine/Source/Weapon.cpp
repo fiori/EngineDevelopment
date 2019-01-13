@@ -129,16 +129,16 @@ void Weapon::SetScale(XMFLOAT3 Scale)
 	m_Scale.z = Scale.z;
 }
 
-void Weapon::SetStrafe(Camera* Camera)
-{
-	m_Position.x = Camera->GetX() + 0.3f;
-	m_Position.z = Camera->GetZ() + 2.5f;
-	m_Position.y = Camera->GetY() - 0.7f;
-}
+//void Weapon::SetStrafe(Camera* Camera)
+//{
+//	m_Position.x = Camera->GetX() + 0.3f;
+//	m_Position.z = Camera->GetZ() + 2.5f;
+//	m_Position.y = Camera->GetY() - 0.7f;
+//}
 
-void Weapon::SetPitch(Camera* Camera)
-{
-}
+//void Weapon::SetPitch(Camera* Camera)
+//{
+//}
 
 void Weapon::SetRotation(Camera* Camera)
 {

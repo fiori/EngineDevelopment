@@ -1,9 +1,10 @@
 #include "../Headers/window.h"
 #include "../Headers/Graphics.h"
 #include <cassert>
+#include <sstream>
 
-Window::Window(HINSTANCE instanceHandle, int show)
-	:m_hInst(instanceHandle)
+Window::Window(HINSTANCE instanceHandle,std::wstring WindowName, int show)
+	:m_hInst(instanceHandle), m_MainWndCaption(WindowName)
 {
 	WNDCLASS wc;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -16,8 +17,8 @@ Window::Window(HINSTANCE instanceHandle, int show)
 	wc.hbrBackground = nullptr;
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = m_ClassName;
-	
-	
+
+
 	if (!RegisterClass(&wc))
 	{
 		MessageBox(nullptr, L"RegisterClass Failed", nullptr, 0);
@@ -25,7 +26,7 @@ Window::Window(HINSTANCE instanceHandle, int show)
 
 	m_MainWnd = CreateWindow(
 		m_ClassName,
-		L"Fiori Engine",
+		m_MainWndCaption.c_str(),
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
@@ -41,12 +42,13 @@ Window::Window(HINSTANCE instanceHandle, int show)
 	}
 	ShowCursor(false);
 
+	m_Timer.Reset();
 	ShowWindow(m_MainWnd, show);
 	UpdateWindow(m_MainWnd);
 
-	
 
-	
+
+
 }
 
 Window::~Window()
@@ -109,4 +111,36 @@ LRESULT Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+void Window::CalculateFrameStats()
+{
+	// Code computes the average frames per second, and also
+	// the average time it takes to render one frame. The stats
+	// are appended to the window caption bar.
+
+	static int frameCnt = 0;
+	static float timeElapsed = 0.0f;
+
+	frameCnt++;
+
+	//Compute averages over one second period.
+	if((m_Timer.GameTime() - timeElapsed) >= 1.0f)
+	{
+		float fps = (float)frameCnt; // fps = frameCnt / 1
+
+		std::wostringstream outs;
+		outs.precision(6);
+		outs << m_MainWndCaption << L" "
+			<< L"FPS: " << fps << L" ";
+		SetWindowText(m_MainWnd, outs.str().c_str());
+
+		//Reset for next average.
+		frameCnt = 0;
+		timeElapsed += 1.0f;
+	}
+
+	/*std::wostringstream outs;
+	outs.precision(6);
+	outs << m_Timer.GameTime() << L" (ms)";
+	SetWindowText(m_MainWnd, outs.str().c_str());*/
 }

@@ -126,6 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\ParticleGenerator.cpp" />
     <ClCompile Include="Source\scene_node.cpp" />
     <ClCompile Include="Source\GameTimer.cpp" />
     <ClCompile Include="Source\inputclass.cpp" />
@@ -143,12 +144,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Camera.h" />
+    <ClInclude Include="Headers\Defines.h" />
     <ClInclude Include="Headers\GameTimer.h" />
     <ClInclude Include="Headers\Graphics.h" />
     <ClInclude Include="Headers\Includes.h" />
     <ClInclude Include="Headers\inputclass.h" />
     <ClInclude Include="Headers\Mouse.h" />
     <ClInclude Include="Headers\objfilemodel.h" />
+    <ClInclude Include="Headers\ParticleGenerator.h" />
     <ClInclude Include="Headers\ReflectModelLoader.h" />
     <ClInclude Include="Headers\Weapon.h" />
     <ClInclude Include="Headers\window.h" />

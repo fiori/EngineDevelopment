@@ -1,4 +1,6 @@
 #include "../Headers/ModelLoader.h"
+#include "../Headers/Graphics.h"
+#include <numeric>
 
 struct MODEL_CONSTANT_BUFFER
 {
@@ -153,11 +155,6 @@ void ModelLoader::LoadObjModel(char* fileName)
 	if (FAILED(D3DX11CompileFromFile(L"Shaders/model_shaders.hlsl", nullptr, nullptr, "ModelVS", "vs_4_0", 0, 0, nullptr, &VS, nullptr, nullptr)))
 		MessageBox(nullptr, L"Error compiling the model vertex shader", nullptr, 0);
 
-	//if (error != nullptr)//Check for shader compilation errors
-	//{
-	//	OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
-	//	error->Release();
-	//}
 	//Create vertexShader object
 	if (FAILED(m_device_->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), nullptr, &m_VShader)))
 		MessageBox(nullptr, L"Error Creating Vertex Shader", nullptr, 0);
@@ -166,12 +163,6 @@ void ModelLoader::LoadObjModel(char* fileName)
 	if (FAILED(D3DX11CompileFromFile(L"Shaders/PixelShader.hlsl", nullptr, nullptr, "PShader", "ps_4_0", 0, 0, nullptr, &PS, nullptr, nullptr)))
 		MessageBox(nullptr, L"Error Compiling the Pixel Shader", nullptr, 0);
 
-	/*if (error != nullptr)
-	{
-		OutputDebugStringW(static_cast<wchar_t*>(error->GetBufferPointer()));
-		error->Release();
-	}
-*/
 	//Create PixelShader Object
 	if (FAILED(m_device_->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), nullptr, &m_PShader)))
 		MessageBox(nullptr, L"Error Creating the Pixel Shader", nullptr, 0);
@@ -204,13 +195,6 @@ void ModelLoader::LoadObjModel(char* fileName)
 
 void ModelLoader::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection)
 {
-	
-	//world = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
-	//world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
-	//world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
-	//world *= XMMatrixScaling((m_scale + m_xScale), m_scale, (m_scale + m_zScale));
-	//world *= XMMatrixTranslation(m_x, m_y, m_z);
-
 	model_cb_values.WorldViewProjection = (*world)*(*view)*(*projection);
 	m_ImmediateContext->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);
 	m_ImmediateContext->UpdateSubresource(m_ConstantBuffer, 0, nullptr, &model_cb_values,0,0);
@@ -377,23 +361,6 @@ void ModelLoader::LoadSkyBox(char* ObjectFile, char* FileForTheTexture)
 	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	m_device_->CreateSamplerState(&sampler_desc, &m_Sampler);
-
-	//typedef struct D3D11_RASTERIZER_DESC {
-	//	D3D11_FILL_MODE FillMode;
-	//	D3D11_CULL_MODE CullMode;
-	//	BOOL            FrontCounterClockwise;
-	//	INT             DepthBias;
-	//	FLOAT           DepthBiasClamp;
-	//	FLOAT           SlopeScaledDepthBias;
-	//	BOOL            DepthClipEnable;
-	//	BOOL            ScissorEnable;
-	//	BOOL            MultisampleEnable;
-	//	BOOL            AntialiasedLineEnable;
-	//}
-
-	
-
-
 }
 
 void ModelLoader::TransposeLight()
@@ -419,6 +386,23 @@ void ModelLoader::MoveForward(float distance)
 {
 	this->m_x += sin(m_yAngle * (XM_PI / 180.0)) * distance;
 	this->m_z += cos(m_yAngle * (XM_PI / 180.0)) * distance;
+}
+
+void ModelLoader::Chase(ModelLoader* enemy, const float DeltaTime)
+{
+	LookAt_XZ(enemy->GetXPos(), enemy->GetZPos());
+	if (this->GetYPos() <= GROUND_POSITION)
+	{
+		//vec3 diff = b - a; float distance = sqrtf(dot(diff, diff));
+
+		float Dist = sqrt(pow(XMVectorGetX(enemy->GetPosition()) - XMVectorGetX(this->GetPosition()), 2) + 
+			pow(XMVectorGetY(enemy->GetPosition()) - XMVectorGetY(this->GetPosition()), 2) + 
+			pow(XMVectorGetZ(enemy->GetPosition()) - XMVectorGetZ(this->GetPosition()), 2));
+		//float distance = sqrt(distance);
+
+		if (Dist >= CHASE_PLAYER_OFFSET && Dist <= CHASE_PLAYER_VIEW_RANGE)
+			MoveForward(-ENEMY_MOVEMENT_SPEED * DeltaTime); 
+	}
 }
 
 void ModelLoader::AddTexture(char* fileName)

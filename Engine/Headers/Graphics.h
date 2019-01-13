@@ -4,18 +4,21 @@
 #define _XM_NO_INTRINSICS_
 #define XM_NO_ALIGNMENT
 #include <xnamath.h>
-#include "../Headers/Includes.h"
 //#include "../Headers/UILoader.h"
+#include "../Headers/Includes.h"
 #include <list>
-
+#include "ParticleGenerator.h"
 
 //#include "../Headers/ParticleGenerator.h"
 class Graphics
 {
 public:
-	Graphics(class Window& window);
+	Graphics(class Window& wnd);
+	void GameLoading();
+
 	~Graphics();
-	void Input(GameTimer timer);
+	void Input();
+	void UpdateModel();
 	void Render();
 
 	//float getGravityForce(ModelLoader * objectOne, ModelLoader * objectTwo);
@@ -27,7 +30,6 @@ private:
 	static constexpr float ClearColor[4] = { 0.2f, 0.2f, 0.2f, 1.0f }; //RGBA
 
 private:
-	Window& wnd;
 	//UILoader* userInterface;
 	float mouseXPastPos;
 	bool mouseMoved = false;
@@ -94,23 +96,25 @@ private:
 	ID3D11DepthStencilView*		m_DepthStencilView;
 
 private:
-	//////
-	//Tutorial07
-	Camera*	m_Camera = new Camera(0.0f, 0.0f, -15.0f, 0, 0.0f);
 	//Tutorial 08
 	ID3D11ShaderResourceView*		m_TextureMap0;
 	ID3D11SamplerState*				m_Sampler0;
 
 	//Tutorial 09
 	XMVECTOR m_directional_light_shines_from;
-	
+
 	XMVECTOR m_directional_light_color;
-	
+
 	XMVECTOR m_ambient_light_color;
 
 	XMMATRIX transpose;
 
 private:
+	Window& wnd;
+private:
+	//////
+	//Tutorial07
+	Camera*	m_Camera = new Camera(0.0f, 0.0f, -15.0f, 0, 0.0f);
 	//Tutorial 10
 	ModelLoader* m_PlayerModel;
 	ModelLoader* m_GunModel;
@@ -121,7 +125,8 @@ private:
 	ModelLoader* m_Model01;
 	ReflectModelLoader* m_ModelReflect;
 	std::list<ModelLoader*> ModelList;
+	ParticleGenerator* m_particle_generator_;
 
 	//ParticleGenerator* particle;
-	scene_node* m_root_node, *m_PlayerNode, *m_gunNode;
+	scene_node* m_root_node, *m_PlayerNode, *m_gunNode, *m_FloorNode, *m_RandomEnemyNode;
 };

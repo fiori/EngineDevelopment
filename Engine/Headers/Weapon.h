@@ -41,8 +41,8 @@ public:
 	//Setter
 	void SetPosition(XMFLOAT3 Position);
 	void SetScale(XMFLOAT3 Scale);
-	void SetStrafe(Camera* Camera);
-	void SetPitch(Camera* Camera);
+	//void SetStrafe(Camera* Camera);
+	//void SetPitch(Camera* Camera);
 	void SetRotation(Camera* Camera);
 	void TransposeLight();
 	//Getters

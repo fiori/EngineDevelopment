@@ -127,7 +127,8 @@ bool scene_node::check_collision(scene_node* compare_tree, scene_node* object_tr
 {
 	//check to see if root of tree being compared is same as root node of object tree being checked
 	//i.e stop object node and children being checked against each other
-	if (object_tree_root == compare_tree) return false;
+	if (object_tree_root == compare_tree) 
+		return false;
 
 	//only check for collisions if both nodes contain a model
 	if(m_p_model && compare_tree->m_p_model)

@@ -5,3 +5,4 @@
 #include "GameTimer.h"
 #include "Weapon.h"
 #include "scene_node.h"
+#include "Defines.h"
