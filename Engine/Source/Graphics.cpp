@@ -245,6 +245,7 @@ void Graphics::Input()
 {
 	wnd.m_Timer.Tick();
 	wnd.CalculateFrameStats();
+	wnd.input.Frame();
 
 	if (wnd.input.IsEscapePressed())
 		PostQuitMessage(0); // Exit the application
@@ -260,16 +261,23 @@ void Graphics::Input()
 
 	if (wnd.input.KeyIsPressed(DIK_A))
 		m_Camera->Strafe(PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
+	if (wnd.input.KeyIsPressed(DIK_SPACE) && m_Camera->getJumping() == false)
+		m_Camera->Jump(wnd.m_Timer.DeltaTime());
 
-
-
-	
 
 }
 
 void Graphics::UpdateModel()
 {
-	wnd.input.Frame();
+	if (m_Camera->GetY() > 5.0f)
+		m_Camera->SetJump(false);
+
+	if (m_Camera->getJumping() == false && m_Camera->GetY() > 0)
+		m_Camera->IncYPos(-6.0 * wnd.m_Timer.DeltaTime());
+	if (m_Camera->GetY() < 0)
+		m_Camera->SetY(0);
+
+
 	view = m_Camera->GetViewMatrix();
 	m_Camera->Rotate(wnd.input.m_mouseState.lX * SENSITIVITY);
 	m_Camera->Pitch(-wnd.input.m_mouseState.lY * SENSITIVITY);

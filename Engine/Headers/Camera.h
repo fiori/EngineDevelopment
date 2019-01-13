@@ -15,6 +15,7 @@ public:
 	void Strafe(float distance);
 	void Pitch(float degrees);
 	void Up(float y);
+	void Jump(float deltaTime);
 	XMMATRIX GetViewMatrix();
 	~Camera();
 
@@ -28,13 +29,14 @@ public:
 	float GetDZ() const { return m_dz; };
 	float GetRotation() const { return m_camera_rotation; };
 	float GetPitch(){ return -m_pitch;};
+	bool getJumping() { return m_jumping; };
 	XMFLOAT3 GetPosition() const { return XMFLOAT3(m_X, m_Y, m_Z); };
 	XMFLOAT3 GetDPosition() const { return XMFLOAT3(m_dx, m_dy, m_dz); };
 	//Setters
 	void SetX(float x) { m_X = x; };
 	void SetY(float y) { m_Y = y; };
 	void SetZ(float z) { m_Z = z; };
-
+	void SetJump(bool jump) { m_jumping = jump; m_velocityY = 0; };
 	void IncXPos(float pos) { m_X += pos; };
 	void IncYPos(float pos) { m_Y += pos; };
 	void IncZPos(float pos) { m_Z += pos; };
@@ -47,10 +49,14 @@ private:
 		m_dx,
 		m_dz,
 		m_dy,
-		m_pitch;
+		m_pitch,
+		m_velocityY = 0;
 
 	double
 		m_camera_rotation;
+
+	bool m_jumping = false;
+		
 
 private:
 	XMVECTOR

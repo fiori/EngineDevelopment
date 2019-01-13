@@ -1,5 +1,7 @@
 #include "../Headers/Camera.h"
 #include <xnamath.h>
+#include <thread>
+#include "../Headers/Defines.h"
 
 Camera::Camera(float x, float y, float z, double CameraRotation, float pitch)
 	:m_X(x), m_Y(y), m_Z(z), m_camera_rotation(CameraRotation), m_pitch(pitch)
@@ -14,6 +16,8 @@ void Camera::Rotate(double degrees)
 	m_camera_rotation += degrees;
 	m_dx = sin(m_camera_rotation * (XM_PI / 180));
 	m_dz = cos(m_camera_rotation * (XM_PI / 180));
+	m_Y += m_velocityY;
+
 }
 
 void Camera::Forward(float distance)
@@ -33,6 +37,8 @@ void Camera::Pitch(float degrees)
 	m_dy = sin(m_pitch * (XM_PI / 180));
 }
 
+
+
 void Camera::Strafe(float distance)
 {
 	XMVECTOR const forward = XMVector4Normalize(m_lookat - m_position);
@@ -45,6 +51,15 @@ void Camera::Strafe(float distance)
 void Camera::Up(float y)
 {
 	m_Y += y;
+}
+
+void Camera::Jump(float deltaTime)
+{
+	if (m_Y == 0)
+	{
+		m_velocityY = 15.0f * deltaTime;
+		m_jumping = true;
+	}
 }
 
 XMMATRIX Camera::GetViewMatrix()
