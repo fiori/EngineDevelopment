@@ -16,7 +16,9 @@ enum NODES
 	PLAYER,
 	GUN,
 	ENEMY,
-	BARREL
+	BARREL,
+	AK47,
+	SCENE_NODES
 };
 
 class Game
@@ -44,12 +46,13 @@ private:
 	ModelLoader*		m_Floor;
 	ModelLoader*		m_Barrel;
 	ModelLoader*		m_Model01;
+	ModelLoader*		m_AK47;
 	ReflectModelLoader* m_ModelReflect;
 	list<ModelLoader*>	SpawnModelList;
 	list<ModelLoader*>  AllModels;
 	ParticleGenerator*	m_particle_generator_;
 
 	//ParticleGenerator* particle;
-	scene_node* m_nodes[5];
+	scene_node* m_nodes[10];
 	//scene_node* m_root_node, *m_PlayerNode, *m_gunNode, *m_FloorNode, *m_RandomEnemyNode;
 };

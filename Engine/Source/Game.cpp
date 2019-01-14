@@ -55,7 +55,6 @@ Game::Game(Window& window, Graphics& graphics)
 	m_Model01->LoadObjModel((char*)"Assets/Sphere.obj");
 	m_Model01->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	m_Model01->SetScale(0.7f);
-	SpawnModelList.push_back(m_Model01);
 
 	m_GunModel = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 1.0f, -1.0f, 3.0f);
 	m_GunModel->LoadObjModel((char*)"Assets/gun2.obj");
@@ -63,20 +62,28 @@ Game::Game(Window& window, Graphics& graphics)
 	m_GunModel->SetScale(1.0f);
 	AllModels.push_back(m_GunModel);
 
-	for (int i = 0; i < 5; i++)
+	m_AK47 = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 1.0f, -1.0f, 3.0f);
+	m_AK47->LoadObjModel((char*)"Assets/ak47.obj");
+	m_AK47->AddTexture((char*)"Assets/AK_diffuse.jpg");
+	m_AK47->SetScale(0.01f);
+	AllModels.push_back(m_AK47);
+
+	for (int i = 0; i < SCENE_NODES; i++)
 	{
 		m_nodes[i] = new scene_node();
 	}
 
 	m_nodes[PLAYER]->setModel(m_PlayerModel);
-	m_nodes[GUN]->setModel(m_GunModel);
 	m_nodes[PLAYER]->SetPosition(XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z));
+	m_nodes[GUN]->setModel(m_GunModel);
 	m_nodes[ENEMY]->setModel(m_RandomEnemy);
 	m_nodes[BARREL]->setModel(m_Barrel);
+	m_nodes[AK47]->setModel(m_AK47);
 	m_nodes[ROOT]->addChildNode(m_nodes[PLAYER]);
 	m_nodes[PLAYER]->addChildNode(m_nodes[GUN]);
 	m_nodes[ROOT]->addChildNode(m_nodes[ENEMY]);
 	m_nodes[ROOT]->addChildNode(m_nodes[BARREL]);
+	m_nodes[ROOT]->addChildNode(m_nodes[AK47]);
 
 	//particle = new ParticleGenerator(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	//particle->CreateParticle();
@@ -84,14 +91,6 @@ Game::Game(Window& window, Graphics& graphics)
 
 Game::~Game()
 {
-	for (ModelLoader* element : SpawnModelList)
-	{
-		if (element)
-		{
-			element = nullptr;
-			delete element;
-		}
-	}
 	for (ModelLoader* element : AllModels)
 	{
 		if (element)

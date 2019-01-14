@@ -371,13 +371,13 @@ void ModelLoader::TransposeLight()
 
 void ModelLoader::LookAt_XZ(float x, float z)
 {
-	m_yAngle = atan2((this->m_x - x), (this->m_z - z)) * (180.0 / XM_PI);
+	m_yAngle = atan2((this->m_x - x), (this->m_z - z)) * (180.0f / XM_PI);
 }
 
 void ModelLoader::MoveForward(float distance)
 {
-	this->m_x += sin(m_yAngle * (XM_PI / 180.0)) * distance;
-	this->m_z += cos(m_yAngle * (XM_PI / 180.0)) * distance;
+	this->m_x += sin(m_yAngle * (XM_PI / 180.0f)) * distance;
+	this->m_z += cos(m_yAngle * (XM_PI / 180.0f)) * distance;
 }
 
 void ModelLoader::AddTexture(char* fileName)
