@@ -103,10 +103,10 @@ void ReflectModelLoader::CalculateBoundingSphereRadius()
 
 XMVECTOR ReflectModelLoader::GetBoundingSphereWorldSpacePosition()
 {
-	world = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
+	world = XMMatrixScaling(m_scale, m_scale, m_scale);
+	world *= XMMatrixRotationX(XMConvertToRadians(m_xAngle));
 	world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
 	world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
-	world *= XMMatrixScaling(m_scale, m_scale, m_scale);
 	world *= XMMatrixTranslation(m_x, m_y, m_z);
 	XMVECTOR offset = XMVectorSet(m_bouding_sphere_centre_x,m_bouding_sphere_centre_y,m_bouding_sphere_centre_z, 0.0f);
 	offset = XMVector3Transform(offset, world);
@@ -206,10 +206,10 @@ void ReflectModelLoader::LoadObjModel(char* fileName)
 void ReflectModelLoader::Draw(XMMATRIX* view, XMMATRIX* projection)
 {
 	
-	world = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
+	world = XMMatrixScaling(m_scale, m_scale, m_scale);
+	world *= XMMatrixRotationX(XMConvertToRadians(m_xAngle));
 	world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
 	world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
-	world *= XMMatrixScaling(m_scale, m_scale, m_scale);
 	world *= XMMatrixTranslation(m_x, m_y, m_z);
 
 	model_cb_values.worldViewMatrix = world * (*view);

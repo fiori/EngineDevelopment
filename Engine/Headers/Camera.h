@@ -5,13 +5,14 @@
 #define _XM_NO_INTRINSICS_
 #define XM_NO_ALIGNMENT
 #include <xnamath.h>
+#include "scene_node.h"
 
 class Camera
 {
 public:
 	Camera(float x, float y, float z, double CameraRotation, float pitch);
 	void Rotate(double degrees);
-	void Forward(float distance);
+	void Forward(float distance, scene_node* root_node);
 	void Strafe(float distance);
 	void Pitch(float degrees);
 	void Up(float y);

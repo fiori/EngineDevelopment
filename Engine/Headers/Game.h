@@ -14,7 +14,9 @@ enum NODES
 {
 	ROOT,
 	PLAYER,
-	GUN
+	GUN,
+	ENEMY,
+	BARREL
 };
 
 class Game

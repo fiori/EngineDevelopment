@@ -4,37 +4,38 @@
 #define _XM_NO_INTRINSICS_
 #define XM_NO_ALIGNMENT
 #include <xnamath.h>
-#include "Game.h"
 #include "window.h"
 
-//#include "../Headers/ParticleGenerator.h"
 class Graphics
 {
 	friend class Game;
 public:
-	Graphics(class Window& wnd);
-	void GameLoading();
-
+	//Imagine you have a MyString(int size) class with a constructor
+	//that constructs a string of the given size.
+	//You have a function print(const MyString&),
+	//and you call print(3)
+	//(when you actually intended to call print("3")).
+	//You expect it to print "3", but it prints an empty
+	//string of length 3 instead.
+	// Prefixing the explicit keyword to the constructor
+	//prevents the compiler from using that constructor
+	//for implicit conversions.
+	//Source: https://msdn.microsoft.com/en-us/library/wwywka61.aspx [VIEWED: 17/11/2018]
+	explicit Graphics(class Window& wnd);
 	~Graphics();
-	void Input();
-	void UpdateModel();
 	void BeginFrame();
 	void EndFrame();
-	void Render();
-	//float getGravityForce(ModelLoader * objectOne, ModelLoader * objectTwo);
-
-
 private:
+	//Constexpr helps the program to run fast and use less memory
+	//If possible will be computed at compile time instead of
+	//run-time
+	//Source https://msdn.microsoft.com/en-us/library/dn956974.aspx [VIEWED: 17/11/2018]
+	//if the declaration uses constexpr or inline (since C++17)
+	//specifier, the member must be declared to have complete type (static).
+	//Source: https://en.cppreference.com/w/cpp/language/static [VIEWED: 19/11/2018]
 	static constexpr short SCREENWIDTH = 640;
 	static constexpr short SCREENHEIGHT = 640;
 	static constexpr float ClearColor[4] = { 0.2f, 0.2f, 0.2f, 1.0f }; //RGBA
-
-private:
-	//UILoader* userInterface;
-	float mouseXPastPos;
-	bool mouseMoved = false;
-	int x, y;
-
 
 private:
 	IDXGISwapChain*			m_SwapChain;
@@ -42,30 +43,10 @@ private:
 	ID3D11DeviceContext*	m_ImmediateContext;
 	ID3D11RenderTargetView*	m_RenderTargetView;
 
-	/////////////////////////////////////////////////////
-	//Tutorial 03 Using Vertex Buffer and Shader to Render
-private:
-	ID3D11InputLayout*		m_InputLayout;
-	ID3D11Buffer*			m_VertexBuffer;
-	ID3D11VertexShader*		m_VertexShader;
-	ID3D11PixelShader*		m_PixelShader;
-	//ID3D11BlendState*		g_pAlphaBlendEnable; //14
-	//ID3D11BlendState*		g_pAlphaBlendDisable; //14
-
-	struct POS_COLOR_TEXT_NORM_VERTEX
-	{
-		XMFLOAT3 Pos; //Position
-		XMFLOAT4 Color; //Color
-		XMFLOAT2 Texture0;
-		XMFLOAT3 Normal;
-	};
-	/////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////
-	//Tutorial 04 Constant Buffer
 private:
 	ID3D11Buffer*		m_ConstantBuffer0;
-
+	/////////////////////////////////////////
+	//Const buffer structs. Pack to 16 bytes. Don't let any single element cross a 16 byte boundary
 	struct CONSTANT_BUFFER0
 	{
 		XMMATRIX WorldViewProjection; // 64 bytes
@@ -76,20 +57,12 @@ private:
 		XMFLOAT3 packing_bytes;	// 3x4 bytes = 12 bytes
 	};
 	CONSTANT_BUFFER0 cb0_values;
-
 	///////////////////////////////////////
 private:
 	////////////
-	//Tutorial05
-
 	//backface culling
 	ID3D11RasterizerState* m_RasterState;
 	///////////////
-
-	float RotationZ = 0;
-
-private:
-	///////////
 	//Tutorial 06
 	//ZBuffer
 	ID3D11DepthStencilView*		m_DepthStencilView;
@@ -98,17 +71,6 @@ private:
 	//Tutorial 08
 	ID3D11ShaderResourceView*		m_TextureMap0;
 	ID3D11SamplerState*				m_Sampler0;
-
-	//Tutorial 09
-	XMVECTOR m_directional_light_shines_from;
-
-	XMVECTOR m_directional_light_color;
-
-	XMVECTOR m_ambient_light_color;
-
-	XMMATRIX transpose;
-
 private:
 	Window& wnd;
-
 };

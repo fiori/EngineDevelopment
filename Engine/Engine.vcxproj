@@ -161,6 +161,7 @@
     <ClInclude Include="Headers\ModelLoader.h" />
     <ClInclude Include="Headers\scene_node.h" />
     <ClInclude Include="Headers\UILoader.h" />
+    <ClInclude Include="Headers\Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\PixelShader.hlsl">

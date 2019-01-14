@@ -87,10 +87,10 @@ void Weapon::AddTexture(char* fileName)
 
 void Weapon::Draw(XMMATRIX* view, XMMATRIX* projection)
 {
-	world = XMMatrixRotationX(XMConvertToRadians(m_Angle.x));
+	world = XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z);
+	world *= XMMatrixRotationX(XMConvertToRadians(m_Angle.x));
 	world *= XMMatrixRotationY(XMConvertToRadians(m_Angle.y));
 	world *= XMMatrixRotationZ(XMConvertToRadians(m_Angle.z));
-	world *= XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z);
 	world *= XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
 
 	model_cb_values.WorldViewProjection = world * (*view)*(*projection);

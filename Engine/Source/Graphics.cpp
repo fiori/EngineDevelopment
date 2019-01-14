@@ -1,5 +1,13 @@
 #include "../Headers/Graphics.h"
 
+struct POS_COLOR_TEXT_NORM_VERTEX
+{
+	XMFLOAT3 Pos; //Position
+	XMFLOAT4 Color; //Color
+	XMFLOAT2 Texture0;
+	XMFLOAT3 Normal;
+};
+
 Graphics::Graphics(Window& window)
 	:wnd(window)
 {
@@ -147,16 +155,10 @@ Graphics::Graphics(Window& window)
 	m_Device->CreateSamplerState(&sampler_desc, &m_Sampler0);
 	m_ImmediateContext->PSSetSamplers(0, 1, &m_Sampler0);
 	m_ImmediateContext->PSSetShaderResources(0, 1, &m_TextureMap0);
-
-
 }
 
 Graphics::~Graphics()
 {
-	if (m_VertexBuffer) m_VertexBuffer->Release();
-	if (m_InputLayout) m_InputLayout->Release();
-	if (m_VertexShader) m_VertexShader->Release();
-	if (m_PixelShader) m_PixelShader->Release();
 	if (m_TextureMap0) m_TextureMap0->Release();
 	if (m_Sampler0) m_Sampler0->Release();
 	if (m_Device) m_Device->Release();

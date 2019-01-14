@@ -104,10 +104,10 @@ void ModelLoader::CalculateBoundingSphereRadius()
 
 XMVECTOR ModelLoader::GetBoundingSphereWorldSpacePosition()
 {
-	world = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
+	world = XMMatrixScaling(m_scale, m_scale, m_scale);
+	world *= XMMatrixRotationX(XMConvertToRadians(m_xAngle));
 	world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
 	world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
-	world *= XMMatrixScaling(m_scale, m_scale, m_scale);
 	world *= XMMatrixTranslation(m_x, m_y, m_z);
 	XMVECTOR offset = XMVectorSet(m_bouding_sphere_centre_x,m_bouding_sphere_centre_y,m_bouding_sphere_centre_z, 0.0f);
 	offset = XMVector3Transform(offset, world);
@@ -121,10 +121,15 @@ float ModelLoader::GetBoundingSphereRadius()
 
 
 ModelLoader::ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z)
-	:m_device_(Device), m_ImmediateContext(ImmediateContext), m_x(x), m_y(y), m_z(z), m_xAngle(0.0f), m_yAngle(0.0f),
-	m_zAngle(0.0f), m_scale(1.0f), m_textureMap(nullptr), m_Sampler(nullptr)
+	:m_device_(Device), m_ImmediateContext(ImmediateContext), m_textureMap(nullptr), m_Sampler(nullptr)
 {
-	
+	m_x = x;
+	m_y = y;
+	m_z = z;
+	m_xAngle = 0.0f;
+	m_yAngle = 0.0f;
+	m_zAngle = 0.0f;
+	m_scale = 1.0f;
 }
 
 ModelLoader::~ModelLoader()
@@ -224,10 +229,10 @@ void ModelLoader::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection)
 void ModelLoader::Draw(XMMATRIX* view, XMMATRIX* projection)
 {
 
-	world = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
+	world = XMMatrixScaling((m_scale + m_xScale), m_scale, (m_scale + m_zScale));
+	world *= XMMatrixRotationX(XMConvertToRadians(m_xAngle));
 	world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
 	world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
-	world *= XMMatrixScaling((m_scale + m_xScale), m_scale, (m_scale + m_zScale));
 	world *= XMMatrixTranslation(m_x, m_y, m_z);
 
 	model_cb_values.WorldViewProjection = world*(*view)*(*projection);
@@ -388,22 +393,7 @@ void ModelLoader::MoveForward(float distance)
 	this->m_z += cos(m_yAngle * (XM_PI / 180.0)) * distance;
 }
 
-void ModelLoader::Chase(ModelLoader* enemy, const float DeltaTime)
-{
-	LookAt_XZ(enemy->GetXPos(), enemy->GetZPos());
-	if (this->GetYPos() <= GROUND_POSITION)
-	{
-		//vec3 diff = b - a; float distance = sqrtf(dot(diff, diff));
 
-		float Dist = sqrt(pow(XMVectorGetX(enemy->GetPosition()) - XMVectorGetX(this->GetPosition()), 2) + 
-			pow(XMVectorGetY(enemy->GetPosition()) - XMVectorGetY(this->GetPosition()), 2) + 
-			pow(XMVectorGetZ(enemy->GetPosition()) - XMVectorGetZ(this->GetPosition()), 2));
-		//float distance = sqrt(distance);
-
-		if (Dist >= CHASE_PLAYER_OFFSET && Dist <= CHASE_PLAYER_VIEW_RANGE)
-			MoveForward(-ENEMY_MOVEMENT_SPEED * DeltaTime); 
-	}
-}
 
 void ModelLoader::AddTexture(char* fileName)
 {

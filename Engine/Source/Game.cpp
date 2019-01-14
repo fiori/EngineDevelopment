@@ -5,7 +5,7 @@ Game::Game(Window& window, Graphics& graphics)
 	:gfx(graphics), wnd(window)
 {
 	input.Initialize(wnd.m_hInst, wnd.m_MainWnd, Graphics::SCREENWIDTH, Graphics::SCREENHEIGHT);
-	world = XMMatrixTranslation(0, 0, 15);
+	world = XMMatrixIdentity();
 
 	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), Graphics::SCREENWIDTH / Graphics::SCREENHEIGHT, 1.0f, 100.0f);
 	view = m_Camera->GetViewMatrix();
@@ -37,19 +37,16 @@ Game::Game(Window& window, Graphics& graphics)
 	m_Floor->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	m_Floor->SetScale(0.3f);
 	m_Floor->SetXZScale(15.0f, 15.0f);
-	SpawnModelList.push_back(m_Floor);
 
-	m_Barrel = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -4.0f, -2.0f, 0.0f);
+	m_Barrel = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -10.0f, 0.0f, 0.0f);
 	m_Barrel->LoadObjModel((char*)"Assets/barrel.obj");
 	m_Barrel->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	m_Barrel->SetScale(0.3f);
-	SpawnModelList.push_back(m_Barrel);
 
 	m_RandomEnemy = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -2.0f, 5.0f, 0.0f);
 	m_RandomEnemy->LoadObjModel((char*)"Assets/spider.obj");
 	m_RandomEnemy->AddTexture((char*)"Assets/Spinnen_Bein_tex_COLOR_.png");
 	m_RandomEnemy->SetScale(0.012f);
-	SpawnModelList.push_back(m_RandomEnemy);
 
 	//m_Gun = new Weapon(gfx.m_Device, gfx.m_ImmediateContext, XMFLOAT3(0.0f,-4.0f,0.0f), -5.0f, -1.0f, 5.0f);
 	//m_Gun->LoadWeapon((char*)"Assets/gun2.obj");
@@ -68,7 +65,7 @@ Game::Game(Window& window, Graphics& graphics)
 	m_GunModel->SetScale(1.0f);
 	AllModels.push_back(m_GunModel);
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		m_nodes[i] = new scene_node();
 	}
@@ -76,8 +73,12 @@ Game::Game(Window& window, Graphics& graphics)
 
 	m_nodes[PLAYER]->setModel(m_PlayerModel);
 	m_nodes[GUN]->setModel(m_GunModel);
+	m_nodes[ENEMY]->setModel(m_RandomEnemy);
+	m_nodes[BARREL]->setModel(m_Barrel);
 	m_nodes[ROOT]->addChildNode(m_nodes[PLAYER]);
 	m_nodes[PLAYER]->addChildNode(m_nodes[GUN]);
+	m_nodes[ROOT]->addChildNode(m_nodes[ENEMY]);
+	m_nodes[ROOT]->addChildNode(m_nodes[BARREL]);
 
 	//particle = new ParticleGenerator(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	//particle->CreateParticle();
@@ -116,7 +117,6 @@ void Game::Go()
 void Game::Input()
 {
 	input.Frame();
-
 	if (input.IsEscapePressed())
 		PostQuitMessage(0); // Exit the application
 
@@ -150,32 +150,29 @@ void Game::UpdateModel()
 	view = m_Camera->GetViewMatrix();
 	m_Camera->Rotate(input.m_mouseState.lX * SENSITIVITY);
 	m_Camera->Pitch(-input.m_mouseState.lY * SENSITIVITY);
-
-
 	m_SkyBox->SetPosition(m_Camera->GetPosition());
-
 	m_PlayerModel->SetPosition(m_Camera->GetPosition());
 
-	m_nodes[PLAYER]->SetPosition(XMFLOAT3(m_Camera->GetX(), m_Camera->GetY(), m_Camera->GetZ() - PLAYER_CAMERA_OFFSET));
+	m_nodes[PLAYER]->SetPosition(XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z));
 	m_nodes[PLAYER]->SetYRotation(m_Camera->GetRotation());
 	m_nodes[PLAYER]->SetXRotation(m_Camera->GetPitch());
 
-	if (m_RandomEnemy->GetYPos() > GROUND_POSITION)
-		m_RandomEnemy->IncYPos(GRAVITY_FORCE * wnd.m_Timer.DeltaTime());
-	if (m_Barrel->GetYPos() > GROUND_POSITION)
-		m_Barrel->IncYPos(GRAVITY_FORCE * wnd.m_Timer.DeltaTime());
-	else if (m_Barrel->GetYPos() < GROUND_POSITION)
-		m_Barrel->SetYPos(GROUND_POSITION);
+	if (m_nodes[ENEMY]->GetYPos() > GROUND_POSITION)
+		m_nodes[ENEMY]->IncYPos(GRAVITY_FORCE * wnd.m_Timer.DeltaTime(), m_nodes[ROOT]);
+	if (m_nodes[BARREL]->GetYPos() > GROUND_POSITION)
+		m_nodes[BARREL]->IncYPos(GRAVITY_FORCE * wnd.m_Timer.DeltaTime(), m_nodes[ROOT]);
+	else if (m_nodes[BARREL]->GetYPos() < GROUND_POSITION)
+		m_nodes[BARREL]->SetYPos(GROUND_POSITION);
 
 	m_particle_generator_->SetPosition(m_Camera->GetPosition());
-	m_RandomEnemy->Chase(m_PlayerModel, wnd.m_Timer.DeltaTime());
+	m_nodes[ENEMY]->Chase(m_nodes[PLAYER], wnd.m_Timer.DeltaTime());
 }
 
 void Game::Draw()
 {
 	m_SkyBox->Draw(&view, &projection);
 	m_ModelReflect->Draw(&view, &projection);
-
+	m_Floor->Draw(&view, &projection);
 	m_particle_generator_->Draw(&view, &projection, &m_Camera->GetPosition(), wnd.m_Timer.DeltaTime());
 	m_nodes[ROOT]->execute(&world, &view, &projection);
 
@@ -193,7 +190,6 @@ void Game::Draw()
 	{
 		if (m_PlayerModel != element)
 		{
-			element->Draw(&view, &projection);
 
 			if (m_PlayerModel->CheckCollision(element))
 			{

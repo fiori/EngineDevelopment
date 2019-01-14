@@ -1,10 +1,17 @@
 #include "../Headers/scene_node.h"
+#include "../Headers/Defines.h"
 
 
 scene_node::scene_node()
-	:m_p_model(nullptr),m_x(0), m_y(0), m_z(0),m_xAngle(0), m_yAngle(0), m_zAngle(0), m_scale(1.0f)
+:m_p_model(nullptr)
 {
-	
+	m_x = 0;
+	m_y = 0;
+	m_z = 0;
+	m_xAngle = 0;
+	m_yAngle = 0;
+	m_zAngle = 0;
+	m_scale = 1.0f;
 }
 
 
@@ -49,10 +56,10 @@ void scene_node::execute(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection)
 	//the local_world matrix will be used to calc the local transformations for this node
 	XMMATRIX local_world = XMMatrixIdentity();
 
-	local_world  = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
+	local_world = XMMatrixScaling(m_scale, m_scale, m_scale);
+	local_world *= XMMatrixRotationX(XMConvertToRadians(m_xAngle));
 	local_world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
 	local_world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
-	local_world *= XMMatrixScaling((m_scale + m_xScale), m_scale, (m_scale + m_zScale));
 	local_world *= XMMatrixTranslation(m_x, m_y, m_z);
 
 	local_world *= *world;
@@ -78,12 +85,10 @@ void scene_node::update_collision_tree(XMMATRIX* world, float scale)
 	// the local_world matrix will be used to calculate the local transformations for this node
 	XMMATRIX local_world = XMMatrixIdentity();
 
-	local_world = XMMatrixRotationX(XMConvertToRadians(m_xAngle));
+	local_world = XMMatrixScaling(m_scale, m_scale, m_scale);
+	local_world *= XMMatrixRotationX(XMConvertToRadians(m_xAngle));
 	local_world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
 	local_world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
-
-	local_world *= XMMatrixScaling(m_scale, m_scale, m_scale);
-
 	local_world *= XMMatrixTranslation(m_x, m_y, m_z);
 
 	//The local matrix is multiplied by the passed in world matrix that contains the concatenated 
@@ -131,7 +136,7 @@ bool scene_node::check_collision(scene_node* compare_tree, scene_node* object_tr
 		return false;
 
 	//only check for collisions if both nodes contain a model
-	if(m_p_model && compare_tree->m_p_model)
+	if (m_p_model && compare_tree->m_p_model)
 	{
 		XMVECTOR v1 = get_world_centre_position();
 		XMVECTOR v2 = compare_tree->get_world_centre_position();
@@ -149,12 +154,12 @@ bool scene_node::check_collision(scene_node* compare_tree, scene_node* object_tr
 		float dz = z1 - z2;
 
 		//Check bounding sphere collision
-		if(sqrt(dx*dx+dy*dy+dz*dz) < (compare_tree->m_p_model->GetBoundingSphereRadius() * compare_tree->m_world_scale) + 
+		if (sqrt(dx*dx + dy * dy + dz * dz) < (compare_tree->m_p_model->GetBoundingSphereRadius() * compare_tree->m_world_scale) +
 			(this->m_p_model->GetBoundingSphereRadius() * m_world_scale))
 		{
 			return true;
 		}
-
+	}
 		//iterate through compared tree child nodes
 		for (int i = 0; i<compare_tree->m_childern.size(); i++)
 		{
@@ -170,7 +175,25 @@ bool scene_node::check_collision(scene_node* compare_tree, scene_node* object_tr
 				return true;
 		}
 		return false;
+}
+
+bool scene_node::Chase(scene_node* enemy, const float DeltaTime)
+{
+	LookAt_XZ(enemy->GetXPos(), enemy->GetZPos());
+	if (this->GetYPos() <= GROUND_POSITION)
+	{
+		//vec3 diff = b - a; float distance = sqrtf(dot(diff, diff));
+
+		float Dist = sqrt(pow(XMVectorGetX(enemy->GetPosition()) - XMVectorGetX(this->GetPosition()), 2) +
+			pow(XMVectorGetY(enemy->GetPosition()) - XMVectorGetY(this->GetPosition()), 2) +
+			pow(XMVectorGetZ(enemy->GetPosition()) - XMVectorGetZ(this->GetPosition()), 2));
+		//float distance = sqrt(distance);
+
+		if (Dist >= CHASE_PLAYER_OFFSET && Dist <= CHASE_PLAYER_VIEW_RANGE)
+			MoveForward(-ENEMY_MOVEMENT_SPEED * DeltaTime, enemy);
+		else return true;
 	}
+	return false;
 }
 
 XMVECTOR scene_node::get_world_centre_position()
@@ -246,8 +269,34 @@ bool scene_node::IncZPos(float in, scene_node* root_node)
 	return false;
 }
 
-void scene_node::MoveForward(float distance)
+bool scene_node::MoveForward(float distance, scene_node* root_node)
 {
+	
+	float old_x = m_x;	// save current state
+	float old_z = m_z;	// save current state
+	//update state
 	this->m_x += sin(m_yAngle * (XM_PI / 180.0)) * distance;
 	this->m_z += cos(m_yAngle * (XM_PI / 180.0)) * distance;
+
+	XMMATRIX identity = XMMatrixIdentity();
+
+	//since state has changed, need to update collision tree
+	//this basic system requires entire hirearchy to be updated
+	//so start at root node passing in identity matrix
+	root_node->update_collision_tree(&identity, 1.0f);
+
+	//Check for collision of this node ( and children ) against all other nodes
+	if (check_collision(root_node))
+	{
+		// if collision restore state
+		m_x = old_x;
+		m_z = old_z;
+		return true;
+	}
+	return false;
+}
+
+void scene_node::LookAt_XZ(float x, float z)
+{
+	m_yAngle = atan2((this->m_x - x), (this->m_z - z)) * (180.0 / XM_PI);	
 }
