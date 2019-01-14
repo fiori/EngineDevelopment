@@ -266,6 +266,8 @@ bool scene_node::IncZPos(float in, scene_node* root_node)
 	return false;
 }
 
+
+
 bool scene_node::MoveForward(float distance, scene_node* root_node)
 {
 	float old_x = m_x;	// save current state

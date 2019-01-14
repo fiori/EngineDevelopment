@@ -1,5 +1,4 @@
 #include "../Headers/ModelLoader.h"
-#include "../Headers/Graphics.h"
 #include <numeric>
 
 struct MODEL_CONSTANT_BUFFER
@@ -379,6 +378,8 @@ void ModelLoader::MoveForward(float distance)
 	this->m_x += sin(m_yAngle * (XM_PI / 180.0f)) * distance;
 	this->m_z += cos(m_yAngle * (XM_PI / 180.0f)) * distance;
 }
+
+
 
 void ModelLoader::AddTexture(char* fileName)
 {

@@ -83,4 +83,5 @@ public:
 	//LookAt
 	void LookAt_XZ(float x, float z);
 	void MoveForward(float distance);
+
 };

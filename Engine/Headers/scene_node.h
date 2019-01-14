@@ -29,6 +29,7 @@ public:
 	bool IncXPos(float in, scene_node * root_node);
 	bool IncYPos(float in, scene_node * root_node);
 	bool IncZPos(float in, scene_node * root_node);
+
 	bool MoveForward(float distance, scene_node* root_node);
 	//LookAt
 	void LookAt_XZ(float x, float z);

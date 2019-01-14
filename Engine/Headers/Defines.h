@@ -6,6 +6,7 @@
 #pragma once
 #define SENSITIVITY 0.05f
 #define PLAYER_CAMERA_OFFSET 15.0f
+#define CAMERA_GRAVITY -6.0f
 #define COLLISION_OFFSET 0.05f
 #define GROUND_POSITION -3.8f
 #define CHASE_PLAYER_VIEW_RANGE 50.0f
@@ -16,3 +17,4 @@
 #define PARTICLE_TIME 0.01f
 #define PARTICLE_AGE 5.0f
 #define PARTICLE_GRAVITY 4.0f
+#define ITEM_ROTATION 50.0f

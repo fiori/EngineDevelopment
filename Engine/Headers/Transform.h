@@ -36,11 +36,11 @@ public:
 	virtual float GetZRotation() const { return m_zAngle; };
 	virtual float GetScale() const { return m_scale; };
 	//Modifiers
-	void IncXPos(float pos) { m_x += pos; };
-	void IncYPos(float pos) { m_y += pos; };
-	void IncZPos(float pos) { m_z += pos; };
-	void IncXRotation(float angle) { m_xAngle += angle; };
-	void IncYRotation(float angle) { m_yAngle += angle; };
-	void IncZRotation(float angle) { m_zAngle += angle; };
-	void IncScale(float scale) { m_scale += scale; };
+	virtual void IncXPos(float pos) { m_x += pos; };
+	virtual void IncYPos(float pos) { m_y += pos; };
+	virtual void IncZPos(float pos) { m_z += pos; };
+	virtual void IncXRotation(float angle) { m_xAngle += angle; };
+	virtual void IncYRotation(float angle) { m_yAngle += angle; };
+	virtual void IncZRotation(float angle) { m_zAngle += angle; };
+	virtual void IncScale(float scale) { m_scale += scale; };
 };

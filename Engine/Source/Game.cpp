@@ -1,4 +1,5 @@
 #include "../Headers/Game.h"
+#include <thread>
 
 Game::Game(Window& window, Graphics& graphics)
 	:gfx(graphics), wnd(window)
@@ -35,7 +36,7 @@ Game::Game(Window& window, Graphics& graphics)
 	m_Floor->LoadObjModel((char*)"Assets/cube.obj");
 	m_Floor->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	m_Floor->SetScale(0.3f);
-	m_Floor->SetXZScale(15.0f, 15.0f);
+	m_Floor->SetXZScale(30.0f, 30.0f);
 
 	m_Barrel = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -10.0f, 0.0f, 0.0f);
 	m_Barrel->LoadObjModel((char*)"Assets/barrel.obj");
@@ -50,7 +51,7 @@ Game::Game(Window& window, Graphics& graphics)
 	//m_Gun = new Weapon(gfx.m_Device, gfx.m_ImmediateContext, XMFLOAT3(0.0f,-4.0f,0.0f), -5.0f, -1.0f, 5.0f);
 	//m_Gun->LoadWeapon((char*)"Assets/gun2.obj");
 	//m_Gun->SetScale(XMFLOAT3(1.0f,1.0f,1.0f));
-//////////////////////////////////SCENE MANAGMENT///////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////SCENE MANAGMENT///////////////////////////////////////////////////////////////////////////////
 	m_Model01 = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 4.91f, 0.0f, 5.0f);
 	m_Model01->LoadObjModel((char*)"Assets/Sphere.obj");
 	m_Model01->AddTexture((char*)"Assets/uv-mapping-grid.png");
@@ -83,7 +84,6 @@ Game::Game(Window& window, Graphics& graphics)
 	m_nodes[PLAYER]->addChildNode(m_nodes[GUN]);
 	m_nodes[ROOT]->addChildNode(m_nodes[ENEMY]);
 	m_nodes[ROOT]->addChildNode(m_nodes[BARREL]);
-	m_nodes[ROOT]->addChildNode(m_nodes[AK47]);
 
 	//particle = new ParticleGenerator(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	//particle->CreateParticle();
@@ -199,11 +199,23 @@ void Game::Input()
 
 void Game::UpdateModel()
 {
+	//////////////////////////////
+	//PickUp
+	if (m_nodes[AK47] != nullptr)
+	{
+		m_nodes[AK47]->IncYRotation(ITEM_ROTATION * wnd.m_Timer.DeltaTime());
+		if (m_nodes[PLAYER]->check_collision(m_nodes[AK47]))
+		{
+			m_nodes[AK47] = nullptr;
+			delete m_nodes[AK47];
+		}
+	}
+	///////////////////////////////
 	if (m_Camera->GetY() > 5.0f)
 		m_Camera->SetJump(false);
 
 	if (m_Camera->getJumping() == false && m_Camera->GetY() > 0)
-		m_Camera->IncYPos(-6.0 * wnd.m_Timer.DeltaTime());
+		m_Camera->IncYPos(CAMERA_GRAVITY * wnd.m_Timer.DeltaTime());
 	if (m_Camera->GetY() < 0)
 		m_Camera->SetY(0);
 
@@ -232,6 +244,12 @@ void Game::Draw()
 	m_Floor->Draw(&view, &projection);
 	m_particle_generator_->Draw(&view, &projection, &m_Camera->GetPosition(), wnd.m_Timer.DeltaTime());
 	m_nodes[ROOT]->execute(&world, &view, &projection);
+	/////////////////////////////////////////////////////////
+	//PickUp
+	if(m_nodes[AK47] != nullptr)
+		m_nodes[AK47]->execute(&world, &view, &projection);
+	//////////////////////////////////////////////////////////
+
 
 	//gfx.m_ImmediateContext->OMSetBlendState(g_pAlphaBlendEnable, 0, 0xffffffff);
 	//userInterface->RenderUI();
