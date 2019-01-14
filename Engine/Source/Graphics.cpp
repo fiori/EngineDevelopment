@@ -26,7 +26,7 @@ Graphics::Graphics(Window& window)
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = TRUE;
-	UINT CreateDeviceFlags = 0u;
+	const UINT CreateDeviceFlags = 0u;
 
 	//#if defined(DEBUG) || defined(_DEBUG)
 	//	CreateDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;

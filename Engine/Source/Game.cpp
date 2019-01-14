@@ -217,6 +217,7 @@ void Game::UpdateModel()
 
 
 	view = m_Camera->GetViewMatrix();
+
 	m_SkyBox->SetPosition(m_Camera->GetPosition());
 
 	m_nodes[PLAYER]->SetYRotation(m_Camera->GetRotation());
