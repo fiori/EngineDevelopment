@@ -3,10 +3,9 @@
 //WIN32 API
 //#include <windows.h>
 
-#include "Graphics.h"
+#include "Game.h"
 #include "Keyboard.h"
 #include "Mouse.h"
-#include "inputclass.h"
 #include "GameTimer.h"
 
 //Essentially, Unicode (http://unicode.org/) uses 16-bit values to represent a character. This allows us to represent a larger character set
@@ -16,8 +15,8 @@
 
 class Window
 {
-	friend Graphics;
-
+	friend class Game;
+	friend class Graphics;
 public:
 	Window(HINSTANCE instanceHandle, std::wstring WindowName, int show);
 	~Window();
@@ -40,5 +39,5 @@ private:
 public:
 	Keyboard kbd;
 	Mouse mouse;
-	InputClass input;
+public:
 };

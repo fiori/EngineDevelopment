@@ -126,6 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\ParticleGenerator.cpp" />
     <ClCompile Include="Source\scene_node.cpp" />
     <ClCompile Include="Source\GameTimer.cpp" />
@@ -143,6 +144,7 @@
     <ClCompile Include="Source\UILoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Headers\Game.h" />
     <ClInclude Include="Headers\Camera.h" />
     <ClInclude Include="Headers\Defines.h" />
     <ClInclude Include="Headers\GameTimer.h" />

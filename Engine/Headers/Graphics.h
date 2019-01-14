@@ -4,14 +4,13 @@
 #define _XM_NO_INTRINSICS_
 #define XM_NO_ALIGNMENT
 #include <xnamath.h>
-//#include "../Headers/UILoader.h"
-#include "../Headers/Includes.h"
-#include <list>
-#include "ParticleGenerator.h"
+#include "Game.h"
+#include "window.h"
 
 //#include "../Headers/ParticleGenerator.h"
 class Graphics
 {
+	friend class Game;
 public:
 	Graphics(class Window& wnd);
 	void GameLoading();
@@ -19,8 +18,9 @@ public:
 	~Graphics();
 	void Input();
 	void UpdateModel();
+	void BeginFrame();
+	void EndFrame();
 	void Render();
-
 	//float getGravityForce(ModelLoader * objectOne, ModelLoader * objectTwo);
 
 
@@ -81,7 +81,6 @@ private:
 private:
 	////////////
 	//Tutorial05
-	XMMATRIX projection, world, view, identity;
 
 	//backface culling
 	ID3D11RasterizerState* m_RasterState;
@@ -111,22 +110,5 @@ private:
 
 private:
 	Window& wnd;
-private:
-	//////
-	//Tutorial07
-	Camera*	m_Camera = new Camera(0.0f, 0.0f, -15.0f, 0, 0.0f);
-	//Tutorial 10
-	ModelLoader* m_PlayerModel;
-	ModelLoader* m_GunModel;
-	ModelLoader* m_SkyBox;
-	ModelLoader* m_RandomEnemy;
-	ModelLoader* m_Floor;
-	ModelLoader* m_Barrel;
-	ModelLoader* m_Model01;
-	ReflectModelLoader* m_ModelReflect;
-	std::list<ModelLoader*> ModelList;
-	ParticleGenerator* m_particle_generator_;
 
-	//ParticleGenerator* particle;
-	scene_node* m_root_node, *m_PlayerNode, *m_gunNode, *m_FloorNode, *m_RandomEnemyNode;
 };

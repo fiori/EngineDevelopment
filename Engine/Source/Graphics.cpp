@@ -1,10 +1,9 @@
 #include "../Headers/Graphics.h"
-#include "../Headers/window.h"
-#include <sstream>
 
 Graphics::Graphics(Window& window)
 	:wnd(window)
 {
+	
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd, sizeof(sd));
 	sd.BufferCount = 1;
@@ -152,84 +151,6 @@ Graphics::Graphics(Window& window)
 
 }
 
-void Graphics::GameLoading()
-{
-	wnd.input.Initialize(wnd.m_hInst, wnd.m_MainWnd, Graphics::SCREENWIDTH, Graphics::SCREENHEIGHT);
-	world = XMMatrixTranslation(0, 0, 15);
-
-	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), Graphics::SCREENWIDTH / Graphics::SCREENHEIGHT, 1.0f, 100.0f);
-	view = m_Camera->GetViewMatrix();
-	identity = XMMatrixIdentity();
-
-	m_particle_generator_ = new ParticleGenerator(m_Device, m_ImmediateContext, 0.0f, 4.0f, 0.0f);
-	m_particle_generator_->setActive(true);
-	m_particle_generator_->CreateParticle();
-
-	//userInterface = new UILoader("Assets/font1.bmp",m_Device, m_ImmediateContext);
-	//userInterface->AddText("Test", -1.0f, 1.0f, 1.0f);
-
-	m_Camera->Pitch(-12.0f);
-	m_SkyBox = new ModelLoader(m_Device, m_ImmediateContext, 0.0f, 0.0f, 0.0f);
-	m_SkyBox->LoadSkyBox((char*)"Assets/cube.obj", (char*)"Assets/abovetheclouds.dds");
-	m_SkyBox->SetScale(3.0f);
-
-	m_ModelReflect = new ReflectModelLoader(m_Device, m_ImmediateContext, 10.0f, 0.0f, 0.0f);
-	m_ModelReflect->LoadObjModel((char*)"Assets/Sphere.obj");
-
-	m_PlayerModel = new ModelLoader(m_Device, m_ImmediateContext, 0.0f, 0.0f, 0.0f);
-	m_PlayerModel->LoadObjModel((char*)"Assets/Sphere.obj");
-	m_PlayerModel->AddTexture((char*)"Assets/uv-mapping-grid.png");
-	ModelList.push_back(m_PlayerModel);
-
-	m_Floor = new ModelLoader(m_Device, m_ImmediateContext, 0.0f, -4.0f, 0.0f);
-	m_Floor->LoadObjModel((char*)"Assets/cube.obj");
-	m_Floor->AddTexture((char*)"Assets/uv-mapping-grid.png");
-	m_Floor->SetScale(0.3f);
-	m_Floor->SetXZScale(15.0f, 15.0f);
-	ModelList.push_back(m_Floor);
-
-	m_Barrel = new ModelLoader(m_Device, m_ImmediateContext, -4.0f, -2.0f, 0.0f);
-	m_Barrel->LoadObjModel((char*)"Assets/barrel.obj");
-	m_Barrel->AddTexture((char*)"Assets/uv-mapping-grid.png");
-	m_Barrel->SetScale(0.3f);
-	ModelList.push_back(m_Barrel);
-
-	m_RandomEnemy = new ModelLoader(m_Device, m_ImmediateContext, -2.0f, 5.0f, 0.0f);
-	m_RandomEnemy->LoadObjModel((char*)"Assets/spider.obj");
-	m_RandomEnemy->AddTexture((char*)"Assets/Spinnen_Bein_tex_COLOR_.png");
-	m_RandomEnemy->SetScale(0.012f);
-	ModelList.push_back(m_RandomEnemy);
-
-	//m_Gun = new Weapon(m_Device, m_ImmediateContext, XMFLOAT3(0.0f,-4.0f,0.0f), -5.0f, -1.0f, 5.0f);
-	//m_Gun->LoadWeapon((char*)"Assets/gun2.obj");
-	//m_Gun->SetScale(XMFLOAT3(1.0f,1.0f,1.0f));
-//////////////////////////////////SCENE MANAGMENT///////////////////////////////////////////////////////////////////////////////
-	m_Model01 = new ModelLoader(m_Device, m_ImmediateContext, 4.91f, 0.0f, 5.0f);
-	m_Model01->LoadObjModel((char*)"Assets/Sphere.obj");
-	m_Model01->AddTexture((char*)"Assets/uv-mapping-grid.png");
-	m_Model01->SetScale(0.7f);
-	ModelList.push_back(m_Model01);
-
-
-	m_GunModel = new ModelLoader(m_Device, m_ImmediateContext, 1.0f, -1.0f, 3.0f);
-	m_GunModel->LoadObjModel((char*)"Assets/gun2.obj");
-	m_GunModel->AddTexture((char*)"Assets/uv-mapping-grid.png");
-	m_GunModel->SetScale(1.0f);
-
-	m_root_node = new scene_node();
-	m_PlayerNode = new scene_node();
-	m_gunNode = new scene_node();
-
-	m_PlayerNode->setModel(m_PlayerModel);
-	m_gunNode->setModel(m_GunModel);
-	m_root_node->addChildNode(m_PlayerNode);
-	m_PlayerNode->addChildNode(m_gunNode);
-
-	//particle = new ParticleGenerator(m_Device, m_ImmediateContext, 0.0f, 0.0f, 0.0f);
-	//particle->CreateParticle();
-
-}
-
 Graphics::~Graphics()
 {
 	if (m_VertexBuffer) m_VertexBuffer->Release();
@@ -239,126 +160,15 @@ Graphics::~Graphics()
 	if (m_TextureMap0) m_TextureMap0->Release();
 	if (m_Sampler0) m_Sampler0->Release();
 	if (m_Device) m_Device->Release();
-	delete m_Camera;
 }
-void Graphics::Input()
+void Graphics::BeginFrame()
 {
-	wnd.m_Timer.Tick();
+	wnd.m_Timer.Tick();	
 	wnd.CalculateFrameStats();
-	wnd.input.Frame();
-
-	if (wnd.input.IsEscapePressed())
-		PostQuitMessage(0); // Exit the application
-
-	if (wnd.input.KeyIsPressed(DIK_W))
-		m_Camera->Forward(PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
-
-	if (wnd.input.KeyIsPressed(DIK_S))
-		m_Camera->Forward(-PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
-
-	if (wnd.input.KeyIsPressed(DIK_D))
-		m_Camera->Strafe(-PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
-
-	if (wnd.input.KeyIsPressed(DIK_A))
-		m_Camera->Strafe(PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
-	if (wnd.input.KeyIsPressed(DIK_SPACE) && m_Camera->getJumping() == false)
-		m_Camera->Jump(wnd.m_Timer.DeltaTime());
-
-
-}
-
-void Graphics::UpdateModel()
-{
-	if (m_Camera->GetY() > 5.0f)
-		m_Camera->SetJump(false);
-
-	if (m_Camera->getJumping() == false && m_Camera->GetY() > 0)
-		m_Camera->IncYPos(-6.0 * wnd.m_Timer.DeltaTime());
-	if (m_Camera->GetY() < 0)
-		m_Camera->SetY(0);
-
-
-	view = m_Camera->GetViewMatrix();
-	m_Camera->Rotate(wnd.input.m_mouseState.lX * SENSITIVITY);
-	m_Camera->Pitch(-wnd.input.m_mouseState.lY * SENSITIVITY);
-
-
-	m_SkyBox->SetPosition(m_Camera->GetPosition());
-	m_PlayerModel->SetPosition(m_Camera->GetPosition());
-
-	m_PlayerNode->SetPosition(XMFLOAT3(m_Camera->GetX(), m_Camera->GetY(), m_Camera->GetZ() - PLAYER_CAMERA_OFFSET));
-	m_PlayerNode->SetYRotation(m_Camera->GetRotation());
-	m_PlayerNode->SetXRotation(m_Camera->GetPitch());
-
-	if (m_RandomEnemy->GetYPos() > GROUND_POSITION)
-		m_RandomEnemy->IncYPos(GRAVITY_FORCE * wnd.m_Timer.DeltaTime());
-	if (m_Barrel->GetYPos() > GROUND_POSITION)
-		m_Barrel->IncYPos(GRAVITY_FORCE * wnd.m_Timer.DeltaTime());
-	else if (m_Barrel->GetYPos() < GROUND_POSITION)
-		m_Barrel->SetYPos(GROUND_POSITION);
-
-	m_particle_generator_->SetPosition(m_Camera->GetPosition());
-	m_RandomEnemy->Chase(m_PlayerModel, wnd.m_Timer.DeltaTime());
-}
-
-void Graphics::Render()
-{
 	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
 	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-	
-	
-
-	m_SkyBox->Draw(&view, &projection);
-	m_ModelReflect->Draw(&view, &projection);
-
-	m_particle_generator_->Draw(&view, &projection, &m_Camera->GetPosition(),wnd.m_Timer.DeltaTime());
-	m_root_node->execute(&world, &view, &projection);
-
-	//m_ImmediateContext->OMSetBlendState(g_pAlphaBlendEnable, 0, 0xffffffff);
-	//userInterface->RenderUI();
-	//m_ImmediateContext->OMSetBlendState(g_pAlphaBlendDisable, 0, 0xffffffff);
-
-	//m_Gun->SetPosition(XMFLOAT3(m_Camera->GetPosition().x + 0.3f, m_Camera->GetPosition().y -1.0f, m_Camera->GetPosition().z + 2.0f));
-	//m_Gun->Draw(&view, &projection);
-	//m_Gun->SetRotation(m_Camera);
-
-
-
-	for (ModelLoader* element : ModelList)
-	{
-		if (m_PlayerModel != element)
-		{
-			element->Draw(&view, &projection);
-
-			if (m_PlayerModel->CheckCollision(element))
-			{
-				if (m_PlayerModel->GetZPos() > element->GetZPos() && (m_PlayerModel->GetXPos() > element->GetXPos() || m_PlayerModel->GetXPos() < element->GetXPos() || m_PlayerModel->GetXPos() == element->GetXPos()))
-				{
-					m_PlayerModel->IncZPos(COLLISION_OFFSET);
-					m_Camera->IncZPos(COLLISION_OFFSET);
-				}
-				else if (m_PlayerModel->GetXPos() > element->GetXPos() || m_PlayerModel->GetXPos() < element->GetXPos() || m_PlayerModel->GetXPos() == element->GetXPos() && m_PlayerModel->GetZPos() < element->GetZPos())
-				{
-					m_PlayerModel->IncZPos(-COLLISION_OFFSET);
-					m_Camera->IncZPos(-COLLISION_OFFSET);
-				}
-				else if (m_PlayerModel->GetXPos() < element->GetXPos())
-				{
-					m_PlayerModel->IncXPos(-COLLISION_OFFSET);
-					m_PlayerModel->IncZPos(COLLISION_OFFSET);
-					m_Camera->IncXPos(-COLLISION_OFFSET);
-					m_Camera->IncZPos(COLLISION_OFFSET);
-				}
-				else
-				{
-					m_PlayerModel->IncXPos(COLLISION_OFFSET);
-					m_PlayerModel->IncZPos(COLLISION_OFFSET);
-					m_Camera->IncXPos(COLLISION_OFFSET);
-					m_Camera->IncZPos(COLLISION_OFFSET);
-				}
-			}
-		}
-	}
+}
+void Graphics::EndFrame()
+{
 	m_SwapChain->Present(0, 0);
 }
