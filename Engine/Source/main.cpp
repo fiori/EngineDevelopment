@@ -7,7 +7,6 @@
 //TODO: implement game timer like delta time
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nCmdShow)
 {
-	
 	//GameTimer g_Timer;
 	Window wnd(hInst, L"Fiori Engine", nCmdShow);
 	Graphics graphics(wnd);

@@ -82,4 +82,3 @@ private:
 	bool m_isInWindow = false;
 	std::queue<Event> buffer;
 };
-

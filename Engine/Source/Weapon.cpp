@@ -9,10 +9,9 @@ struct GUN_CONSTANT_BUFFER
 }; GUN_CONSTANT_BUFFER model_cb_values;
 
 Weapon::Weapon(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, XMFLOAT3 Rotation, float x, float y, float z)
-	:m_device_(Device), m_ImmediateContext(ImmediateContext), m_Position(XMFLOAT3(x,y,z)), 
+	:m_device_(Device), m_ImmediateContext(ImmediateContext), m_Position(XMFLOAT3(x, y, z)),
 	m_Angle(Rotation), m_Scale(XMFLOAT3(1.0f, 1.0f, 1.0f))
 {
-
 }
 
 void Weapon::LoadWeapon(char* fileName)
@@ -49,7 +48,6 @@ void Weapon::LoadWeapon(char* fileName)
 	if (FAILED(m_device_->CreateInputLayout(InputLayoutDesc, ARRAYSIZE(InputLayoutDesc), VS->GetBufferPointer(), VS->GetBufferSize(), &m_InputLayout)))
 		MessageBox(nullptr, L"Error Creating the Input Layout", nullptr, 0);
 
-
 	//Create and set up the constant buffer
 	D3D11_BUFFER_DESC	constant_buffer_desc;
 	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
@@ -59,8 +57,6 @@ void Weapon::LoadWeapon(char* fileName)
 	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	if (FAILED(m_device_->CreateBuffer(&constant_buffer_desc, nullptr, &m_ConstantBuffer)))
 		MessageBox(nullptr, L"Error Creating the Constant buffer", nullptr, 0);
-
-
 }
 
 void Weapon::AddTexture(char* fileName)
@@ -153,5 +149,3 @@ void Weapon::TransposeLight()
 	model_cb_values.directional_light_vector = XMVector3Transform(m_directional_light_shines_from, m_transpose);
 	model_cb_values.directional_light_vector = XMVector3Normalize(model_cb_values.directional_light_vector);
 }
-
-

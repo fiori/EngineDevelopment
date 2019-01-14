@@ -16,7 +16,7 @@ private:
 	float m_x, m_y, m_z;
 	float m_xAngle, m_yAngle, m_zAngle;
 	float m_scale;
-	
+
 private:
 	XMMATRIX world;
 private:
@@ -40,20 +40,19 @@ private:
 	ID3D11ShaderResourceView*	m_textureMap;
 	ID3D11SamplerState*			m_Sampler;
 
-//Tutorial12
+	//Tutorial12
 private:
 	float m_bouding_sphere_centre_x, m_bouding_sphere_centre_y, m_bouding_sphere_centre_z, m_bouding_sphere_radius;
 	XMFLOAT3 m_MinimumVertPos, m_MaximumVertPos;
 public:
 	bool CheckCollision(ReflectModelLoader* model);
-	
 
 private:
 	void CalculateModelCentrePoint();
 	void CalculateBoundingSphereRadius();
 	XMVECTOR GetBoundingSphereWorldSpacePosition();
 	float GetBoundingSphereRadius();
-//--------------------------------
+	//--------------------------------
 public:
 	ReflectModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z);
 	~ReflectModelLoader();
@@ -63,7 +62,7 @@ public:
 	void Draw(XMMATRIX* view, XMMATRIX* projection);
 	void AddTexture(char* fileName);
 	void TransposeLight();
-//--------------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
 public:
 	//SkyBox
 	void LoadSkyBox(char* ObjectFile, char* FileForTheTexture);
@@ -76,7 +75,7 @@ private:
 	ID3D11RasterizerState*			m_SkyBoxRasterSkyBox = 0;
 	ID3D11DepthStencilState*		m_SkyBoxDepthWriteSolid = 0;
 	ID3D11DepthStencilState*		m_SkyBoxDepthWriteSkybox = 0;
-//--------------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
 
 public:
 	//Public methods for model modification
@@ -86,8 +85,8 @@ public:
 	void SetZPos(float pos) { m_z = pos; };
 	void SetPosition(XMFLOAT3 Position)
 	{
-		m_x = Position.x; 
-		m_y = Position.y; 
+		m_x = Position.x;
+		m_y = Position.y;
 		m_z = Position.z;
 	};
 	void SetXRotation(float angle) { m_xAngle = angle; };
@@ -114,4 +113,3 @@ public:
 	void LookAt_XZ(float x, float z);
 	void MoveForward(float distance);
 };
-

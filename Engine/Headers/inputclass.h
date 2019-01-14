@@ -4,12 +4,10 @@
 #ifndef _INPUTCLASS_H_
 #define _INPUTCLASS_H_
 
-
 ///////////////////////////////
 // PRE-PROCESSING DIRECTIVES //
 ///////////////////////////////
 #define DIRECTINPUT_VERSION 0x0800
-
 
 /////////////
 // LINKING //
@@ -17,12 +15,10 @@
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
-
 //////////////
 // INCLUDES //
 //////////////
 #include <dinput.h>
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: InputClass

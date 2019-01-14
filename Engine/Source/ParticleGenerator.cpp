@@ -7,8 +7,7 @@ struct PARTICLE_CONSTANT_BUFFER
 {
 	XMMATRIX WorldViewProjection;
 	XMVECTOR Color;
-};PARTICLE_CONSTANT_BUFFER model_cb_values;
-
+}; PARTICLE_CONSTANT_BUFFER model_cb_values;
 
 ParticleGenerator::ParticleGenerator(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z)
 	:m_device_(Device), m_ImmediateContext(ImmediateContext), m_x(x), m_y(y), m_z(z), m_xAngle(0.0f), m_yAngle(0.0f),
@@ -31,11 +30,11 @@ int ParticleGenerator::CreateParticle()
 	XMFLOAT3 vertices[6] =
 	{
 		XMFLOAT3(-1.0f, -1.0f, 0.0f),
-		XMFLOAT3( 1.0f,  1.0f, 0.0f),
+		XMFLOAT3(1.0f,  1.0f, 0.0f),
 		XMFLOAT3(-1.0f,  1.0f, 0.0f),
 		XMFLOAT3(-1.0f, -1.0f, 0.0f),
-		XMFLOAT3( 1.0f, -1.0f, 0.0f),
-		XMFLOAT3( 1.0f,  1.0f, 0.0f),
+		XMFLOAT3(1.0f, -1.0f, 0.0f),
+		XMFLOAT3(1.0f,  1.0f, 0.0f),
 	};
 
 	D3D11_RASTERIZER_DESC rasterizer_desc;
@@ -142,22 +141,22 @@ void ParticleGenerator::Draw(XMMATRIX* view, XMMATRIX* projection, XMFLOAT3* cam
 				switch (m_type)
 				{
 				case RAINBOW_FOUNTAIN:
-					{
-						m_age = PARTICLE_AGE;
-						m_untilParticle = PARTICLE_TIME;
-						(*it)->color = XMFLOAT4(RandomZeroToOne(), RandomZeroToOne(), RandomZeroToOne(), 1.0f);
-						(*it)->gravity = 4.5f;
-						(*it)->position = XMFLOAT3(0.0f, 6.0f, 3.0f);
-						(*it)->velocity = XMFLOAT3(RandomNegOneToPosOne(), 2.50f, RandomNegOneToPosOne());
-						break;
-					}				
+				{
+					m_age = PARTICLE_AGE;
+					m_untilParticle = PARTICLE_TIME;
+					(*it)->color = XMFLOAT4(RandomZeroToOne(), RandomZeroToOne(), RandomZeroToOne(), 1.0f);
+					(*it)->gravity = 4.5f;
+					(*it)->position = XMFLOAT3(0.0f, 6.0f, 3.0f);
+					(*it)->velocity = XMFLOAT3(RandomNegOneToPosOne(), 2.50f, RandomNegOneToPosOne());
+					break;
+				}
 				case RAIN:
 				{
 					m_age = PARTICLE_AGE;
 					m_untilParticle = PARTICLE_TIME;
 					(*it)->color = XMFLOAT4(RandomZeroToOne(), RandomZeroToOne(), RandomZeroToOne(), 1.0f);
 					(*it)->gravity = PARTICLE_GRAVITY;
-					(*it)->position = XMFLOAT3(this->m_x + RandomNumber(50,100), 80.0f, this->m_z + RandomNumber(50,100));
+					(*it)->position = XMFLOAT3(this->m_x + RandomNumber(50, 100), 80.0f, this->m_z + RandomNumber(50, 100));
 					(*it)->velocity = XMFLOAT3(RandomNegOneToPosOne(), -10.0f, RandomNegOneToPosOne());
 					break;
 				}
@@ -170,8 +169,6 @@ void ParticleGenerator::Draw(XMMATRIX* view, XMMATRIX* projection, XMFLOAT3* cam
 				m_active.push_back(*it);
 				m_free.pop_front();
 			}
-
-
 		}
 		else
 			m_untilParticle = PARTICLE_TIME;
@@ -191,7 +188,7 @@ void ParticleGenerator::Draw(XMMATRIX* view, XMMATRIX* projection, XMFLOAT3* cam
 				(*it)->position.y += (*it)->velocity.y*(deltaTime);
 				(*it)->position.z += (*it)->velocity.z*(deltaTime);
 				break;
-			}			
+			}
 			case RAIN:
 			{
 				(*it)->age += deltaTime;
@@ -212,7 +209,6 @@ void ParticleGenerator::Draw(XMMATRIX* view, XMMATRIX* projection, XMFLOAT3* cam
 			local_world *= XMMatrixRotationY(XMConvertToRadians(m_yAngle));
 			local_world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
 			local_world *= XMMatrixTranslation((*it)->position.x, (*it)->position.y, (*it)->position.z);
-
 
 			//constant buffer stuff for shader
 			model_cb_values.WorldViewProjection = local_world * (*view)*(*projection);
@@ -242,7 +238,6 @@ void ParticleGenerator::Draw(XMMATRIX* view, XMMATRIX* projection, XMFLOAT3* cam
 				it++;
 		}
 	}
-
 }
 
 ParticleGenerator::~ParticleGenerator()
@@ -254,8 +249,8 @@ ParticleGenerator::~ParticleGenerator()
 	}
 	/*if (m_textureMap)m_textureMap->Release();
 	if (m_Sampler)m_Sampler->Release();*/
-	if(m_ParticleTextureMap)m_ParticleTextureMap->Release();
-	if(m_ParticleSampler)m_ParticleSampler->Release();
+	if (m_ParticleTextureMap)m_ParticleTextureMap->Release();
+	if (m_ParticleSampler)m_ParticleSampler->Release();
 	if (m_ParticleRasterSolid)m_ParticleRasterSolid->Release();
 	if (m_ParticleRasterParticle)m_ParticleRasterParticle->Release();
 	if (m_ParticleDepthWriteSolid)m_ParticleDepthWriteSolid->Release();
@@ -279,10 +274,9 @@ float ParticleGenerator::RandomNumber(int min, int max)
 	return ((temp / 32767.0f) * max) - min;
 }
 
-
 void ParticleGenerator::LookAt_XZ(float x, float z)
 {
-	m_yAngle = atan2((this->m_x - x),(this->m_z - z)) * (180.0 / XM_PI);
+	m_yAngle = atan2((this->m_x - x), (this->m_z - z)) * (180.0 / XM_PI);
 }
 
 void ParticleGenerator::MoveForward(float distance)
@@ -290,6 +284,3 @@ void ParticleGenerator::MoveForward(float distance)
 	this->m_x += sin(m_yAngle * (XM_PI / 180.0)) * distance;
 	this->m_z += cos(m_yAngle * (XM_PI / 180.0)) * distance;
 }
-
-
-

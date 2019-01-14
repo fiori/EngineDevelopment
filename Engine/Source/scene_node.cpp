@@ -1,9 +1,8 @@
 #include "../Headers/scene_node.h"
 #include "../Headers/Defines.h"
 
-
 scene_node::scene_node()
-:m_p_model(nullptr)
+	:m_p_model(nullptr)
 {
 	m_x = 0;
 	m_y = 0;
@@ -13,7 +12,6 @@ scene_node::scene_node()
 	m_zAngle = 0;
 	m_scale = 1.0f;
 }
-
 
 scene_node::~scene_node()
 {
@@ -91,11 +89,11 @@ void scene_node::update_collision_tree(XMMATRIX* world, float scale)
 	local_world *= XMMatrixRotationZ(XMConvertToRadians(m_zAngle));
 	local_world *= XMMatrixTranslation(m_x, m_y, m_z);
 
-	//The local matrix is multiplied by the passed in world matrix that contains the concatenated 
+	//The local matrix is multiplied by the passed in world matrix that contains the concatenated
 	//transformations of all parent nodes so that this nodes transformations are relative to thos
 	local_world *= *world;
 
-	//calc the world space scale of this object, is needed to calculate the 
+	//calc the world space scale of this object, is needed to calculate the
 	//correct bounding sphere radius of an object in a scaled hierarchy
 	m_world_scale = scale * m_scale;
 
@@ -120,7 +118,6 @@ void scene_node::update_collision_tree(XMMATRIX* world, float scale)
 	{
 		m_childern[i]->update_collision_tree(&local_world, m_world_scale);
 	}
-
 }
 
 bool scene_node::check_collision(scene_node* compare_tree)
@@ -132,7 +129,7 @@ bool scene_node::check_collision(scene_node* compare_tree, scene_node* object_tr
 {
 	//check to see if root of tree being compared is same as root node of object tree being checked
 	//i.e stop object node and children being checked against each other
-	if (object_tree_root == compare_tree) 
+	if (object_tree_root == compare_tree)
 		return false;
 
 	//only check for collisions if both nodes contain a model
@@ -161,10 +158,10 @@ bool scene_node::check_collision(scene_node* compare_tree, scene_node* object_tr
 		}
 	}
 	//iterate through compared tree child nodes
-	for (int i = 0; i<compare_tree->m_childern.size(); i++)
+	for (int i = 0; i < compare_tree->m_childern.size(); i++)
 	{
 		//check for colliision against all compared tree child nodes
-		if (check_collision(compare_tree->m_childern[i], object_tree_root)) 
+		if (check_collision(compare_tree->m_childern[i], object_tree_root))
 			return true;
 	}
 	//iterate through composite object child nodes
@@ -216,7 +213,7 @@ bool scene_node::IncXPos(float in, scene_node* root_node)
 	root_node->update_collision_tree(&identity, 1.0f);
 
 	//Check for collision of this node ( and children ) against all other nodes
-	if(check_collision(root_node))
+	if (check_collision(root_node))
 	{
 		// if collision restore state
 		m_x = old_x;
@@ -271,7 +268,6 @@ bool scene_node::IncZPos(float in, scene_node* root_node)
 
 bool scene_node::MoveForward(float distance, scene_node* root_node)
 {
-	
 	float old_x = m_x;	// save current state
 	float old_z = m_z;	// save current state
 	//update state
@@ -298,5 +294,5 @@ bool scene_node::MoveForward(float distance, scene_node* root_node)
 
 void scene_node::LookAt_XZ(float x, float z)
 {
-	m_yAngle = atan2((this->m_x - x), (this->m_z - z)) * (180.0 / XM_PI);	
+	m_yAngle = atan2((this->m_x - x), (this->m_z - z)) * (180.0 / XM_PI);
 }

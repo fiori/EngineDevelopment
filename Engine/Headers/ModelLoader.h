@@ -18,7 +18,7 @@ private:
 	ID3D11PixelShader*		m_PShader;
 	ID3D11InputLayout*		m_InputLayout;
 	ID3D11Buffer*			m_ConstantBuffer;
-	
+
 private:
 	XMMATRIX world;
 private:
@@ -38,8 +38,7 @@ public:
 	void SetDirectionalLightColor(float x, float y, float z);
 	void SetAmbientLightColor(float x, float y, float z);
 
-
-//Tutorial12
+	//Tutorial12
 private:
 	float m_bouding_sphere_centre_x, m_bouding_sphere_centre_y, m_bouding_sphere_centre_z, m_bouding_sphere_radius;
 	XMFLOAT3 m_MinimumVertPos, m_MaximumVertPos;
@@ -49,24 +48,23 @@ public:
 	float GetBoundingSphere_Y()	const { return m_bouding_sphere_centre_y; };
 	float GetBoundingSphere_Z()	const { return m_bouding_sphere_centre_z; };
 	float GetBoundingSphereRadius();
-	
 
 private:
 	void CalculateModelCentrePoint();
 	void CalculateBoundingSphereRadius();
 	XMVECTOR GetBoundingSphereWorldSpacePosition();
-//--------------------------------
+	//--------------------------------
 public:
 	ModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z);
 	~ModelLoader();
 
 public:
 	void LoadObjModel(char* fileName);
-	void Draw(XMMATRIX* world,XMMATRIX* view, XMMATRIX* projection);
+	void Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection);
 	void Draw(XMMATRIX* view, XMMATRIX* projection);
 	void AddTexture(char* fileName);
 	void TransposeLight();
-//--------------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
 public:
 	//SkyBox
 	void LoadSkyBox(char* ObjectFile, char* FileForTheTexture);
@@ -79,12 +77,10 @@ private:
 	ID3D11RasterizerState*			m_SkyBoxRasterSkyBox = 0;
 	ID3D11DepthStencilState*		m_SkyBoxDepthWriteSolid = 0;
 	ID3D11DepthStencilState*		m_SkyBoxDepthWriteSkybox = 0;
-//--------------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
 
 public:
 	//LookAt
 	void LookAt_XZ(float x, float z);
 	void MoveForward(float distance);
-
 };
-

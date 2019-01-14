@@ -1,10 +1,8 @@
 #include "../Headers/Mouse.h"
 
-
 Mouse::Mouse()
 {
 }
-
 
 Mouse::~Mouse()
 {
@@ -48,8 +46,6 @@ Mouse::Event Mouse::Read()
 		return Mouse::Event();
 	}
 }
-
-
 
 void Mouse::OnMouveMove(int x, int y)
 {

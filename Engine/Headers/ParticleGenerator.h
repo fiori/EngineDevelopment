@@ -28,19 +28,18 @@ private:
 	ID3D11InputLayout*		m_InputLayout;
 	ID3D11Buffer*			m_ConstantBuffer;
 	ID3D11Buffer*			m_VertexBuffer;
-	
 
 	float m_x, m_y, m_z;
 	float m_xAngle, m_yAngle, m_zAngle;
 	float m_scale;
 	bool m_isActive;
-	
-//Particles
+
+	//Particles
 public:
 	ParticleGenerator(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z);
 	int CreateParticle();
 	void Draw(XMMATRIX* view, XMMATRIX* projection, XMFLOAT3* cameraposition, float deltaTime);
-	
+
 	~ParticleGenerator();
 private:
 	float m_timePrevious;
@@ -53,8 +52,8 @@ private:
 	list<Particle*>::iterator it;
 	float m_age;
 	type m_type;
-	
-//--------------------------------------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------------------------------
 private:
 	//SkyBox
 	ID3D11ShaderResourceView*		m_ParticleTextureMap;
@@ -63,7 +62,7 @@ private:
 	ID3D11RasterizerState*			m_ParticleRasterParticle = 0;
 	ID3D11DepthStencilState*		m_ParticleDepthWriteSolid = 0;
 	ID3D11DepthStencilState*		m_ParticleDepthWriteParticle = 0;
-//--------------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
 
 public:
 	//Public methods for model modification
@@ -73,8 +72,8 @@ public:
 	void SetZPos(float pos) { m_z = pos; };
 	void SetPosition(XMFLOAT3 Position)
 	{
-		m_x = Position.x; 
-		m_y = Position.y; 
+		m_x = Position.x;
+		m_y = Position.y;
 		m_z = Position.z;
 	};
 	void SetXRotation(float angle) { m_xAngle = angle; };
@@ -103,4 +102,3 @@ public:
 	void LookAt_XZ(float x, float z);
 	void MoveForward(float distance);
 };
-

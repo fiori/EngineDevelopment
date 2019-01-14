@@ -11,7 +11,6 @@ struct POS_COLOR_TEXT_NORM_VERTEX
 Graphics::Graphics(Window& window)
 	:wnd(window)
 {
-	
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd, sizeof(sd));
 	sd.BufferCount = 1;
@@ -22,7 +21,7 @@ Graphics::Graphics(Window& window)
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.OutputWindow = wnd.m_MainWnd;
-	
+
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = TRUE;
@@ -73,7 +72,7 @@ Graphics::Graphics(Window& window)
 	if(FAILED(m_Device->CreateBlendState(&b, &g_pAlphaBlendEnable)))
 		MessageBox(nullptr,L"Alphablend failed", nullptr, 0);*/
 
-	// Creates the Z Buffer texture
+		// Creates the Z Buffer texture
 	D3D11_TEXTURE2D_DESC tex2dDesc;
 	ZeroMemory(&tex2dDesc, sizeof(tex2dDesc));
 
@@ -131,7 +130,6 @@ Graphics::Graphics(Window& window)
 
 	m_ImmediateContext->RSSetState(m_RasterState);
 
-
 	////////////////////////////////////////////////////////////////////////////
 	//Tutorial 08
 	//Create The Texture Mapping
@@ -165,7 +163,7 @@ Graphics::~Graphics()
 }
 void Graphics::BeginFrame()
 {
-	wnd.m_Timer.Tick();	
+	wnd.m_Timer.Tick();
 	wnd.CalculateFrameStats();
 	m_ImmediateContext->ClearRenderTargetView(m_RenderTargetView, ClearColor);
 	m_ImmediateContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);

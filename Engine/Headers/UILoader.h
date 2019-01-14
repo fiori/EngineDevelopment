@@ -20,20 +20,18 @@ struct POS_TEX_VERTEX
 	XMFLOAT2 Texture;
 };
 
-
 class UILoader
 {
-				
 public:
 	UILoader(std::string filename, ID3D11Device* device, ID3D11DeviceContext* context);
 	~UILoader();
 	void RenderUI();
 	void AddText(std::string s, float x, float y, float size);
-	
+
 private:
 	POS_TEX_VERTEX vertices[10000 * 6];
 	std::vector<string_2d> s2d;
-	
+
 	ID3D11Device*			m_device;
 	ID3D11DeviceContext*	m_ImmediateContext;
 
@@ -48,4 +46,3 @@ private:
 	ID3D11DepthStencilState* pDepthEnabledStencilState;		// state to turn on Z buffer
 	ID3D11DepthStencilState* pDepthDisabledStencilState;
 };
-

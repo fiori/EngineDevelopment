@@ -22,7 +22,7 @@ enum NODES
 class Game
 {
 public:
-	Game(class Window& window,class Graphics& graphics);
+	Game(class Window& window, class Graphics& graphics);
 	~Game();
 
 	void Go();
@@ -53,4 +53,3 @@ private:
 	scene_node* m_nodes[5];
 	//scene_node* m_root_node, *m_PlayerNode, *m_gunNode, *m_FloorNode, *m_RandomEnemyNode;
 };
-

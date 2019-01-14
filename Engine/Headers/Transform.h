@@ -8,7 +8,7 @@ protected:
 	float m_xScale;
 	float m_zScale;
 
-	public:
+public:
 	//Public methods for model modification
 	//Setters
 	virtual void SetXPos(float pos) { m_x = pos; };
@@ -44,4 +44,3 @@ protected:
 	void IncZRotation(float angle) { m_zAngle += angle; };
 	void IncScale(float scale) { m_scale += scale; };
 };
-

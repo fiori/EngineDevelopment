@@ -25,7 +25,6 @@ private:
 	XMVECTOR m_directional_light_color = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f); // White
 	XMVECTOR m_ambient_light_color = XMVectorSet(0.4f, 0.4f, 0.4f, 1.0f); // Dark Grey - always use a small value for ambient lighting
 
-
 public:
 	Weapon();
 	~Weapon();
@@ -49,6 +48,4 @@ public:
 	XMFLOAT3 GetPosition() const { return m_Position; };
 	XMFLOAT3 GetRotation() const { return m_Angle; };
 	XMFLOAT3 GetScale() const { return m_Scale; };
-
 };
-

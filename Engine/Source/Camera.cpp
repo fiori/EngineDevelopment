@@ -17,7 +17,6 @@ void Camera::Rotate(double degrees)
 	m_dx = sin(m_camera_rotation * (XM_PI / 180));
 	m_dz = cos(m_camera_rotation * (XM_PI / 180));
 	m_Y += m_velocityY;
-
 }
 
 void Camera::Forward(float distance)
@@ -36,8 +35,6 @@ void Camera::Pitch(float degrees)
 		m_pitch = -89.0f;
 	m_dy = sin(m_pitch * (XM_PI / 180));
 }
-
-
 
 void Camera::Strafe(float distance)
 {

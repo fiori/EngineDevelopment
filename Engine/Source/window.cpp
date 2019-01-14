@@ -3,7 +3,7 @@
 #include <cassert>
 #include <sstream>
 
-Window::Window(HINSTANCE instanceHandle,std::wstring WindowName, int show)
+Window::Window(HINSTANCE instanceHandle, std::wstring WindowName, int show)
 	:m_hInst(instanceHandle), m_MainWndCaption(WindowName)
 {
 	WNDCLASS wc;
@@ -17,7 +17,6 @@ Window::Window(HINSTANCE instanceHandle,std::wstring WindowName, int show)
 	wc.hbrBackground = nullptr;
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = m_ClassName;
-
 
 	if (!RegisterClass(&wc))
 	{
@@ -45,10 +44,6 @@ Window::Window(HINSTANCE instanceHandle,std::wstring WindowName, int show)
 	m_Timer.Reset();
 	ShowWindow(m_MainWnd, show);
 	UpdateWindow(m_MainWnd);
-
-
-
-
 }
 
 Window::~Window()
@@ -124,7 +119,7 @@ void Window::CalculateFrameStats()
 	frameCnt++;
 
 	//Compute averages over one second period.
-	if((m_Timer.GameTime() - timeElapsed) >= 1.0f)
+	if ((m_Timer.GameTime() - timeElapsed) >= 1.0f)
 	{
 		float fps = (float)frameCnt; // fps = frameCnt / 1
 

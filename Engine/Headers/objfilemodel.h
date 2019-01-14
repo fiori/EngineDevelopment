@@ -12,16 +12,13 @@
 #include <vector>
 using namespace std;
 
-
 class ObjFileModel
 {
 private:
 	ID3D11Device*           pD3DDevice;
 	ID3D11DeviceContext*    pImmediateContext;
 
-
-
-//////////////////////////////////////////////////
+	//////////////////////////////////////////////////
 
 	int loadfile(char* fname);
 
@@ -32,16 +29,16 @@ private:
 //////////////////////////////////////////////////
 
 	void parsefile();
-	bool getnextline() ;
+	bool getnextline();
 	bool getnexttoken(int& tokenstart, int& tokenlength);
 
 	unsigned int  tokenptr;
 
-//////////////////////////////////////////////////
+	//////////////////////////////////////////////////
 
 	bool createVB();
 
-	ID3D11Buffer* pVertexBuffer; 
+	ID3D11Buffer* pVertexBuffer;
 
 public:
 
@@ -55,7 +52,6 @@ public:
 		XMFLOAT2 TexCoord;
 		XMFLOAT3 Normal;
 	};
-
 
 	string filename;
 
@@ -72,5 +68,3 @@ public:
 	MODEL_POS_TEX_NORM_VERTEX* vertices;
 	unsigned int numverts;
 };
-
-
