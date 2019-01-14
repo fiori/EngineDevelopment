@@ -20,7 +20,7 @@ void Camera::Rotate(double degrees)
 
 }
 
-void Camera::Forward(float distance, scene_node* root_node)
+void Camera::Forward(float distance)
 {
 	XMVECTOR const forward = XMVector4Normalize(m_lookat - m_position);
 	m_X += (forward.x * distance);

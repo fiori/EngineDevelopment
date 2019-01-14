@@ -160,21 +160,21 @@ bool scene_node::check_collision(scene_node* compare_tree, scene_node* object_tr
 			return true;
 		}
 	}
-		//iterate through compared tree child nodes
-		for (int i = 0; i<compare_tree->m_childern.size(); i++)
-		{
-			//check for colliision against all compared tree child nodes
-			if (check_collision(compare_tree->m_childern[i], object_tree_root)) 
-				return true;
-		}
-		//iterate through composite object child nodes
-		for (int i = 0; i < m_childern.size(); i++)
-		{
-			//check all the child nodes of the composite object against compared tree
-			if (m_childern[i]->check_collision(compare_tree, object_tree_root))
-				return true;
-		}
-		return false;
+	//iterate through compared tree child nodes
+	for (int i = 0; i<compare_tree->m_childern.size(); i++)
+	{
+		//check for colliision against all compared tree child nodes
+		if (check_collision(compare_tree->m_childern[i], object_tree_root)) 
+			return true;
+	}
+	//iterate through composite object child nodes
+	for (int i = 0; i < m_childern.size(); i++)
+	{
+		//check all the child nodes of the composite object against compared tree
+		if (m_childern[i]->check_collision(compare_tree, object_tree_root))
+			return true;
+	}
+	return false;
 }
 
 bool scene_node::Chase(scene_node* enemy, const float DeltaTime)

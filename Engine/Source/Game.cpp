@@ -73,6 +73,7 @@ Game::Game(Window& window, Graphics& graphics)
 
 	m_nodes[PLAYER]->setModel(m_PlayerModel);
 	m_nodes[GUN]->setModel(m_GunModel);
+	m_nodes[PLAYER]->SetPosition(XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z));
 	m_nodes[ENEMY]->setModel(m_RandomEnemy);
 	m_nodes[BARREL]->setModel(m_Barrel);
 	m_nodes[ROOT]->addChildNode(m_nodes[PLAYER]);
@@ -119,21 +120,89 @@ void Game::Input()
 	input.Frame();
 	if (input.IsEscapePressed())
 		PostQuitMessage(0); // Exit the application
-
-	if (input.KeyIsPressed(DIK_W))
-		m_Camera->Forward(PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
-
-	if (input.KeyIsPressed(DIK_S))
-		m_Camera->Forward(-PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
-
-	if (input.KeyIsPressed(DIK_D))
-		m_Camera->Strafe(-PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
-
-	if (input.KeyIsPressed(DIK_A))
-		m_Camera->Strafe(PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
 	
-	if (input.KeyIsPressed(DIK_SPACE) && m_Camera->getJumping() == false)
-		m_Camera->Jump(wnd.m_Timer.DeltaTime());
+		if (input.KeyIsPressed(DIK_W))
+		{
+			m_Camera->Forward(PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
+
+			//Set the player node to the position of the camera
+			m_nodes[PLAYER]->SetPosition(XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z));
+
+			XMMATRIX identity = XMMatrixIdentity();
+
+			//update tree to reflect new camera position
+			m_nodes[ROOT]->update_collision_tree(&identity, 1.0f);
+
+			if(m_nodes[PLAYER]->check_collision(m_nodes[ROOT]))
+			{
+				m_Camera->Forward(-PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
+				m_nodes[PLAYER]->SetPosition(XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z));
+			}
+
+		}
+
+		if (input.KeyIsPressed(DIK_S))
+		{
+			m_Camera->Forward(-PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
+			
+			//Set the player node to the position of the camera
+			m_nodes[PLAYER]->SetPosition(XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z));
+
+			XMMATRIX identity = XMMatrixIdentity();
+
+			//update tree to reflect new camera position
+			m_nodes[ROOT]->update_collision_tree(&identity, 1.0f);
+
+			if (m_nodes[PLAYER]->check_collision(m_nodes[ROOT]))
+			{
+				m_Camera->Forward(PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
+				m_nodes[PLAYER]->SetPosition(XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z));
+			}
+		}
+
+		if (input.KeyIsPressed(DIK_D))
+		{
+			m_Camera->Strafe(-PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
+			//Set the player node to the position of the camera
+			m_nodes[PLAYER]->SetPosition(XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z));
+
+			XMMATRIX identity = XMMatrixIdentity();
+
+			//update tree to reflect new camera position
+			m_nodes[ROOT]->update_collision_tree(&identity, 1.0f);
+
+			if (m_nodes[PLAYER]->check_collision(m_nodes[ROOT]))
+			{
+				m_Camera->Strafe(PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
+				m_nodes[PLAYER]->SetPosition(XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z));
+			}
+		}
+
+		if (input.KeyIsPressed(DIK_A))
+		{
+			m_Camera->Strafe(PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
+			//Set the player node to the position of the camera
+			m_nodes[PLAYER]->SetPosition(XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z));
+
+			XMMATRIX identity = XMMatrixIdentity();
+
+			//update tree to reflect new camera position
+			m_nodes[ROOT]->update_collision_tree(&identity, 1.0f);
+
+			if (m_nodes[PLAYER]->check_collision(m_nodes[ROOT]))
+			{
+				m_Camera->Strafe(-PLAYER_MOVEMENT_SPEED * wnd.m_Timer.DeltaTime());
+				m_nodes[PLAYER]->SetPosition(XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z));
+			}
+
+		}
+
+
+		if (input.KeyIsPressed(DIK_SPACE) && m_Camera->getJumping() == false)
+			m_Camera->Jump(wnd.m_Timer.DeltaTime());
+
+		m_Camera->Rotate(input.m_mouseState.lX * SENSITIVITY);
+		m_Camera->Pitch(-input.m_mouseState.lY * SENSITIVITY);
 }
 
 void Game::UpdateModel()
@@ -148,12 +217,8 @@ void Game::UpdateModel()
 
 
 	view = m_Camera->GetViewMatrix();
-	m_Camera->Rotate(input.m_mouseState.lX * SENSITIVITY);
-	m_Camera->Pitch(-input.m_mouseState.lY * SENSITIVITY);
 	m_SkyBox->SetPosition(m_Camera->GetPosition());
-	m_PlayerModel->SetPosition(m_Camera->GetPosition());
 
-	m_nodes[PLAYER]->SetPosition(XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z));
 	m_nodes[PLAYER]->SetYRotation(m_Camera->GetRotation());
 	m_nodes[PLAYER]->SetXRotation(m_Camera->GetPitch());
 
@@ -186,7 +251,7 @@ void Game::Draw()
 
 
 
-	for (ModelLoader* element : SpawnModelList)
+	/*for (ModelLoader* element : SpawnModelList)
 	{
 		if (m_PlayerModel != element)
 		{
@@ -219,5 +284,5 @@ void Game::Draw()
 				}
 			}
 		}
-	}
+	}*/
 }
