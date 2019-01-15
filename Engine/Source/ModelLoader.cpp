@@ -402,3 +402,29 @@ void ModelLoader::AddTexture(char* fileName)
 
 	m_device_->CreateSamplerState(&sampler_desc, &m_Sampler);
 }
+
+void ModelLoader::CopyModel(ModelLoader* model)
+{
+	m_Object = model->m_Object;
+	m_ConstantBuffer = model->m_ConstantBuffer;
+	m_VShader = model->m_VShader;
+	m_PShader = model->m_PShader;
+	m_InputLayout = model->m_InputLayout;
+	CalculateModelCentrePoint();
+	CalculateBoundingSphereRadius();
+}
+
+void ModelLoader::CopyTexture(ModelLoader* model, D3D11_TEXTURE_ADDRESS_MODE AdressUV)
+{
+	this->m_textureMap = model->m_textureMap;
+	D3D11_SAMPLER_DESC sampler_desc;
+	ZeroMemory(&sampler_desc, sizeof(sampler_desc));
+
+	sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampler_desc.AddressU = AdressUV;
+	sampler_desc.AddressV = AdressUV;
+	sampler_desc.AddressW = AdressUV;
+	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	m_device_->CreateSamplerState(&sampler_desc, &m_Sampler);
+}

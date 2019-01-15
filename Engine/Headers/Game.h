@@ -18,6 +18,7 @@ enum NODES
 	ENEMY,
 	BARREL,
 	AK47,
+	SPHERE,
 	SCENE_NODES
 };
 
@@ -47,6 +48,7 @@ private:
 	ModelLoader*		m_Barrel;
 	ModelLoader*		m_Model01;
 	ModelLoader*		m_AK47;
+	ModelLoader*		m_Walls[400];
 	ReflectModelLoader* m_ModelReflect;
 	list<ModelLoader*>	SpawnModelList;
 	list<ModelLoader*>  AllModels;

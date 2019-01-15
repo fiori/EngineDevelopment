@@ -22,7 +22,6 @@ Game::Game(Window& window, Graphics& graphics)
 	m_SkyBox = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	m_SkyBox->LoadSkyBox((char*)"Assets/cube.obj", (char*)"Assets/abovetheclouds.dds");
 	m_SkyBox->SetScale(3.0f);
-	AllModels.push_back(m_SkyBox);
 
 	m_ModelReflect = new ReflectModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 10.0f, 0.0f, 0.0f);
 	m_ModelReflect->LoadObjModel((char*)"Assets/Sphere.obj");
@@ -30,13 +29,16 @@ Game::Game(Window& window, Graphics& graphics)
 	m_PlayerModel = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	m_PlayerModel->LoadObjModel((char*)"Assets/Sphere.obj");
 	m_PlayerModel->AddTexture((char*)"Assets/uv-mapping-grid.png");
-	SpawnModelList.push_back(m_PlayerModel);
+
+
 
 	m_Floor = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, -4.0f, 0.0f);
 	m_Floor->LoadObjModel((char*)"Assets/cube.obj");
 	m_Floor->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	m_Floor->SetScale(0.3f);
 	m_Floor->SetXZScale(30.0f, 30.0f);
+
+
 
 	m_Barrel = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -10.0f, 0.0f, 0.0f);
 	m_Barrel->LoadObjModel((char*)"Assets/barrel.obj");
@@ -53,21 +55,30 @@ Game::Game(Window& window, Graphics& graphics)
 	//m_Gun->SetScale(XMFLOAT3(1.0f,1.0f,1.0f));
 	//////////////////////////////////SCENE MANAGMENT///////////////////////////////////////////////////////////////////////////////
 	m_Model01 = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 4.91f, 0.0f, 5.0f);
-	m_Model01->LoadObjModel((char*)"Assets/Sphere.obj");
-	m_Model01->AddTexture((char*)"Assets/uv-mapping-grid.png");
+	m_Model01->CopyModel(m_PlayerModel);
+	m_Model01->CopyTexture(m_PlayerModel, D3D11_TEXTURE_ADDRESS_WRAP);
 	m_Model01->SetScale(0.7f);
 
 	m_GunModel = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 1.0f, -1.0f, 3.0f);
 	m_GunModel->LoadObjModel((char*)"Assets/gun2.obj");
 	m_GunModel->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	m_GunModel->SetScale(1.0f);
-	AllModels.push_back(m_GunModel);
 
 	m_AK47 = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 1.0f, -1.0f, 3.0f);
 	m_AK47->LoadObjModel((char*)"Assets/ak47.obj");
 	m_AK47->AddTexture((char*)"Assets/AK_diffuse.jpg");
 	m_AK47->SetScale(0.01f);
-	AllModels.push_back(m_AK47);
+
+	for (int i= 0; i < 400; i++)
+	{
+
+		m_Walls[i] = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -10.0f * cos(4.0f * i) + (tan(4.0f * i) * 40), 4.0f, 10.0f * cos(4.0f * i) + (tan(4.0f * i) * 40));
+		//Copy Texture and Copy Model
+		m_Walls[i]->CopyModel(m_Floor);
+		m_Walls[i]->CopyTexture(m_PlayerModel,D3D11_TEXTURE_ADDRESS_WRAP);
+		m_Walls[i]->SetScale(0.3f);
+	}
+
 
 	for (int i = 0; i < SCENE_NODES; i++)
 	{
@@ -80,10 +91,12 @@ Game::Game(Window& window, Graphics& graphics)
 	m_nodes[ENEMY]->setModel(m_RandomEnemy);
 	m_nodes[BARREL]->setModel(m_Barrel);
 	m_nodes[AK47]->setModel(m_AK47);
-	m_nodes[ROOT]->addChildNode(m_nodes[PLAYER]);
+	m_nodes[SPHERE]->setModel((m_Model01));
 	m_nodes[PLAYER]->addChildNode(m_nodes[GUN]);
+	m_nodes[ROOT]->addChildNode(m_nodes[PLAYER]);
 	m_nodes[ROOT]->addChildNode(m_nodes[ENEMY]);
 	m_nodes[ROOT]->addChildNode(m_nodes[BARREL]);
+	m_nodes[ROOT]->addChildNode(m_nodes[SPHERE]);
 
 	//particle = new ParticleGenerator(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	//particle->CreateParticle();
@@ -206,6 +219,7 @@ void Game::UpdateModel()
 		m_nodes[AK47]->IncYRotation(ITEM_ROTATION * wnd.m_Timer.DeltaTime());
 		if (m_nodes[PLAYER]->check_collision(m_nodes[AK47]))
 		{
+			m_nodes[GUN]->setModel(m_AK47);
 			m_nodes[AK47] = nullptr;
 			delete m_nodes[AK47];
 		}
@@ -241,55 +255,17 @@ void Game::Draw()
 {
 	m_SkyBox->Draw(&view, &projection);
 	m_ModelReflect->Draw(&view, &projection);
+
 	m_Floor->Draw(&view, &projection);
 	m_particle_generator_->Draw(&view, &projection, &m_Camera->GetPosition(), wnd.m_Timer.DeltaTime());
 	m_nodes[ROOT]->execute(&world, &view, &projection);
+	for (int i = 0; i < 400; i++)
+	{
+		m_Walls[i]->Draw(&view, &projection);
+	}
 	/////////////////////////////////////////////////////////
 	//PickUp
 	if(m_nodes[AK47] != nullptr)
 		m_nodes[AK47]->execute(&world, &view, &projection);
-	//////////////////////////////////////////////////////////
-
-
-	//gfx.m_ImmediateContext->OMSetBlendState(g_pAlphaBlendEnable, 0, 0xffffffff);
-	//userInterface->RenderUI();
-	//gfx.m_ImmediateContext->OMSetBlendState(g_pAlphaBlendDisable, 0, 0xffffffff);
-
-	//m_Gun->SetPosition(XMFLOAT3(m_Camera->GetPosition().x + 0.3f, m_Camera->GetPosition().y -1.0f, m_Camera->GetPosition().z + 2.0f));
-	//m_Gun->Draw(&view, &projection);
-	//m_Gun->SetRotation(m_Camera);
-
-	/*for (ModelLoader* element : SpawnModelList)
-	{
-		if (m_PlayerModel != element)
-		{
-			if (m_PlayerModel->CheckCollision(element))
-			{
-				if (m_PlayerModel->GetZPos() > element->GetZPos() && (m_PlayerModel->GetXPos() > element->GetXPos() || m_PlayerModel->GetXPos() < element->GetXPos() || m_PlayerModel->GetXPos() == element->GetXPos()))
-				{
-					m_PlayerModel->IncZPos(COLLISION_OFFSET);
-					m_Camera->IncZPos(COLLISION_OFFSET);
-				}
-				else if (m_PlayerModel->GetXPos() > element->GetXPos() || m_PlayerModel->GetXPos() < element->GetXPos() || m_PlayerModel->GetXPos() == element->GetXPos() && m_PlayerModel->GetZPos() < element->GetZPos())
-				{
-					m_PlayerModel->IncZPos(-COLLISION_OFFSET);
-					m_Camera->IncZPos(-COLLISION_OFFSET);
-				}
-				else if (m_PlayerModel->GetXPos() < element->GetXPos())
-				{
-					m_PlayerModel->IncXPos(-COLLISION_OFFSET);
-					m_PlayerModel->IncZPos(COLLISION_OFFSET);
-					m_Camera->IncXPos(-COLLISION_OFFSET);
-					m_Camera->IncZPos(COLLISION_OFFSET);
-				}
-				else
-				{
-					m_PlayerModel->IncXPos(COLLISION_OFFSET);
-					m_PlayerModel->IncZPos(COLLISION_OFFSET);
-					m_Camera->IncXPos(COLLISION_OFFSET);
-					m_Camera->IncZPos(COLLISION_OFFSET);
-				}
-			}
-		}
-	}*/
+	
 }

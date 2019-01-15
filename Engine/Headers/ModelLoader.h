@@ -63,6 +63,8 @@ public:
 	void Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection);
 	void Draw(XMMATRIX* view, XMMATRIX* projection);
 	void AddTexture(char* fileName);
+	void CopyModel(ModelLoader* model);
+	void CopyTexture(ModelLoader* model, D3D11_TEXTURE_ADDRESS_MODE AdressUV);
 	void TransposeLight();
 	//--------------------------------------------------------------------------------------------------------
 public:

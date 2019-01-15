@@ -117,9 +117,15 @@ float ReflectModelLoader::GetBoundingSphereRadius()
 }
 
 ReflectModelLoader::ReflectModelLoader(ID3D11Device* Device, ID3D11DeviceContext* ImmediateContext, float x, float y, float z)
-	:m_device_(Device), m_ImmediateContext(ImmediateContext), m_x(x), m_y(y), m_z(z), m_xAngle(0.0f), m_yAngle(0.0f),
-	m_zAngle(0.0f), m_scale(1.0f)
+	:m_device_(Device), m_ImmediateContext(ImmediateContext)
 {
+	m_x = x;
+	m_y = y; 
+	m_z = z;
+	m_xAngle = 0.0f;
+	m_yAngle = 0.0f;
+	m_zAngle = 0.0f;
+	m_scale = 1.0f;
 }
 
 ReflectModelLoader::~ReflectModelLoader()
