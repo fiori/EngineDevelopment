@@ -77,7 +77,7 @@ Game::Game(Window& window, Graphics& graphics)
 
 	for (int i = 0; i < 400; i++)
 	{
-		m_Walls[i] = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -10.0f * cos(4.0f * i) + (tan(4.0f * i) * 40), 4.0f, 10.0f * cos(4.0f * i) + (tan(4.0f * i) * 40));
+		m_Walls[i] = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -10.0f * cos(4.0f * i) + (tan(4.0f * i) * 40), 0.0f, 10.0f * cos(4.0f * i) + (tan(4.0f * i) * 40));
 		//Copy Texture and Copy Model
 		m_Walls[i]->CopyModel(m_Floor);
 		m_Walls[i]->CopyTexture(m_PlayerModel, D3D11_TEXTURE_ADDRESS_WRAP);
@@ -265,6 +265,9 @@ void Game::Draw()
 	for (int i = 0; i < 400; i++)
 	{
 		m_Walls[i]->Draw(&view, &projection);
+		m_Walls[i]->IncXRotation(sin(-0.10f * cos(4.0f * i) + (tan(4.0f * i))) *30.0f * wnd.m_Timer.DeltaTime());
+		m_Walls[i]->IncZRotation(cos(0.10f * cos(4.0f * i) + (tan(4.0f * i))) * 30.0f * wnd.m_Timer.DeltaTime());
+		m_Walls[i]->IncYRotation(tan(0.10f * cos(4.0f * i) + (tan(4.0f * i))) * 30.0f * wnd.m_Timer.DeltaTime());
 	}
 	/////////////////////////////////////////////////////////
 	//PickUp

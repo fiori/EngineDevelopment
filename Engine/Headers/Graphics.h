@@ -10,17 +10,7 @@ class Graphics
 {
 	friend class Game;
 public:
-	//Imagine you have a MyString(int size) class with a constructor
-	//that constructs a string of the given size.
-	//You have a function print(const MyString&),
-	//and you call print(3)
-	//(when you actually intended to call print("3")).
-	//You expect it to print "3", but it prints an empty
-	//string of length 3 instead.
-	// Prefixing the explicit keyword to the constructor
-	//prevents the compiler from using that constructor
-	//for implicit conversions.
-	//Source: https://msdn.microsoft.com/en-us/library/wwywka61.aspx [VIEWED: 17/11/2018]
+
 	explicit Graphics(class Window& wnd);
 	~Graphics();
 	void BeginFrame();
