@@ -19,6 +19,8 @@ Game::Game(Window& window, Graphics& graphics)
 	m_SkyBox = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	m_SkyBox->LoadSkyBox((char*)"Assets/cube.obj", (char*)"Assets/abovetheclouds.dds");
 	m_SkyBox->SetScale(3.0f);
+	AllModels.push_back(m_SkyBox);
+
 
 	m_ModelReflect = new ReflectModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 10.0f, 0.0f, 0.0f);
 	m_ModelReflect->LoadObjModel((char*)"Assets/Sphere.obj");
@@ -26,38 +28,52 @@ Game::Game(Window& window, Graphics& graphics)
 	m_PlayerModel = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	m_PlayerModel->LoadObjModel((char*)"Assets/Sphere.obj");
 	m_PlayerModel->AddTexture((char*)"Assets/uv-mapping-grid.png");
+	AllModels.push_back(m_PlayerModel);
+
 
 	m_Floor = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, -4.0f, 0.0f);
 	m_Floor->LoadObjModel((char*)"Assets/cube.obj");
 	m_Floor->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	m_Floor->SetScale(0.3f);
 	m_Floor->SetXZScale(30.0f, 30.0f);
+	AllModels.push_back(m_Floor);
+
 
 	m_Barrel = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -10.0f, 0.0f, 0.0f);
 	m_Barrel->LoadObjModel((char*)"Assets/barrel.obj");
 	m_Barrel->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	m_Barrel->SetScale(0.3f);
+	AllModels.push_back(m_Barrel);
+
 
 	m_RandomEnemy = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -2.0f, 5.0f, 0.0f);
 	m_RandomEnemy->LoadObjModel((char*)"Assets/spider.obj");
 	m_RandomEnemy->AddTexture((char*)"Assets/Spinnen_Bein_tex_COLOR_.png");
 	m_RandomEnemy->SetScale(0.012f);
+	AllModels.push_back(m_RandomEnemy);
+
 
 	//////////////////////////////////SCENE MANAGMENT///////////////////////////////////////////////////////////////////////////////
 	m_Model01 = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 4.91f, 0.0f, 5.0f);
 	m_Model01->CopyModel(m_PlayerModel);
 	m_Model01->CopyTexture(m_PlayerModel, D3D11_TEXTURE_ADDRESS_WRAP);
 	m_Model01->SetScale(0.7f);
+	AllModels.push_back(m_Model01);
+
 
 	m_GunModel = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 1.0f, -1.0f, 3.0f);
 	m_GunModel->LoadObjModel((char*)"Assets/gun2.obj");
 	m_GunModel->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	m_GunModel->SetScale(1.0f);
+	AllModels.push_back(m_GunModel);
+
 
 	m_AK47 = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 1.0f, -1.0f, 3.0f);
 	m_AK47->LoadObjModel((char*)"Assets/ak47.obj");
 	m_AK47->AddTexture((char*)"Assets/AK_diffuse.jpg");
 	m_AK47->SetScale(0.01f);
+	AllModels.push_back(m_AK47);
+
 
 	for (int i = 0; i < 400; i++)
 	{
@@ -66,6 +82,7 @@ Game::Game(Window& window, Graphics& graphics)
 		m_Walls[i]->CopyModel(m_Floor);
 		m_Walls[i]->CopyTexture(m_PlayerModel, D3D11_TEXTURE_ADDRESS_WRAP);
 		m_Walls[i]->SetScale(0.3f);
+		AllModels.push_back(m_Walls[i]);
 	}
 
 	for (int i = 0; i < SCENE_NODES; i++)
@@ -97,6 +114,7 @@ Game::~Game()
 			delete element;
 		}
 	}
+
 }
 
 void Game::Go()
