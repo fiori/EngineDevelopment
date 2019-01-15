@@ -44,10 +44,11 @@ private:
 	ModelLoader*		m_GunModel;
 	ModelLoader*		m_SkyBox;
 	ModelLoader*		m_RandomEnemy;
-	ModelLoader*		m_Floor;
+	ModelLoader*		m_Floor[40];
 	ModelLoader*		m_Barrel;
-	ModelLoader*		m_Model01;
+	ModelLoader*		m_Sphere;
 	ModelLoader*		m_AK47;
+	ModelLoader*		m_Cube;
 	ModelLoader*		m_Walls[400];
 	ReflectModelLoader* m_ModelReflect;
 	list<ModelLoader*>	SpawnModelList;

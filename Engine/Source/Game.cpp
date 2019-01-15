@@ -21,30 +21,30 @@ Game::Game(Window& window, Graphics& graphics)
 	m_SkyBox->SetScale(3.0f);
 	AllModels.push_back(m_SkyBox);
 
-
 	m_ModelReflect = new ReflectModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 10.0f, 0.0f, 0.0f);
 	m_ModelReflect->LoadObjModel((char*)"Assets/Sphere.obj");
 
+	m_Sphere = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 4.91f, 0.0f, 5.0f);
+	m_Sphere->LoadObjModel((char*)"Assets/Sphere.obj");
+	m_Sphere->AddTexture((char*)"Assets/uv-mapping-grid.png");
+	m_Sphere->SetScale(0.7f);
+	AllModels.push_back(m_Sphere);
+
 	m_PlayerModel = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	m_PlayerModel->LoadObjModel((char*)"Assets/Sphere.obj");
-	m_PlayerModel->AddTexture((char*)"Assets/uv-mapping-grid.png");
+	m_PlayerModel->CopyTexture(m_Sphere, D3D11_TEXTURE_ADDRESS_WRAP);
 	AllModels.push_back(m_PlayerModel);
-
-
-	m_Floor = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, -4.0f, 0.0f);
-	m_Floor->LoadObjModel((char*)"Assets/cube.obj");
-	m_Floor->AddTexture((char*)"Assets/uv-mapping-grid.png");
-	m_Floor->SetScale(0.3f);
-	m_Floor->SetXZScale(30.0f, 30.0f);
-	AllModels.push_back(m_Floor);
-
+	
+	m_Cube = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, 0.0f, 0.0f);
+	m_Cube->LoadObjModel((char*)"Assets/Cube.obj");
+	m_Cube->CopyTexture(m_Sphere, D3D11_TEXTURE_ADDRESS_WRAP);
+	AllModels.push_back(m_Cube);
 
 	m_Barrel = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -10.0f, 0.0f, 0.0f);
 	m_Barrel->LoadObjModel((char*)"Assets/barrel.obj");
-	m_Barrel->AddTexture((char*)"Assets/uv-mapping-grid.png");
+	m_Barrel->CopyTexture(m_Sphere, D3D11_TEXTURE_ADDRESS_WRAP);
 	m_Barrel->SetScale(0.3f);
 	AllModels.push_back(m_Barrel);
-
 
 	m_RandomEnemy = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -2.0f, 5.0f, 0.0f);
 	m_RandomEnemy->LoadObjModel((char*)"Assets/spider.obj");
@@ -54,16 +54,11 @@ Game::Game(Window& window, Graphics& graphics)
 
 
 	//////////////////////////////////SCENE MANAGMENT///////////////////////////////////////////////////////////////////////////////
-	m_Model01 = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 4.91f, 0.0f, 5.0f);
-	m_Model01->CopyModel(m_PlayerModel);
-	m_Model01->CopyTexture(m_PlayerModel, D3D11_TEXTURE_ADDRESS_WRAP);
-	m_Model01->SetScale(0.7f);
-	AllModels.push_back(m_Model01);
 
 
 	m_GunModel = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 1.0f, -1.0f, 3.0f);
 	m_GunModel->LoadObjModel((char*)"Assets/gun2.obj");
-	m_GunModel->AddTexture((char*)"Assets/uv-mapping-grid.png");
+	m_GunModel->CopyTexture(m_Sphere, D3D11_TEXTURE_ADDRESS_WRAP);
 	m_GunModel->SetScale(1.0f);
 	AllModels.push_back(m_GunModel);
 
@@ -74,17 +69,46 @@ Game::Game(Window& window, Graphics& graphics)
 	m_AK47->SetScale(0.01f);
 	AllModels.push_back(m_AK47);
 
+	/////////////////////////////////////////
+	//Necesary for random floor generation 
+	int spawner = 1;
+	float xTranslation = 60.6f;
+	float zTranslation = 60.6f;
 
+	for (size_t i = 0; i < 20; i++)
+	{
+		m_Floor[i] = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -90.f + xTranslation * spawner, -4.0f, 0.0f);
+		m_Floor[i]->CopyModel(m_Cube);
+		m_Floor[i]->CopyTexture(m_PlayerModel,D3D11_TEXTURE_ADDRESS_WRAP);
+		m_Floor[i]->SetScale(0.3f);
+		m_Floor[i]->SetXZScale(30.0f, 30.0f);
+		AllModels.push_back(m_Floor[i]);
+		spawner++;
+	}
+	spawner = 1;
+	for (size_t i = 20; i < 40; i++)
+	{
+		m_Floor[i] = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, -4.0f, 0.0f + zTranslation * spawner);
+		m_Floor[i]->CopyModel(m_Cube);
+		m_Floor[i]->CopyTexture(m_PlayerModel,D3D11_TEXTURE_ADDRESS_WRAP);
+		m_Floor[i]->SetScale(0.3f);
+		m_Floor[i]->SetXZScale(30.0f, 30.0f);
+		AllModels.push_back(m_Floor[i]);
+		spawner++;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	//Testing the CopyModel and Copy Texture
 	for (int i = 0; i < 400; i++)
 	{
-		m_Walls[i] = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -10.0f * cos(4.0f * i) + (tan(4.0f * i) * 40), 0.0f, 10.0f * cos(4.0f * i) + (tan(4.0f * i) * 40));
+		m_Walls[i] = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -10.0f * cos(4.0f * i) + (tan(4.0f * i) * 40), 2.0f, 10.0f * cos(4.0f * i) + (tan(4.0f * i) * 40));
 		//Copy Texture and Copy Model
-		m_Walls[i]->CopyModel(m_Floor);
+		m_Walls[i]->CopyModel(m_Cube);
 		m_Walls[i]->CopyTexture(m_PlayerModel, D3D11_TEXTURE_ADDRESS_WRAP);
 		m_Walls[i]->SetScale(0.3f);
 		AllModels.push_back(m_Walls[i]);
 	}
-
+	//////////////////////////////////////////////////////////////////
 	for (int i = 0; i < SCENE_NODES; i++)
 	{
 		m_nodes[i] = new scene_node();
@@ -96,7 +120,7 @@ Game::Game(Window& window, Graphics& graphics)
 	m_nodes[ENEMY]->setModel(m_RandomEnemy);
 	m_nodes[BARREL]->setModel(m_Barrel);
 	m_nodes[AK47]->setModel(m_AK47);
-	m_nodes[SPHERE]->setModel((m_Model01));
+	m_nodes[SPHERE]->setModel((m_Sphere));
 	m_nodes[PLAYER]->addChildNode(m_nodes[GUN]);
 	m_nodes[ROOT]->addChildNode(m_nodes[PLAYER]);
 	m_nodes[ROOT]->addChildNode(m_nodes[ENEMY]);
@@ -227,17 +251,19 @@ void Game::UpdateModel()
 			delete m_nodes[AK47];
 		}
 	}
-	///////////////////////////////
+	/////////////////////////////////
+	//Camera
 	if (m_Camera->GetY() > 5.0f)
 		m_Camera->SetJump(false);
 
-	if (m_Camera->getJumping() == false && m_Camera->GetY() > 0)
+	if (!m_Camera->getJumping() && m_Camera->GetY() > 0)
 		m_Camera->IncYPos(CAMERA_GRAVITY * wnd.m_Timer.DeltaTime());
+	
 	if (m_Camera->GetY() < 0)
 		m_Camera->SetY(0);
-
+	
 	view = m_Camera->GetViewMatrix();
-
+	//////////////////////////////////
 	m_SkyBox->SetPosition(m_Camera->GetPosition());
 
 	m_nodes[PLAYER]->SetYRotation(m_Camera->GetRotation());
@@ -259,7 +285,12 @@ void Game::Draw()
 	m_SkyBox->Draw(&view, &projection);
 	m_ModelReflect->Draw(&view, &projection);
 
-	m_Floor->Draw(&view, &projection);
+	for (int i = 0; i < 40; i++)
+	{
+		m_Floor[i]->Draw(&view, &projection);
+	}
+
+
 	m_particle_generator_->Draw(&view, &projection, &m_Camera->GetPosition(), wnd.m_Timer.DeltaTime());
 	m_nodes[ROOT]->execute(&world, &view, &projection);
 	for (int i = 0; i < 400; i++)
