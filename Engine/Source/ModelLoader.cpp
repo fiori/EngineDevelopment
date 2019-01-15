@@ -379,8 +379,6 @@ void ModelLoader::MoveForward(float distance)
 	this->m_z += cos(m_yAngle * (XM_PI / 180.0f)) * distance;
 }
 
-
-
 void ModelLoader::AddTexture(char* fileName)
 {
 	D3DX11CreateShaderResourceViewFromFileA(

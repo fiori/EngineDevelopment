@@ -15,9 +15,6 @@ Game::Game(Window& window, Graphics& graphics)
 	m_particle_generator_->setActive(true);
 	m_particle_generator_->CreateParticle();
 
-	//userInterface = new UILoader("Assets/font1.bmp",gfx.m_Device, gfx.m_ImmediateContext);
-	//userInterface->AddText("Test", -1.0f, 1.0f, 1.0f);
-
 	m_Camera->Pitch(-12.0f);
 	m_SkyBox = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, 0.0f, 0.0f);
 	m_SkyBox->LoadSkyBox((char*)"Assets/cube.obj", (char*)"Assets/abovetheclouds.dds");
@@ -30,15 +27,11 @@ Game::Game(Window& window, Graphics& graphics)
 	m_PlayerModel->LoadObjModel((char*)"Assets/Sphere.obj");
 	m_PlayerModel->AddTexture((char*)"Assets/uv-mapping-grid.png");
 
-
-
 	m_Floor = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, -4.0f, 0.0f);
 	m_Floor->LoadObjModel((char*)"Assets/cube.obj");
 	m_Floor->AddTexture((char*)"Assets/uv-mapping-grid.png");
 	m_Floor->SetScale(0.3f);
 	m_Floor->SetXZScale(30.0f, 30.0f);
-
-
 
 	m_Barrel = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -10.0f, 0.0f, 0.0f);
 	m_Barrel->LoadObjModel((char*)"Assets/barrel.obj");
@@ -50,9 +43,6 @@ Game::Game(Window& window, Graphics& graphics)
 	m_RandomEnemy->AddTexture((char*)"Assets/Spinnen_Bein_tex_COLOR_.png");
 	m_RandomEnemy->SetScale(0.012f);
 
-	//m_Gun = new Weapon(gfx.m_Device, gfx.m_ImmediateContext, XMFLOAT3(0.0f,-4.0f,0.0f), -5.0f, -1.0f, 5.0f);
-	//m_Gun->LoadWeapon((char*)"Assets/gun2.obj");
-	//m_Gun->SetScale(XMFLOAT3(1.0f,1.0f,1.0f));
 	//////////////////////////////////SCENE MANAGMENT///////////////////////////////////////////////////////////////////////////////
 	m_Model01 = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, 4.91f, 0.0f, 5.0f);
 	m_Model01->CopyModel(m_PlayerModel);
@@ -69,16 +59,14 @@ Game::Game(Window& window, Graphics& graphics)
 	m_AK47->AddTexture((char*)"Assets/AK_diffuse.jpg");
 	m_AK47->SetScale(0.01f);
 
-	for (int i= 0; i < 400; i++)
+	for (int i = 0; i < 400; i++)
 	{
-
 		m_Walls[i] = new ModelLoader(gfx.m_Device, gfx.m_ImmediateContext, -10.0f * cos(4.0f * i) + (tan(4.0f * i) * 40), 4.0f, 10.0f * cos(4.0f * i) + (tan(4.0f * i) * 40));
 		//Copy Texture and Copy Model
 		m_Walls[i]->CopyModel(m_Floor);
-		m_Walls[i]->CopyTexture(m_PlayerModel,D3D11_TEXTURE_ADDRESS_WRAP);
+		m_Walls[i]->CopyTexture(m_PlayerModel, D3D11_TEXTURE_ADDRESS_WRAP);
 		m_Walls[i]->SetScale(0.3f);
 	}
-
 
 	for (int i = 0; i < SCENE_NODES; i++)
 	{
@@ -97,9 +85,6 @@ Game::Game(Window& window, Graphics& graphics)
 	m_nodes[ROOT]->addChildNode(m_nodes[ENEMY]);
 	m_nodes[ROOT]->addChildNode(m_nodes[BARREL]);
 	m_nodes[ROOT]->addChildNode(m_nodes[SPHERE]);
-
-	//particle = new ParticleGenerator(gfx.m_Device, gfx.m_ImmediateContext, 0.0f, 0.0f, 0.0f);
-	//particle->CreateParticle();
 }
 
 Game::~Game()
@@ -265,7 +250,6 @@ void Game::Draw()
 	}
 	/////////////////////////////////////////////////////////
 	//PickUp
-	if(m_nodes[AK47] != nullptr)
+	if (m_nodes[AK47] != nullptr)
 		m_nodes[AK47]->execute(&world, &view, &projection);
-	
 }

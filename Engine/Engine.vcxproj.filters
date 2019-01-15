@@ -121,10 +121,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\PixelShader.hlsl" />
-    <FxCompile Include="Shaders\VertexShader.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="InitializeGraphics\createAndSetVertexBuffer.fi" />
     <None Include="InitializeGraphics\createAndSetConstantBuffer.fi" />
   </ItemGroup>
